@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>隐私政策 - Jostudio</title>
+    <meta name="description" content="Jostudio 隐私政策。" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0b0f14;
+        --surface: rgba(255, 255, 255, 0.06);
+        --surface2: rgba(255, 255, 255, 0.08);
+        --border: rgba(255, 255, 255, 0.12);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.64);
+        --muted2: rgba(255, 255, 255, 0.52);
+        --brand: #f59e0b;
+        --brand2: #b45309;
+        --max: 980px;
+        --r: 18px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: radial-gradient(1200px 800px at 20% -10%, rgba(245, 158, 11, 0.16), transparent 60%),
+          radial-gradient(1000px 700px at 100% 0%, rgba(16, 185, 129, 0.12), transparent 55%),
+          radial-gradient(900px 600px at 50% 120%, rgba(59, 130, 246, 0.12), transparent 60%),
+          var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        line-height: 1.7;
+      }
+
+      a {
+        color: var(--text);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .container {
+        max-width: var(--max);
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        backdrop-filter: blur(10px);
+        background: rgba(11, 15, 20, 0.78);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .logo {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, rgba(245, 158, 11, 1), rgba(180, 83, 9, 1));
+        box-shadow: 0 10px 30px rgba(245, 158, 11, 0.22);
+      }
+
+      .brandTitle {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.1;
+      }
+
+      .brandTitle strong {
+        font-weight: 900;
+        letter-spacing: -0.2px;
+      }
+
+      .brandTitle span {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 2px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
+        font-weight: 700;
+      }
+
+      .btnPrimary {
+        border-color: rgba(245, 158, 11, 0.5);
+        background: linear-gradient(135deg, rgba(245, 158, 11, 1), rgba(180, 83, 9, 1));
+        color: #0b0f14;
+      }
+
+      .btn:focus-visible {
+        outline: 3px solid rgba(245, 158, 11, 0.45);
+        outline-offset: 2px;
+      }
+
+      .card {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.04));
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 22px;
+        margin-top: 18px;
+      }
+
+      h1 {
+        font-size: 32px;
+        line-height: 1.15;
+        margin: 18px 0 8px;
+        letter-spacing: -0.8px;
+      }
+
+      h2 {
+        font-size: 18px;
+        margin: 26px 0 10px;
+        letter-spacing: -0.2px;
+      }
+
+      p,
+      li {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .meta {
+        color: var(--muted2);
+        font-size: 12px;
+        margin: 0;
+      }
+
+      ul {
+        margin: 10px 0 0;
+        padding-left: 18px;
+      }
+
+      .footer {
+        margin-top: 28px;
+        color: var(--muted2);
+        font-size: 12px;
+      }
+
+      .anchorRow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .chip {
+        padding: 8px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      @media (max-width: 640px) {
+        h1 {
+          font-size: 26px;
+        }
+        .card {
+          padding: 18px;
+          border-radius: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar" role="banner">
+      <div class="container">
+        <div class="nav" aria-label="导航">
+          <a class="brand" href="index.html" aria-label="返回首页">
+            <div class="logo" aria-hidden="true"></div>
+            <div class="brandTitle">
+              <strong>Jostudio</strong>
+              <span>隐私政策</span>
+            </div>
+          </a>
+          <a class="btn btnPrimary" href="index.html#cta">返回首页</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="container" role="main">
+      <div class="card">
+        <h1>隐私政策</h1>
+        <p class="meta">生效日期：<span id="effective"></span></p>
+        <div class="anchorRow" aria-label="快速跳转">
+          <a class="chip" href="#scope">适用范围</a>
+          <a class="chip" href="#data">我们收集什么</a>
+          <a class="chip" href="#use">如何使用</a>
+          <a class="chip" href="#share">共享与披露</a>
+          <a class="chip" href="#rights">你的权利</a>
+          <a class="chip" href="#contact">联系我们</a>
+        </div>
+
+        <section id="scope" aria-label="适用范围">
+          <h2>1. 适用范围</h2>
+          <p>
+            本隐私政策适用于你使用 Jostudio 提供的产品与服务（包括网页、移动应用及相关功能）。我们会以清晰、可理解的方式说明我们如何收集、使用、存储与保护你的个人信息。
+          </p>
+        </section>
+
+        <section id="data" aria-label="我们收集什么">
+          <h2>2. 我们收集的信息</h2>
+          <p>根据你使用的功能不同，我们可能会收集以下信息类别：</p>
+          <ul>
+            <li>账号与联系信息：例如邮箱（用于登录、找回账号或通知）。</li>
+            <li>资料信息：例如年龄段、城市、币种偏好、风险偏好等（用于个性化计算与展示）。</li>
+            <li>财务输入信息：例如月收入、月支出、存款、资产项与每日填写的支出估算（用于预算与净资产变化估算）。</li>
+            <li>设备与日志信息：例如设备型号、操作系统、崩溃日志（用于稳定性与安全）。</li>
+          </ul>
+          <p>我们不会要求你提供与产品目的无关的敏感信息。你可以选择不提供非必填信息，但部分功能可能受限。</p>
+        </section>
+
+        <section id="use" aria-label="如何使用">
+          <h2>3. 我们如何使用信息</h2>
+          <ul>
+            <li>提供与改进服务：计算“今日建议可花”、本月预测与净资产变化，优化产品体验。</li>
+            <li>安全与风控：防止滥用、欺诈与未授权访问。</li>
+            <li>沟通与支持：回应你的问题、提供必要通知。</li>
+          </ul>
+        </section>
+
+        <section id="share" aria-label="共享与披露">
+          <h2>4. 共享、转让与披露</h2>
+          <p>我们不会向第三方出售你的个人信息。仅在以下情形下可能共享或披露：</p>
+          <ul>
+            <li>为提供服务而必要：例如云服务、错误分析等服务提供商（在合理范围内处理）。</li>
+            <li>经你明确同意：例如你主动选择导出、分享报告或数据。</li>
+            <li>法律要求：监管或司法机关依法要求提供时。</li>
+          </ul>
+        </section>
+
+        <section id="store" aria-label="存储与安全">
+          <h2>5. 信息存储与安全</h2>
+          <ul>
+            <li>我们会采取合理的技术与管理措施保护你的信息，防止泄露、篡改或丢失。</li>
+            <li>信息存储期限以实现产品功能与符合法律要求为限，超期将进行删除或匿名化处理。</li>
+          </ul>
+        </section>
+
+        <section id="rights" aria-label="你的权利">
+          <h2>6. 你的权利</h2>
+          <p>你可以在适用法律允许的范围内行使以下权利：</p>
+          <ul>
+            <li>访问、更正：查看并更新你的资料信息。</li>
+            <li>删除：删除账号与相关数据（以产品内“删除数据/账号”功能为准）。</li>
+            <li>撤回同意：对可选权限与可选信息提供进行撤回。</li>
+          </ul>
+        </section>
+
+        <section id="children" aria-label="未成年人">
+          <h2>7. 未成年人</h2>
+          <p>如果你是未成年人，请在监护人同意与指导下使用本产品。我们不会主动面向未成年人收集超出产品必要范围的信息。</p>
+        </section>
+
+        <section id="changes" aria-label="政策变更">
+          <h2>8. 政策更新</h2>
+          <p>我们可能会更新本隐私政策。重大变更将通过应用内提示、站内公告或你提供的联系方式通知你。</p>
+        </section>
+
+        <section id="contact" aria-label="联系我们">
+          <h2>9. 联系我们</h2>
+          <p>如对本隐私政策有任何疑问、建议或投诉，请联系：</p>
+          <p><a href="mailto:hello@jostudio.app">hello@jostudio.app</a></p>
+        </section>
+
+        <div class="footer">
+          <div>© <span id="year"></span> Jostudio</div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      (function () {
+        var y = document.getElementById('year');
+        if (y) y.textContent = String(new Date().getFullYear());
+        var e = document.getElementById('effective');
+        if (e) e.textContent = String(new Date().toISOString().slice(0, 10));
+      })();
+    </script>
+  </body>
+</html>
+
