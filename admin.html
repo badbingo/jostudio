@@ -475,18 +475,31 @@
                 }
             },
             mounted() {
-                this.checkAuth();
+                // Check local storage for persistent auth
+                if (localStorage.getItem('admin_auth') === 'true') {
+                    // Restore password from local storage if possible (insecure but convenient for this simple admin)
+                    // Or better, just prompt login if password is lost. 
+                    // But here we rely on the session being "active".
+                    // However, we need the password for the RPC call.
+                    const storedPwd = localStorage.getItem('admin_pwd');
+                    if (storedPwd) {
+                        this.password = storedPwd;
+                        this.isAuthenticated = true;
+                        this.fetchData();
+                    } else {
+                        // If no password stored, force re-login
+                        this.logout();
+                    }
+                }
             },
             methods: {
                 checkAuth() {
-                    if (localStorage.getItem('admin_auth') === 'true') {
-                        this.isAuthenticated = true;
-                        this.fetchData();
-                    }
+                    // Deprecated in favor of mounted logic
                 },
                 login() {
                     if (this.password === 'Badbingo@3558077') {
                         localStorage.setItem('admin_auth', 'true');
+                        localStorage.setItem('admin_pwd', this.password); // Store password to persist session for RPC
                         this.isAuthenticated = true;
                         this.loginError = false;
                         this.fetchData();
@@ -496,6 +509,7 @@
                 },
                 logout() {
                     localStorage.removeItem('admin_auth');
+                    localStorage.removeItem('admin_pwd');
                     this.isAuthenticated = false;
                     this.password = '';
                 },
