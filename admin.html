@@ -340,7 +340,7 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <button @click="showUserDetail(user)" class="text-blue-600 hover:text-blue-900">详情</button>
+                                            <button @click="confirmDeleteUser(user)" class="text-red-600 hover:text-red-900">删除</button>
                                         </td>
                                     </tr>
                                     <tr v-if="filteredUsers.length === 0">
@@ -670,6 +670,25 @@
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
+                },
+                async confirmDeleteUser(user) {
+                    if (confirm(`警告：您确定要删除用户 "${user.name || user.email}" 吗？\n\n此操作将永久删除：\n1. 用户账号\n2. 所有财务数据\n3. 测评与模拟记录\n\n该操作无法撤销！`)) {
+                        try {
+                            const { error } = await supabaseClient.rpc('admin_delete_user', {
+                                admin_password: this.password,
+                                target_user_id: user.id
+                            });
+
+                            if (error) throw error;
+
+                            this.users = this.users.filter(u => u.id !== user.id);
+                            this.calculateStats();
+                            alert('用户已彻底删除。');
+                        } catch (err) {
+                            console.error('Delete failed:', err);
+                            alert('删除失败: ' + err.message + '\n\n请联系开发人员检查数据库函数 "admin_delete_user" 是否已安装。');
+                        }
+                    }
                 }
             }
         }).mount('#app');
