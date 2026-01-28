@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afford - Know how much you can safely spend</title>
+    <meta name="description" content="Personal financial health monitor. Not just expense tracking, but your life financial navigator. See your wealth trajectory for the next 20 years through AI simulation and personality analysis.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="images/moneyicon.png">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9', // Sky blue
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                        },
+                        dark: {
+                            900: '#0f172a', // Slate 900
+                            800: '#1e293b',
+                            700: '#334155',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .phone-frame {
+            border: 8px solid #333;
+            border-radius: 40px;
+            overflow: hidden;
+            position: relative;
+            background: #000;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            aspect-ratio: 9/19.5;
+        }
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40%;
+            height: 24px;
+            background: #333;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-dark-900 text-white antialiased">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-dark-900/80 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <img src="images/moneyicon.png" alt="Logo" class="h-8 w-8 rounded-lg">
+                    <span class="text-xl font-bold tracking-tight">Afford</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#features" class="hover:text-brand-500 transition px-3 py-2 rounded-md text-sm font-medium">Features</a>
+                        <a href="#showcase" class="hover:text-brand-500 transition px-3 py-2 rounded-md text-sm font-medium">Preview</a>
+                        <a href="#faq" class="hover:text-brand-500 transition px-3 py-2 rounded-md text-sm font-medium">FAQ</a>
+                    </div>
+                </div>
+                <div>
+                    <a href="#" class="bg-brand-600 hover:bg-brand-500 text-white px-5 py-2 rounded-full text-sm font-bold transition shadow-lg shadow-brand-500/20">
+                        Download App
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
+        <!-- Background Image -->
+        <div class="absolute inset-0 z-0">
+            <img src="images/hero_bg.jpg" alt="Background" class="w-full h-full object-cover opacity-30">
+            <div class="absolute inset-0 bg-gradient-to-b from-dark-900/50 via-dark-900/80 to-dark-900"></div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:grid lg:grid-cols-12 lg:gap-16 items-center">
+                
+                <!-- Left Content -->
+                <div class="lg:col-span-6 text-center lg:text-left mb-12 lg:mb-0">
+                    <div class="inline-flex items-center px-3 py-1 rounded-full border border-brand-500/30 bg-brand-500/10 text-brand-500 text-xs font-semibold uppercase tracking-wide mb-6">
+                        <span class="w-2 h-2 bg-brand-500 rounded-full mr-2 animate-pulse"></span>
+                        v1.0 Official Release
+                    </div>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-tight">
+                        10 seconds a day,<br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-purple-500">Master your financial rhythm</span>
+                    </h1>
+                    <p class="text-lg text-gray-400 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                        Ditch the tedious bookkeeping. We are your pocket <strong>"Financial Rhythm Controller"</strong>. Based on your remaining budget and days, we dynamically tell you: <strong>How much can you safely spend today</strong>, ensuring you don't overspend by month-end.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <a href="#" class="flex items-center justify-center bg-white text-dark-900 px-8 py-3.5 rounded-xl font-bold hover:bg-gray-100 transition transform hover:-translate-y-1 shadow-lg">
+                            <i class="fab fa-apple text-xl mr-2"></i>
+                            Download on App Store
+                        </a>
+                    </div>
+                    <div class="mt-8 flex items-center justify-center lg:justify-start space-x-6 text-sm text-gray-500">
+                        <div class="flex items-center">
+                            <i class="fas fa-shield-alt text-brand-500 mr-2"></i>
+                            Privacy Encrypted
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-bolt text-brand-500 mr-2"></i>
+                            No Ads
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Content (Phone Mockup) -->
+                <div class="lg:col-span-6 flex justify-center lg:justify-end relative">
+                    <!-- Decorative blobs -->
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-600/20 rounded-full blur-[100px] -z-10"></div>
+                    
+                    <!-- Phone -->
+                    <div class="phone-frame w-[280px] sm:w-[320px] transform rotate-[-6deg] hover:rotate-0 transition duration-500 border-gray-800 bg-gray-900">
+                        <div class="phone-notch"></div>
+                        <img src="images/s1.png" alt="App Screenshot" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div id="features" class="py-24 bg-dark-800/50 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold mb-4">Not just bookkeeping, but rhythm control</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">
+                    Traditional bookkeeping is like a "rearview mirror", only seeing money already spent.<br>
+                    We are your "real-time GPS", dynamically adjusting your speed (spending limit) based on road conditions (budget), taking you safely to the destination (saving money).
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-dark-900 rounded-2xl p-1 overflow-hidden group hover:shadow-2xl hover:shadow-brand-500/10 transition duration-300 border border-white/5">
+                    <div class="h-48 overflow-hidden rounded-t-xl relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark-900 to-transparent z-10"></div>
+                        <img src="images/feature_money.jpg" alt="Money" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    </div>
+                    <div class="p-6 relative z-20 -mt-12">
+                        <div class="w-12 h-12 bg-brand-600 rounded-lg flex items-center justify-center mb-4 shadow-lg text-white text-xl">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Daily Dynamic Budget</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            Say goodbye to rigid monthly limits. The system automatically calculates "Available Today" based on remaining budget and days. Save today, spend more tomorrow—make consumption flexible.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-dark-900 rounded-2xl p-1 overflow-hidden group hover:shadow-2xl hover:shadow-purple-500/10 transition duration-300 border border-white/5">
+                    <div class="h-48 overflow-hidden rounded-t-xl relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark-900 to-transparent z-10"></div>
+                        <img src="images/feature_chart.jpg" alt="Chart" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    </div>
+                    <div class="p-6 relative z-20 -mt-12">
+                        <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mb-4 shadow-lg text-white text-xl">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Month-End Prediction</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            Real-time simulation of the month's outcome. Based on your current spending rhythm, accurately predict how much you can save by month-end. Don't wait until it's too late.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-dark-900 rounded-2xl p-1 overflow-hidden group hover:shadow-2xl hover:shadow-green-500/10 transition duration-300 border border-white/5">
+                    <div class="h-48 overflow-hidden rounded-t-xl relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark-900 to-transparent z-10"></div>
+                        <img src="images/feature_plan.jpg" alt="Plan" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    </div>
+                    <div class="p-6 relative z-20 -mt-12">
+                        <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mb-4 shadow-lg text-white text-xl">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">AI Financial Report</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            AI analyzes your profile, assets, and spending rhythm. Provides detailed analysis and financial advice to help you optimize asset allocation.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Showcase Section -->
+    <div id="showcase" class="py-24 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between mb-12">
+                <div>
+                    <h2 class="text-3xl font-bold mb-2">Beautiful Interface, Ultimate Experience</h2>
+                    <p class="text-gray-400">Dark mode design, protecting your eyes, focusing on data.</p>
+                </div>
+            </div>
+            
+            <!-- Screenshots Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+                <!-- S1 -->
+                <div class="transform hover:scale-105 transition duration-500">
+                    <div class="rounded-[24px] overflow-hidden border-4 border-dark-800 shadow-2xl">
+                        <img src="images/s1.png" alt="Screen 1" class="w-full">
+                    </div>
+                </div>
+                <!-- S2 -->
+                <div class="transform hover:scale-105 transition duration-500">
+                    <div class="rounded-[24px] overflow-hidden border-4 border-dark-800 shadow-2xl">
+                        <img src="images/s2.png" alt="Screen 2" class="w-full">
+                    </div>
+                </div>
+                <!-- S3 -->
+                <div class="transform hover:scale-105 transition duration-500">
+                    <div class="rounded-[24px] overflow-hidden border-4 border-dark-800 shadow-2xl">
+                        <img src="images/s3.png" alt="Screen 3" class="w-full">
+                    </div>
+                </div>
+                <!-- S4 -->
+                <div class="transform hover:scale-105 transition duration-500">
+                    <div class="rounded-[24px] overflow-hidden border-4 border-dark-800 shadow-2xl">
+                        <img src="images/s4.png" alt="Screen 4" class="w-full">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats / Trust -->
+    <div class="py-20 border-y border-white/5 bg-brand-900/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div>
+                    <div class="text-3xl font-bold text-white mb-1">10s</div>
+                    <div class="text-sm text-brand-500 uppercase tracking-wider">Daily Time</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-white mb-1">Real-time</div>
+                    <div class="text-sm text-brand-500 uppercase tracking-wider">Dynamic Budget</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-white mb-1">Strict</div>
+                    <div class="text-sm text-brand-500 uppercase tracking-wider">Privacy Protection</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-white mb-1">4.9</div>
+                    <div class="text-sm text-brand-500 uppercase tracking-wider">User Rating</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div id="faq" class="py-24 bg-dark-800/30">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold mb-4">FAQ</h2>
+                <p class="text-gray-400">Questions answered to help you get started quickly</p>
+            </div>
+
+            <div class="grid gap-8">
+                <!-- Q1 -->
+                <div class="bg-dark-900 border border-white/5 rounded-2xl p-8 hover:border-brand-500/30 transition duration-300">
+                    <h3 class="text-xl font-bold mb-3 flex items-start">
+                        <span class="text-brand-500 mr-3">Q.</span>
+                        Why does "Available Today" change every day?
+                    </h3>
+                    <p class="text-gray-400 leading-relaxed pl-8">
+                        This is the core value of our algorithm. The system divides your <strong>remaining total budget</strong> by <strong>remaining days</strong>. If you saved money yesterday, today's limit increases automatically; if you overspent yesterday, the system spreads the pressure over future days. This way you always know how to spend right now, ensuring no month-end crunch.
+                    </p>
+                </div>
+
+                <!-- Q2 -->
+                <div class="bg-dark-900 border border-white/5 rounded-2xl p-8 hover:border-brand-500/30 transition duration-300">
+                    <h3 class="text-xl font-bold mb-3 flex items-start">
+                        <span class="text-brand-500 mr-3">Q.</span>
+                        Do I need to record every single grocery or taxi receipt?
+                    </h3>
+                    <p class="text-gray-400 leading-relaxed pl-8">
+                        No. The biggest pain point of traditional bookkeeping is "too tedious to keep up". We focus on <strong>minimalism</strong>. You only need to enter one "Today's Total Spending" at the end of the day. We focus on macro financial rhythm, not trivial details.
+                    </p>
+                </div>
+
+                <!-- Q3 -->
+                <div class="bg-dark-900 border border-white/5 rounded-2xl p-8 hover:border-brand-500/30 transition duration-300">
+                    <h3 class="text-xl font-bold mb-3 flex items-start">
+                        <span class="text-brand-500 mr-3">Q.</span>
+                        What exactly does the AI financial report analyze?
+                    </h3>
+                    <p class="text-gray-400 leading-relaxed pl-8">
+                        It's not just charts. AI combines your age, city, asset structure, and consumption rhythm to calculate your "risk tolerance" and "financial freedom". It acts like a private consultant, suggesting whether you should increase your emergency fund or if your current consumption level is healthy.
+                    </p>
+                </div>
+
+                <!-- Q4 -->
+                <div class="bg-dark-900 border border-white/5 rounded-2xl p-8 hover:border-brand-500/30 transition duration-300">
+                    <h3 class="text-xl font-bold mb-3 flex items-start">
+                        <span class="text-brand-500 mr-3">Q.</span>
+                        Is my data safe if I delete the app?
+                    </h3>
+                    <p class="text-gray-400 leading-relaxed pl-8">
+                        Yes. We use cloud encrypted synchronization. As long as you log in with the same account, data will be automatically restored. Meanwhile, you have 100% control over your data and can permanently delete your account and all cloud data within the app at any time.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="py-24 text-center">
+        <div class="max-w-3xl mx-auto px-4">
+            <h2 class="text-4xl font-bold mb-6">Ready to control your life?</h2>
+            <p class="text-gray-400 text-lg mb-10">
+                Don't let financial anxiety limit your imagination. Start planning your road to freedom now.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#" class="bg-brand-600 hover:bg-brand-500 text-white px-8 py-4 rounded-xl font-bold transition shadow-lg shadow-brand-500/30 text-lg">
+                    Free Trial
+                </a>
+            </div>
+            <p class="mt-6 text-sm text-gray-500">
+                Supports iOS 15.0+ Devices
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-black py-12 border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-3 mb-6 md:mb-0">
+                    <img src="images/moneyicon.png" alt="Logo" class="h-8 w-8 grayscale opacity-50">
+                    <span class="text-gray-500 font-medium">J & O Studio @ 2026</span>
+                </div>
+                <div class="flex space-x-8 text-sm text-gray-500">
+                    <a href="terms.html" class="hover:text-white transition">Terms of Service</a>
+                    <a href="privacy.html" class="hover:text-white transition">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
