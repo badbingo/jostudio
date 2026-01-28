@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enough Money App - 后台管理</title>
+    <title>Affordly App - Admin Dashboard</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
@@ -43,14 +43,14 @@
         <!-- Login Overlay -->
         <div v-if="!isAuthenticated" class="login-overlay">
             <div class="bg-white p-8 rounded-xl shadow-2xl w-96">
-                <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">管理员登录</h2>
+                <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Admin Login</h2>
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">密码</label>
-                    <input type="password" v-model="password" @keyup.enter="login" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="请输入管理员密码">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                    <input type="password" v-model="password" @keyup.enter="login" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter admin password">
                 </div>
-                <p v-if="loginError" class="text-red-500 text-xs italic mb-4">密码错误</p>
+                <p v-if="loginError" class="text-red-500 text-xs italic mb-4">Incorrect password</p>
                 <button @click="login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-200">
-                    进入后台
+                    Login
                 </button>
             </div>
         </div>
@@ -63,12 +63,12 @@
                     <div class="flex justify-between h-16">
                         <div class="flex items-center">
                             <i class="fas fa-chart-line text-blue-600 text-2xl mr-3"></i>
-                            <span class="font-bold text-xl text-gray-800">Enough Money Admin</span>
+                            <span class="font-bold text-xl text-gray-800">Afford Admin</span>
                         </div>
                         <div class="flex items-center space-x-4">
-                            <span class="text-sm text-gray-500">管理员</span>
+                            <span class="text-sm text-gray-500">Admin</span>
                             <button @click="logout" class="text-gray-600 hover:text-red-600 transition">
-                                <i class="fas fa-sign-out-alt"></i> 退出
+                                <i class="fas fa-sign-out-alt"></i> Logout
                             </button>
                         </div>
                     </div>
@@ -88,7 +88,7 @@
                                     <i class="fas fa-users text-xl"></i>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-gray-500 font-medium">注册用户总数</p>
+                                    <p class="text-sm text-gray-500 font-medium">Total Users</p>
                                     <p class="text-2xl font-bold text-gray-800">{{ stats.totalUsers }}</p>
                                 </div>
                             </div>
@@ -100,7 +100,7 @@
                                     <i class="fas fa-user-plus text-xl"></i>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-gray-500 font-medium">近7日新增</p>
+                                    <p class="text-sm text-gray-500 font-medium">New Users (7d)</p>
                                     <p class="text-2xl font-bold text-gray-800">{{ stats.newUsers }}</p>
                                 </div>
                             </div>
@@ -112,7 +112,7 @@
                                     <i class="fas fa-user-clock text-xl"></i>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-gray-500 font-medium">近期活跃 (3日内)</p>
+                                    <p class="text-sm text-gray-500 font-medium">Active (3d)</p>
                                     <p class="text-2xl font-bold text-gray-800">{{ stats.activeUsers }}</p>
                                 </div>
                             </div>
@@ -124,7 +124,7 @@
                                     <i class="fas fa-user-slash text-xl"></i>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-gray-500 font-medium">流失用户 (>7日)</p>
+                                    <p class="text-sm text-gray-500 font-medium">Lost (>7d)</p>
                                     <p class="text-2xl font-bold text-gray-800">{{ stats.lostUsers }}</p>
                                 </div>
                             </div>
@@ -137,14 +137,14 @@
                             <span class="absolute inset-y-0 left-0 flex items-center pl-3">
                                 <i class="fas fa-search text-gray-400"></i>
                             </span>
-                            <input v-model="searchQuery" type="text" placeholder="搜索姓名或邮箱..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64">
+                            <input v-model="searchQuery" type="text" placeholder="Search name or email..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64">
                         </div>
                         <div class="space-x-2">
                             <button @click="refreshData" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition">
-                                <i class="fas fa-sync-alt mr-2"></i> 刷新
+                                <i class="fas fa-sync-alt mr-2"></i> Refresh
                             </button>
                             <button @click="exportCSV" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
-                                <i class="fas fa-file-csv mr-2"></i> 导出 CSV
+                                <i class="fas fa-file-csv mr-2"></i> Export CSV
                             </button>
                         </div>
                     </div>
@@ -153,11 +153,11 @@
                     <div class="bg-white rounded-lg shadow mb-8 overflow-hidden">
                         <div class="bg-gradient-to-r from-gray-800 to-gray-900 px-6 py-4 flex justify-between items-center">
                             <h3 class="text-lg font-bold text-white flex items-center">
-                                <i class="fas fa-bullhorn mr-3 text-yellow-400"></i>App 首页 Banner 配置
+                                <i class="fas fa-bullhorn mr-3 text-yellow-400"></i>App Home Banner Config
                             </h3>
-                            <button @click="saveBannerConfig" :disabled="savingBanner" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-medium transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+                            <button @click="saveBannerConfig('cn')" :disabled="savingBanner" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-medium transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
                                 <i class="fas" :class="savingBanner ? 'fa-spinner fa-spin' : 'fa-save'"></i>
-                                <span class="ml-2">{{ savingBanner ? '保存中...' : '发布配置' }}</span>
+                                <span class="ml-2">{{ savingBanner ? 'Saving...' : 'Publish Config' }}</span>
                             </button>
                         </div>
                         
@@ -165,7 +165,7 @@
                             <!-- Left: Editor -->
                             <div class="space-y-6">
                                 <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-200">
-                                    <span class="text-gray-700 font-medium">启用 Banner</span>
+                                    <span class="text-gray-700 font-medium">Enable Banner</span>
                                     <label class="relative inline-flex items-center cursor-pointer">
                                         <input type="checkbox" v-model="bannerConfig.visible" class="sr-only peer">
                                         <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
@@ -173,17 +173,17 @@
                                 </div>
 
                                 <div class="space-y-4">
-                                    <h4 class="font-semibold text-gray-700 border-b pb-2">内容设置</h4>
+                                    <h4 class="font-semibold text-gray-700 border-b pb-2">Content Settings</h4>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-600 mb-1">主标题</label>
-                                        <input type="text" v-model="bannerConfig.title" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border" placeholder="例如：🎉 新功能上线！">
+                                        <label class="block text-sm font-medium text-gray-600 mb-1">Title</label>
+                                        <input type="text" v-model="bannerConfig.title" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border" placeholder="e.g., 🎉 New Feature!">
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-600 mb-1">副标题 (可选)</label>
-                                        <input type="text" v-model="bannerConfig.subtitle" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border" placeholder="例如：查看详情了解更多">
+                                        <label class="block text-sm font-medium text-gray-600 mb-1">Subtitle (Optional)</label>
+                                        <input type="text" v-model="bannerConfig.subtitle" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border" placeholder="e.g., Check it out now">
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-600 mb-1">跳转链接 (URL)</label>
+                                        <label class="block text-sm font-medium text-gray-600 mb-1">Link URL</label>
                                         <div class="flex rounded-md shadow-sm">
                                             <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
                                                 <i class="fas fa-link"></i>
@@ -194,11 +194,11 @@
                                 </div>
 
                                 <div class="space-y-4">
-                                    <h4 class="font-semibold text-gray-700 border-b pb-2">外观样式</h4>
+                                    <h4 class="font-semibold text-gray-700 border-b pb-2">Appearance</h4>
                                     
                                     <!-- Preset Gradients -->
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-600 mb-2">预设主题</label>
+                                        <label class="block text-sm font-medium text-gray-600 mb-2">Presets</label>
                                         <div class="grid grid-cols-5 gap-2">
                                             <button @click="applyPreset('blue')" class="h-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 ring-2 ring-offset-1 ring-transparent hover:ring-blue-400 transition"></button>
                                             <button @click="applyPreset('purple')" class="h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 ring-2 ring-offset-1 ring-transparent hover:ring-purple-400 transition"></button>
@@ -210,14 +210,14 @@
 
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-600 mb-1">背景颜色 (Start)</label>
+                                            <label class="block text-sm font-medium text-gray-600 mb-1">Background (Start)</label>
                                             <div class="flex items-center space-x-2">
                                                 <input type="color" v-model="bannerConfig.gradientStart" class="h-10 w-10 border rounded cursor-pointer p-0.5">
                                                 <input type="text" v-model="bannerConfig.gradientStart" class="flex-1 border-gray-300 rounded px-2 py-2 text-sm uppercase focus:ring-blue-500 focus:border-blue-500 border">
                                             </div>
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-600 mb-1">背景颜色 (End)</label>
+                                            <label class="block text-sm font-medium text-gray-600 mb-1">Background (End)</label>
                                             <div class="flex items-center space-x-2">
                                                 <input type="color" v-model="bannerConfig.gradientEnd" class="h-10 w-10 border rounded cursor-pointer p-0.5">
                                                 <input type="text" v-model="bannerConfig.gradientEnd" class="flex-1 border-gray-300 rounded px-2 py-2 text-sm uppercase focus:ring-blue-500 focus:border-blue-500 border">
@@ -226,14 +226,14 @@
                                     </div>
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-600 mb-1">主标题颜色</label>
+                                            <label class="block text-sm font-medium text-gray-600 mb-1">Title Color</label>
                                             <div class="flex items-center space-x-2">
                                                 <input type="color" v-model="bannerConfig.titleColor" class="h-10 w-10 border rounded cursor-pointer p-0.5">
                                                 <input type="text" v-model="bannerConfig.titleColor" class="flex-1 border-gray-300 rounded px-2 py-2 text-sm uppercase focus:ring-blue-500 focus:border-blue-500 border">
                                             </div>
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-600 mb-1">副标题颜色</label>
+                                            <label class="block text-sm font-medium text-gray-600 mb-1">Subtitle Color</label>
                                             <div class="flex items-center space-x-2">
                                                 <input type="color" v-model="bannerConfig.subtitleColor" class="h-10 w-10 border rounded cursor-pointer p-0.5">
                                                 <input type="text" v-model="bannerConfig.subtitleColor" class="flex-1 border-gray-300 rounded px-2 py-2 text-sm uppercase focus:ring-blue-500 focus:border-blue-500 border">
@@ -245,7 +245,7 @@
 
                             <!-- Right: Preview -->
                             <div class="bg-gray-100 rounded-xl p-6 flex flex-col items-center justify-center border border-gray-200">
-                                <h4 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">效果预览 (iPhone 14 Pro)</h4>
+                                <h4 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Preview (iPhone 14 Pro)</h4>
                                 
                                 <div class="w-[320px] bg-white rounded-[3rem] shadow-2xl overflow-hidden border-[8px] border-gray-900 relative">
                                     <!-- Status Bar Mock -->
@@ -278,25 +278,182 @@
 
                                             <div class="flex-1 pr-3 z-10">
                                                 <div class="text-base font-bold leading-tight mb-1" :style="{ color: bannerConfig.titleColor }">
-                                                    {{ bannerConfig.title || '主标题' }}
+                                                    {{ bannerConfig.title || 'Title' }}
                                                 </div>
                                                 <div v-if="bannerConfig.subtitle" class="text-xs font-medium" :style="{ color: bannerConfig.subtitleColor }">
-                                                    {{ bannerConfig.subtitle }}
+                                                    {{ bannerConfig.subtitle || 'Subtitle' }}
                                                 </div>
                                             </div>
                                             
-                                            <div class="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center backdrop-blur-sm z-10">
-                                                <i class="fas fa-chevron-right text-xs" :style="{ color: bannerConfig.titleColor }"></i>
+                                            <div class="w-9 h-9 rounded-full flex items-center justify-center" style="background: rgba(255,255,255,0.2)">
+                                                <i class="fas fa-chevron-right text-sm" :style="{ color: bannerConfig.titleColor }"></i>
                                             </div>
-                                        </div>
-                                        <div v-else class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center">
-                                            <p class="text-gray-400 text-sm">Banner 已隐藏</p>
                                         </div>
 
                                         <!-- Mock Content Below -->
-                                        <div class="mt-4 bg-white rounded-xl h-24 w-full shadow-sm"></div>
-                                        <div class="mt-4 bg-white rounded-xl h-24 w-full shadow-sm"></div>
+                                        <div class="mt-4 space-y-3 opacity-50">
+                                            <div class="h-24 bg-gray-200 rounded-2xl w-full"></div>
+                                            <div class="h-24 bg-gray-200 rounded-2xl w-full"></div>
+                                        </div>
                                     </div>
+
+                                    <!-- Home Indicator -->
+                                    <div class="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gray-800 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- English Banner Configuration -->
+                    <div class="bg-white rounded-lg shadow mb-8 overflow-hidden">
+                        <div class="bg-gradient-to-r from-blue-800 to-blue-900 px-6 py-4 flex justify-between items-center">
+                            <h3 class="text-lg font-bold text-white flex items-center">
+                                <i class="fas fa-globe-americas mr-3 text-green-400"></i>English App Home Banner Config
+                            </h3>
+                            <button @click="saveBannerConfig('en')" :disabled="savingBanner" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-medium transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+                                <i class="fas" :class="savingBanner ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+                                <span class="ml-2">{{ savingBanner ? 'Saving...' : 'Publish Config' }}</span>
+                            </button>
+                        </div>
+                        
+                        <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <!-- Left: Editor -->
+                            <div class="space-y-6">
+                                <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                    <span class="text-gray-700 font-medium">Enable English Banner</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" v-model="bannerConfigEn.visible" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <h4 class="font-semibold text-gray-700 border-b pb-2">Content Settings (English)</h4>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-600 mb-1">Title</label>
+                                        <input type="text" v-model="bannerConfigEn.title" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border" placeholder="e.g., 🎉 New Feature!">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-600 mb-1">Subtitle (Optional)</label>
+                                        <input type="text" v-model="bannerConfigEn.subtitle" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border" placeholder="e.g., Check it out now">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-600 mb-1">Link URL</label>
+                                        <div class="flex rounded-md shadow-sm">
+                                            <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                                                <i class="fas fa-link"></i>
+                                            </span>
+                                            <input type="text" v-model="bannerConfigEn.link" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border-gray-300 focus:ring-blue-500 focus:border-blue-500 border" placeholder="https://...">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <h4 class="font-semibold text-gray-700 border-b pb-2">Appearance</h4>
+                                    
+                                    <!-- Preset Gradients -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-600 mb-2">Presets</label>
+                                        <div class="grid grid-cols-5 gap-2">
+                                            <button @click="applyPresetEn('blue')" class="h-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 ring-2 ring-offset-1 ring-transparent hover:ring-blue-400 transition"></button>
+                                            <button @click="applyPresetEn('purple')" class="h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 ring-2 ring-offset-1 ring-transparent hover:ring-purple-400 transition"></button>
+                                            <button @click="applyPresetEn('orange')" class="h-8 rounded-full bg-gradient-to-r from-orange-400 to-red-500 ring-2 ring-offset-1 ring-transparent hover:ring-orange-400 transition"></button>
+                                            <button @click="applyPresetEn('green')" class="h-8 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 ring-2 ring-offset-1 ring-transparent hover:ring-emerald-400 transition"></button>
+                                            <button @click="applyPresetEn('dark')" class="h-8 rounded-full bg-gradient-to-r from-gray-700 to-gray-900 ring-2 ring-offset-1 ring-transparent hover:ring-gray-400 transition"></button>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-600 mb-1">Background (Start)</label>
+                                            <div class="flex items-center space-x-2">
+                                                <input type="color" v-model="bannerConfigEn.gradientStart" class="h-10 w-10 border rounded cursor-pointer p-0.5">
+                                                <input type="text" v-model="bannerConfigEn.gradientStart" class="flex-1 border-gray-300 rounded px-2 py-2 text-sm uppercase focus:ring-blue-500 focus:border-blue-500 border">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-600 mb-1">Background (End)</label>
+                                            <div class="flex items-center space-x-2">
+                                                <input type="color" v-model="bannerConfigEn.gradientEnd" class="h-10 w-10 border rounded cursor-pointer p-0.5">
+                                                <input type="text" v-model="bannerConfigEn.gradientEnd" class="flex-1 border-gray-300 rounded px-2 py-2 text-sm uppercase focus:ring-blue-500 focus:border-blue-500 border">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-600 mb-1">Title Color</label>
+                                            <div class="flex items-center space-x-2">
+                                                <input type="color" v-model="bannerConfigEn.titleColor" class="h-10 w-10 border rounded cursor-pointer p-0.5">
+                                                <input type="text" v-model="bannerConfigEn.titleColor" class="flex-1 border-gray-300 rounded px-2 py-2 text-sm uppercase focus:ring-blue-500 focus:border-blue-500 border">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-600 mb-1">Subtitle Color</label>
+                                            <div class="flex items-center space-x-2">
+                                                <input type="color" v-model="bannerConfigEn.subtitleColor" class="h-10 w-10 border rounded cursor-pointer p-0.5">
+                                                <input type="text" v-model="bannerConfigEn.subtitleColor" class="flex-1 border-gray-300 rounded px-2 py-2 text-sm uppercase focus:ring-blue-500 focus:border-blue-500 border">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right: Preview -->
+                            <div class="bg-gray-100 rounded-xl p-6 flex flex-col items-center justify-center border border-gray-200">
+                                <h4 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Preview (iPhone 14 Pro)</h4>
+                                
+                                <div class="w-[320px] bg-white rounded-[3rem] shadow-2xl overflow-hidden border-[8px] border-gray-900 relative">
+                                    <!-- Status Bar Mock -->
+                                    <div class="h-8 bg-white w-full flex justify-between items-end px-6 pb-1">
+                                        <div class="text-[10px] font-bold">9:41</div>
+                                        <div class="flex gap-1 text-[10px]">
+                                            <i class="fas fa-signal"></i>
+                                            <i class="fas fa-wifi"></i>
+                                            <i class="fas fa-battery-full"></i>
+                                        </div>
+                                    </div>
+                                    <!-- Dynamic Island Mock -->
+                                    <div class="absolute top-2 left-1/2 transform -translate-x-1/2 w-24 h-7 bg-black rounded-full z-20"></div>
+
+                                    <!-- App Content Mock -->
+                                    <div class="bg-gray-50 h-[600px] p-4 pt-2">
+                                        <!-- Mock Home Card -->
+                                        <div class="bg-gray-800 rounded-3xl h-48 w-full mb-4 opacity-90"></div>
+                                        
+                                        <!-- Banner Preview -->
+                                        <div v-if="bannerConfigEn.visible" 
+                                             class="rounded-2xl p-4 shadow-lg flex items-center justify-between relative overflow-hidden transition-all duration-300"
+                                             :style="{ 
+                                                 background: `linear-gradient(135deg, ${bannerConfigEn.gradientStart}, ${bannerConfigEn.gradientEnd})`
+                                             }">
+                                            
+                                            <!-- Decorative Circles -->
+                                            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-16 h-16 bg-white opacity-10 rounded-full blur-xl"></div>
+                                            <div class="absolute bottom-0 left-0 -mb-4 -ml-4 w-12 h-12 bg-black opacity-10 rounded-full blur-lg"></div>
+
+                                            <div class="flex-1 pr-3 z-10">
+                                                <div class="text-base font-bold leading-tight mb-1" :style="{ color: bannerConfigEn.titleColor }">
+                                                    {{ bannerConfigEn.title || 'Title' }}
+                                                </div>
+                                                <div v-if="bannerConfigEn.subtitle" class="text-xs font-medium" :style="{ color: bannerConfigEn.subtitleColor }">
+                                                    {{ bannerConfigEn.subtitle || 'Subtitle' }}
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="w-9 h-9 rounded-full flex items-center justify-center" style="background: rgba(255,255,255,0.2)">
+                                                <i class="fas fa-chevron-right text-sm" :style="{ color: bannerConfigEn.titleColor }"></i>
+                                            </div>
+                                        </div>
+
+                                        <!-- Mock Content Below -->
+                                        <div class="mt-4 space-y-3 opacity-50">
+                                            <div class="h-24 bg-gray-200 rounded-2xl w-full"></div>
+                                            <div class="h-24 bg-gray-200 rounded-2xl w-full"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Home Indicator -->
+                                    <div class="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gray-800 rounded-full"></div>
                                 </div>
                             </div>
                         </div>
@@ -308,11 +465,11 @@
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">用户</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">注册时间</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">最近更新</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
-                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registered</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Active</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
@@ -323,8 +480,8 @@
                                                     {{ user.name ? user.name.charAt(0).toUpperCase() : '?' }}
                                                 </div>
                                                 <div class="ml-4">
-                                                    <div class="text-sm font-medium text-blue-600 hover:underline">{{ user.name || '未命名' }}</div>
-                                                    <div class="text-sm text-gray-500">{{ user.email || '无邮箱' }}</div>
+                                                    <div class="text-sm font-medium text-blue-600 hover:underline">{{ user.name || 'Unnamed' }}</div>
+                                                    <div class="text-sm text-gray-500">{{ user.email || 'No Email' }}</div>
                                                 </div>
                                             </div>
                                         </td>
@@ -340,12 +497,12 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <button @click="confirmDeleteUser(user)" class="text-red-600 hover:text-red-900">删除</button>
+                                            <button @click="confirmDeleteUser(user)" class="text-red-600 hover:text-red-900">Delete</button>
                                         </td>
                                     </tr>
                                     <tr v-if="filteredUsers.length === 0">
                                         <td colspan="5" class="px-6 py-10 text-center text-gray-500">
-                                            暂无用户数据
+                                            No user data
                                         </td>
                                     </tr>
                                 </tbody>
@@ -368,48 +525,48 @@
                         <div class="sm:flex sm:items-start">
                             <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4 border-b pb-2" id="modal-title">
-                                    用户详情: {{ selectedUser.name }}
+                                    User Details: {{ selectedUser.name }}
                                 </h3>
                                 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                     <!-- Basic Info -->
                                     <div class="bg-gray-50 p-3 rounded">
-                                        <h4 class="font-bold text-gray-700 mb-2">基本信息</h4>
+                                        <h4 class="font-bold text-gray-700 mb-2">Basic Info</h4>
                                         <p><span class="text-gray-500">ID:</span> {{ selectedUser.id }}</p>
-                                        <p><span class="text-gray-500">邮箱:</span> {{ selectedUser.email }}</p>
-                                        <p><span class="text-gray-500">年龄:</span> {{ selectedUser.age }}</p>
-                                        <p><span class="text-gray-500">性别:</span> {{ selectedUser.gender }}</p>
-                                        <p><span class="text-gray-500">身份:</span> {{ selectedUser.identity }}</p>
-                                        <p><span class="text-gray-500">城市:</span> {{ selectedUser.city }} ({{ selectedUser.country_code }})</p>
+                                        <p><span class="text-gray-500">Email:</span> {{ selectedUser.email }}</p>
+                                        <p><span class="text-gray-500">Age:</span> {{ selectedUser.age }}</p>
+                                        <p><span class="text-gray-500">Gender:</span> {{ selectedUser.gender }}</p>
+                                        <p><span class="text-gray-500">Identity:</span> {{ selectedUser.identity }}</p>
+                                        <p><span class="text-gray-500">City:</span> {{ selectedUser.city }} ({{ selectedUser.country_code }})</p>
                                     </div>
 
                                     <!-- Financial Basics -->
                                     <div class="bg-gray-50 p-3 rounded">
-                                        <h4 class="font-bold text-gray-700 mb-2">财务概况</h4>
-                                        <p><span class="text-gray-500">货币:</span> {{ selectedUser.currency_code }}</p>
-                                        <p><span class="text-gray-500">月收入:</span> {{ formatMoney(selectedUser.monthly_income) }}</p>
-                                        <p><span class="text-gray-500">月支出:</span> {{ formatMoney(selectedUser.monthly_expense) }}</p>
-                                        <p><span class="text-gray-500">现有存款:</span> {{ formatMoney(selectedUser.savings) }}</p>
-                                        <p><span class="text-gray-500">总债务:</span> {{ formatMoney(selectedUser.debt) }}</p>
+                                        <h4 class="font-bold text-gray-700 mb-2">Financial Overview</h4>
+                                        <p><span class="text-gray-500">Currency:</span> {{ selectedUser.currency_code }}</p>
+                                        <p><span class="text-gray-500">Monthly Income:</span> {{ formatMoney(selectedUser.monthly_income) }}</p>
+                                        <p><span class="text-gray-500">Monthly Expense:</span> {{ formatMoney(selectedUser.monthly_expense) }}</p>
+                                        <p><span class="text-gray-500">Savings:</span> {{ formatMoney(selectedUser.savings) }}</p>
+                                        <p><span class="text-gray-500">Debt:</span> {{ formatMoney(selectedUser.debt) }}</p>
                                     </div>
 
                                     <!-- Household -->
                                     <div class="bg-gray-50 p-3 rounded">
-                                        <h4 class="font-bold text-gray-700 mb-2">家庭状况</h4>
-                                        <p><span class="text-gray-500">家庭人数:</span> {{ selectedUser.household_size }}</p>
-                                        <p><span class="text-gray-500">需赡养人数:</span> {{ selectedUser.dependents_count }}</p>
-                                        <p><span class="text-gray-500">房贷/房租月供:</span> {{ formatMoney(selectedUser.housing_payment_monthly) }}</p>
-                                        <p><span class="text-gray-500">债务月供:</span> {{ formatMoney(selectedUser.debt_payment_monthly) }}</p>
+                                        <h4 class="font-bold text-gray-700 mb-2">Household</h4>
+                                        <p><span class="text-gray-500">Size:</span> {{ selectedUser.household_size }}</p>
+                                        <p><span class="text-gray-500">Dependents:</span> {{ selectedUser.dependents_count }}</p>
+                                        <p><span class="text-gray-500">Housing Payment:</span> {{ formatMoney(selectedUser.housing_payment_monthly) }}</p>
+                                        <p><span class="text-gray-500">Debt Payment:</span> {{ formatMoney(selectedUser.debt_payment_monthly) }}</p>
                                     </div>
 
                                     <!-- Assets -->
                                     <div class="bg-gray-50 p-3 rounded">
-                                        <h4 class="font-bold text-gray-700 mb-2">资产详情</h4>
-                                        <p><span class="text-gray-500">投资总值:</span> {{ formatMoney(selectedUser.investments_value) }}</p>
-                                        <p><span class="text-gray-500">养老金/公积金:</span> {{ formatMoney(selectedUser.retirement_value) }}</p>
-                                        <p><span class="text-gray-500">房产价值:</span> {{ formatMoney(selectedUser.real_estate_value) }}</p>
-                                        <p><span class="text-gray-500">车辆价值:</span> {{ formatMoney(selectedUser.car_value) }}</p>
-                                        <p><span class="text-gray-500">奢侈品价值:</span> {{ formatMoney(selectedUser.luxury_value) }}</p>
+                                        <h4 class="font-bold text-gray-700 mb-2">Assets</h4>
+                                        <p><span class="text-gray-500">Investments:</span> {{ formatMoney(selectedUser.investments_value) }}</p>
+                                        <p><span class="text-gray-500">Retirement:</span> {{ formatMoney(selectedUser.retirement_value) }}</p>
+                                        <p><span class="text-gray-500">Real Estate:</span> {{ formatMoney(selectedUser.real_estate_value) }}</p>
+                                        <p><span class="text-gray-500">Car:</span> {{ formatMoney(selectedUser.car_value) }}</p>
+                                        <p><span class="text-gray-500">Luxury:</span> {{ formatMoney(selectedUser.luxury_value) }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -417,7 +574,7 @@
                     </div>
                     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                         <button type="button" @click="selectedUser = null" class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                            关闭
+                            Close
                         </button>
                     </div>
                 </div>
@@ -447,6 +604,16 @@
                     loading: false,
                     savingBanner: false,
                     bannerConfig: {
+                        visible: false,
+                        title: '',
+                        subtitle: '',
+                        link: '',
+                        gradientStart: '#3b82f6',
+                        gradientEnd: '#4f46e5',
+                        titleColor: '#ffffff',
+                        subtitleColor: '#e0e7ff'
+                    },
+                    bannerConfigEn: {
                         visible: false,
                         title: '',
                         subtitle: '',
@@ -536,15 +703,20 @@
                         } else {
                             this.users = data.users || [];
                             // Load Banner Config
-                            if (data.configs && data.configs.home_banner) {
-                                this.bannerConfig = { ...this.bannerConfig, ...data.configs.home_banner };
+                            if (data.configs) {
+                                if (data.configs.home_banner) {
+                                    this.bannerConfig = { ...this.bannerConfig, ...data.configs.home_banner };
+                                }
+                                if (data.configs.home_banner_en) {
+                                    this.bannerConfigEn = { ...this.bannerConfigEn, ...data.configs.home_banner_en };
+                                }
                             }
                         }
 
                         this.calculateStats();
                     } catch (err) {
                         console.error('Error fetching data:', err);
-                        alert('获取数据失败: ' + err.message + '\n\n提示: 请确保已应用数据库迁移 "create_admin_dashboard_rpc.sql" 以启用后台数据访问功能。');
+                        alert('Failed to fetch data: ' + err.message + '\n\nHint: Ensure migration "create_admin_dashboard_rpc.sql" is applied.');
                     } finally {
                         this.loading = false;
                     }
@@ -561,20 +733,35 @@
                         this.bannerConfig = { ...this.bannerConfig, ...presets[theme] };
                     }
                 },
-                async saveBannerConfig() {
+                applyPresetEn(theme) {
+                    const presets = {
+                        blue: { gradientStart: '#3b82f6', gradientEnd: '#4f46e5', titleColor: '#ffffff', subtitleColor: '#e0e7ff' },
+                        purple: { gradientStart: '#a855f7', gradientEnd: '#ec4899', titleColor: '#ffffff', subtitleColor: '#fce7f3' },
+                        orange: { gradientStart: '#f97316', gradientEnd: '#ef4444', titleColor: '#ffffff', subtitleColor: '#ffedd5' },
+                        green: { gradientStart: '#10b981', gradientEnd: '#14b8a6', titleColor: '#ffffff', subtitleColor: '#ccfbf1' },
+                        dark: { gradientStart: '#374151', gradientEnd: '#111827', titleColor: '#ffffff', subtitleColor: '#9ca3af' }
+                    };
+                    if (presets[theme]) {
+                        this.bannerConfigEn = { ...this.bannerConfigEn, ...presets[theme] };
+                    }
+                },
+                async saveBannerConfig(lang = 'cn') {
                     this.savingBanner = true;
                     try {
+                        const key = lang === 'en' ? 'home_banner_en' : 'home_banner';
+                        const config = lang === 'en' ? this.bannerConfigEn : this.bannerConfig;
+                        
                         const { error } = await supabaseClient.rpc('update_app_config', {
                             admin_password: this.password,
-                            config_key: 'home_banner',
-                            config_value: this.bannerConfig
+                            config_key: key,
+                            config_value: config
                         });
 
                         if (error) throw error;
-                        alert('Banner 配置保存成功！App 首页刷新后即可生效。');
+                        alert(`${lang === 'en' ? 'English ' : ''}Banner config saved successfully! It will appear after app refresh.`);
                     } catch (err) {
                         console.error('Error saving config:', err);
-                        alert('保存失败: ' + err.message);
+                        alert('Save failed: ' + err.message);
                     } finally {
                         this.savingBanner = false;
                     }
@@ -613,66 +800,37 @@
                     this.stats.activeUsers = activeCount;
                     this.stats.lostUsers = lostCount;
                 },
+                formatDate(dateStr) {
+                    if (!dateStr) return 'N/A';
+                    return new Date(dateStr).toLocaleString();
+                },
+                formatMoney(amount) {
+                    if (amount === undefined || amount === null) return '-';
+                    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+                },
+                getStatusClass(user) {
+                    const now = new Date();
+                    const updatedAt = new Date(user.updated_at || user.created_at);
+                    const diffDays = Math.ceil(Math.abs(now - updatedAt) / (1000 * 60 * 60 * 24));
+
+                    if (diffDays > 7) return 'bg-red-100 text-red-800';
+                    if (diffDays <= 3) return 'bg-green-100 text-green-800';
+                    return 'bg-yellow-100 text-yellow-800';
+                },
                 getStatusLabel(user) {
                     const now = new Date();
                     const updatedAt = new Date(user.updated_at || user.created_at);
-                    const diffTime = Math.abs(now - updatedAt);
-                    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+                    const diffDays = Math.ceil(Math.abs(now - updatedAt) / (1000 * 60 * 60 * 24));
 
-                    if (diffDays > 7) return '流失';
-                    if (diffDays > 3) return '闲置';
-                    return '活跃';
-                },
-                getStatusClass(user) {
-                    const label = this.getStatusLabel(user);
-                    if (label === '流失') return 'bg-red-100 text-red-800';
-                    if (label === '闲置') return 'bg-yellow-100 text-yellow-800';
-                    return 'bg-green-100 text-green-800';
-                },
-                formatDate(dateStr) {
-                    if (!dateStr) return '-';
-                    return new Date(dateStr).toLocaleString('zh-CN', {
-                        year: 'numeric', month: '2-digit', day: '2-digit',
-                        hour: '2-digit', minute: '2-digit'
-                    });
-                },
-                formatMoney(amount) {
-                    if (amount === null || amount === undefined) return '-';
-                    return new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY' }).format(amount);
+                    if (diffDays > 7) return 'Lost';
+                    if (diffDays <= 3) return 'Active';
+                    return 'Idle';
                 },
                 showUserDetail(user) {
                     this.selectedUser = user;
                 },
-                refreshData() {
-                    this.fetchData();
-                },
-                exportCSV() {
-                    if (!this.users.length) return;
-                    
-                    const headers = Object.keys(this.users[0]);
-                    const csvContent = [
-                        headers.join(','),
-                        ...this.users.map(row => headers.map(fieldName => {
-                            let data = row[fieldName];
-                            // Escape quotes
-                            if (typeof data === 'string') {
-                                data = `"${data.replace(/"/g, '""')}"`;
-                            }
-                            return data;
-                        }).join(','))
-                    ].join('\n');
-
-                    const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement("a");
-                    link.setAttribute("href", url);
-                    link.setAttribute("download", `users_export_${new Date().toISOString().slice(0,10)}.csv`);
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                },
                 async confirmDeleteUser(user) {
-                    if (confirm(`警告：您确定要删除用户 "${user.name || user.email}" 吗？\n\n此操作将永久删除：\n1. 用户账号\n2. 所有财务数据\n3. 测评与模拟记录\n\n该操作无法撤销！`)) {
+                    if (confirm(`Are you sure you want to delete user "${user.name || user.email}"? This cannot be undone.`)) {
                         try {
                             const { error } = await supabaseClient.rpc('admin_delete_user', {
                                 admin_password: this.password,
@@ -681,14 +839,46 @@
 
                             if (error) throw error;
 
-                            this.users = this.users.filter(u => u.id !== user.id);
-                            this.calculateStats();
-                            alert('用户已彻底删除。');
+                            alert('User deleted successfully');
+                            this.fetchData(); // Refresh list
+                            if (this.selectedUser && this.selectedUser.id === user.id) {
+                                this.selectedUser = null;
+                            }
                         } catch (err) {
                             console.error('Delete failed:', err);
-                            alert('删除失败: ' + err.message + '\n\n请联系开发人员检查数据库函数 "admin_delete_user" 是否已安装。');
+                            alert('Delete failed: ' + err.message);
                         }
                     }
+                },
+                exportCSV() {
+                    if (!this.users.length) return;
+                    
+                    const headers = ['ID', 'Name', 'Email', 'Created At', 'Updated At', 'City', 'Net Worth', 'Savings', 'Debt'];
+                    const rows = this.users.map(u => [
+                        u.id,
+                        u.name || '',
+                        u.email || '',
+                        u.created_at,
+                        u.updated_at,
+                        u.city || '',
+                        u.net_worth || 0,
+                        u.savings || 0,
+                        u.debt || 0
+                    ]);
+
+                    let csvContent = "data:text/csv;charset=utf-8," 
+                        + headers.join(",") + "\n" 
+                        + rows.map(e => e.join(",")).join("\n");
+
+                    const encodedUri = encodeURI(csvContent);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", encodedUri);
+                    link.setAttribute("download", "enough_money_users.csv");
+                    document.body.appendChild(link);
+                    link.click();
+                },
+                refreshData() {
+                    this.fetchData();
                 }
             }
         }).mount('#app');
