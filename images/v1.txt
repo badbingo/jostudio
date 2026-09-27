@@ -1,0 +1,1163 @@
+════════════════════════════════════════════════════════════════════════════
+COUPLE HISTORICAL EVIDENCE — SHARED EVENT EVIDENCE MATRIX
+════════════════════════════════════════════════════════════════════════════
+reportId   : Couple_Shared_Event_Evidence_Matrix_DESIGN_REVIEW_TEST_ONLY_v1
+version    : v1 (2026-09-27, America/Los_Angeles)
+STATUS     : TEST-ONLY / READ-ONLY / REPORT-ONLY / FORENSIC ONLY
+Git HEAD   : 2f1b2bf665b74d5c70e93056efba6c92bebaea00
+Zero production changes. Zero V3 re-runs. Single new report file only.
+NO commit / NO push.
+
+════════════════════════════════════════════════════════════════════════════
+§1 SCOPE / OBJECTIVE
+════════════════════════════════════════════════════════════════════════════
+
+本报告建立「同一个真实世界事件 → Owen 独立 V3 observation + Jassica 独立
+V3 observation」的双命盘历史证据结构。
+
+核心原则：
+  1. 双计数禁令（ABSOLUTE NO DOUBLE-COUNTING）：
+     每一行证据 = 1 个现实事件 + 2 个独立 chart observations（Owen 一侧、
+     Jassica 一侧）。任一侧的 observation 不得覆盖、改写或合并另一侧。
+  2. Domain-agnostic（不预设 domain）：
+     结婚 ⇏ relationship；买房 ⇏ wealth；生孩子 ⇏ children；
+     搬家 ⇏ travel；公司收入新高 ⇏ wealth/career。
+     V3 输出是什么，登记什么。观察域归属只描述、不解释、不修正。
+  3. Observed Association 仅描述性：
+     本报告只描述双侧 raw 输出的机器事实。禁止书写「命中了 / 预测成功 /
+     算法准确 / 验证通过 / 倒置矛盾」等任何 accuracy 判断。
+  4. 日期精度权威（DATE PRECISION AUTHORITATIVE）：
+     YEAR_ONLY 只比年度层；MONTH_ONLY 比 month probe + resolved 年度
+     snapshot；EXACT_DATE 可比 day + month + annual。立春边界
+     （resolvedAnnualYear）以管线输出为准，不与 calendar-year 混淆。
+     精度冲突只登记 discrepancy，不自行修正。
+  5. 无补写（NO BACKFILL）：
+     任何一侧不存在的输出，明确写 NONE / NOT PROBED。不重跑 V3，
+     不补 probe，不推测缺失内容。
+  6. 不进 Historical Validation / Calibration：
+     本报告只建立证据结构，不用于任何 tuning / calibration / threshold /
+     semantic rule 输入。
+
+Chart 声明（冻结转录）：
+  Owen    : 壬子-癸丑-己巳-癸酉, Male, 1973-02-02 18:00 Asia/Shanghai
+            dataset = Owen_Backtest_Dataset_v1.2
+  Jassica : 戊午-己未-乙酉-丁丑, Female, 1978-07-22, 杭州萧山, 约 丑时
+            representativeTestTime = 02:00
+            birthTimePrecision = approximate
+            ★ 02:00 为 representative test time，不得写作精确出生时间。
+
+════════════════════════════════════════════════════════════════════════════
+§2 DATA SOURCES（全部只读，零修改）
+════════════════════════════════════════════════════════════════════════════
+
+Owen 侧：
+  [O-A] BacktestData/V3_Owen_Validation_V2_YearSnapshot_Probe_Output_TEST_ONLY_v1.txt
+        annual snapshots（2003/2005/2008/2009/2011/2014/2016/2017/2024/2025）
+  [O-B] BacktestData/V3_Owen_Validation_G1_Annual_2010_2012_Probe_TEST_ONLY_v1.txt
+        （2011 annual 与 [O-A] 同口径；本文以其 §4 区段为准）
+  [O-C] BacktestData/V3_Historical_Probe_Output_TEST_ONLY_v1.txt
+        event probes（20 个 N2 块；本报告仅使用 12 个 mapped probe 块）
+  [O-D] BacktestData/V3_Owen_Validation_V2_FactCorrection_ImpactAudit_TEST_ONLY_v1.txt
+        （E13→2021-02-01 修正、E16/E17/E18 登记、E6 相位更正）
+
+Jassica 侧：
+  [J-A] BacktestData/Jassica_Dataset_Registration_Design_Review_TEST_ONLY_v1.txt
+        事件注册表 S1–S12 + J1/J2、精度分类、§8 交叉引用
+  [J-B] BacktestData/Jassica_Frozen_V3_Raw_Probe_TEST_ONLY_v1.txt
+        annual 10 年 + probe 5 个（S1/S4/S5/S7/S8）
+
+转录范围注记：
+  - 本报告全部 raw 数据为上述文件的机器输出逐字转录（verbatim）。
+  - Owen probe 格式：逐域 `DomainIntensity=X coverageMarker=Y` 行 +
+    `act=... dir=... conf=...` N1 行；probe 格式无 R 段输出 → R 段记 NONE。
+  - Jassica probe 格式：逐域 `intensity=X coverage=Y` 行 + N1 act= 行 +
+    末尾单行 `N2vec:`；同样无 R 段输出 → R 段记 NONE。
+  - annual snapshot 格式含 R-1/R-2/R-3/R-4/R-6 全段。
+  - 源文件 [O-C] 中未被 shared registry 映射的 8 个 probe 块
+    （M01 等），本报告不使用、不登记、不解释。
+
+════════════════════════════════════════════════════════════════════════════
+§3 SHARED EVENT REGISTRY
+════════════════════════════════════════════════════════════════════════════
+
+一行 = 1 个现实事件。双侧 observation 独立登记。
+
+ID  | 日期        | 精度        | 现实事件           | Owen cross-ref         | Jassica cross-ref
+----+-------------+-------------+--------------------+------------------------+----------------------------------
+S1  | 2003-06-18  | EXACT_DATE  | 结婚               | MR01（登记结婚 TIER_1）| S1 probe；§8: S1↔MR01
+S2  | 2003        | YEAR_ONLY   | 第一套住房         | E16                    | §8: S2↔E16
+S3  | 2005        | YEAR_ONLY   | 买办公楼           | E17（买半层办公楼）    | §8: S3↔E17
+S4  | 2005-07-05  | EXACT_DATE  | 第一个孩子出生     | CH01（长女出生）       | S4 probe；§8: 子女出生记录（候选）
+S5  | 2009-02-03  | EXACT_DATE  | 第二个孩子出生     | CH02（小儿出生，       | S5 probe；§8: S5↔E9
+    |             |             |                    |  resolvedAnnualYear=   |
+    |             |             |                    |  2008）                |
+S6  | 2011        | YEAR_ONLY   | 第二套住宅         | E18                    | §8: S6↔E18
+S7  | 2014-04     | MONTH_ONLY  | Jassica 母亲去世   | FA01（岳母去世         | S7 probe；§8 未列
+    |             |             |                    |  2014-04-24 EXACT_DATE)|（精度冲突 → §11）
+S8  | 2017-01     | MONTH_ONLY  | 从上海搬到美国     | M02（迁移上海→USA      | S8 probe；§8 未列
+    |             |             |                    |  2016-08 MONTH_ONLY）  |（日期冲突 → §11）
+S9  | 2017        | YEAR_ONLY   | 房产交易           | P02（购第二栋房）      | §8: S9↔P02（候选待命主确认）
+S10 | 2021        | YEAR_ONLY   | 卖房子             | P01-SALE（售第一套房产 | §8: S10↔P01-SALE
+    |             |             |                    |  2021-02-01，          |
+    |             |             |                    |  resolvedAnnualYear=   |
+    |             |             |                    |  2020）                |
+S11 | 2024        | YEAR_ONLY   | 房产交易           | P03A+P03B（2024购房    | §8: S11↔P03A/P03B
+    |             |             |                    |  之一/之二）           |
+S12 | 2025        | YEAR_ONLY   | 房产交易           | P04（购土地）          | §8: S12↔P04
+J1  | 2004        | YEAR_ONLY   | 开公司             | NOT APPLICABLE         | （Jassica-only）
+    |             |             | （Jassica-only）   |                        |
+J2  | 2009        | YEAR_ONLY   | 公司收入创新高     | NOT APPLICABLE         | （Jassica-only）
+    |             |             | （Jassica-only）   |                        |
+
+精度分布：EXACT_DATE ×3（S1/S4/S5）、MONTH_ONLY ×2（S7/S8）、
+YEAR_ONLY ×9（S2/S3/S6/S9/S10/S11/S12 + J1/J2）。
+J1/J2 为 Jassica-only 事件，Owen 侧 NOT APPLICABLE（见 §9）。
+
+════════════════════════════════════════════════════════════════════════════
+§4 DATE PRECISION RULES
+════════════════════════════════════════════════════════════════════════════
+
+比较范围按精度确定（登记不受限，比较受限）：
+  - EXACT_DATE  : 可比较 day probe + month + annual 层。
+  - MONTH_ONLY  : 比较 month probe + resolved 年度 snapshot。
+  - YEAR_ONLY   : 仅比较年度层（该事件一侧若存在 day probe raw，
+                  raw 仍全额登记于 §7，但 §10 比较句仅限年层）。
+
+立春边界（resolvedAnnualYear = date < 立春 则 −1，管线既定行为）：
+  - S5  2009-02-03 → resolvedAnnualYear = 2008（戊子）
+  - S8  2017-01    → resolvedAnnualYear = 2016（丙申）（双侧一致）
+  - M02 2016-08    → resolvedAnnualYear = 2016（丙申）
+  - P01-SALE 2021-02-01 → resolvedAnnualYear = 2020（庚子）
+  - S1  2003-06-18 → resolvedAnnualYear = 2003（癸未）
+  - S4  2005-07-05 → resolvedAnnualYear = 2005（乙酉）
+  - S7  2014-04    → resolvedAnnualYear = 2014（甲午）
+
+精度冲突登记（只登记，不修正 → 详见 §11）：
+  - S7：Owen 侧 EXACT_DATE（2014-04-24 岳母去世）vs Jassica 侧
+        MONTH_ONLY（2014-04 母亲去世）。
+  - S8：Owen 侧 2016-08 vs Jassica 侧 2017-01；双侧
+        resolvedAnnualYear = 2016 一致。
+  - S10：shared registry YEAR_ONLY 2021 vs Owen registry
+         exact-date 2021-02-01（resolvedAnnualYear=2020）。
+
+════════════════════════════════════════════════════════════════════════════
+§5 OWEN OBSERVATION MAPPING
+════════════════════════════════════════════════════════════════════════════
+
+每事件 → Owen 独立 observation（annual snapshot / event probe）。
+V3 输出的 domain 原样登记，不预设事件-域归属。
+
+Event | Owen annual layer         | Owen probe layer
+------+---------------------------+------------------------------------------
+S1    | 2003 annual               | MR01（day probe, resolvedAnnualYear=2003）
+S2    | 2003 annual               | NOT PROBED（E16 无 day probe）
+S3    | 2005 annual               | NOT PROBED（E17 无 day probe）
+S4    | 2005 annual               | CH01（day probe, 2005）
+S5    | 2008 annual（resolved）   | CH02（day probe, resolvedAnnualYear=2008）
+S6    | 2011 annual               | NOT PROBED（E18 无 day probe）
+S7    | 2014 annual               | FA01（day probe EXACT_DATE 2014-04-24）
+S8    | 2016 annual（resolved）   | M02（month probe, 2016-08, resolved 2016）
+S9    | 2017 annual               | P02（day probe, 2017）
+S10   | 2020 annual：NOT PROBED； | P01-SALE（day probe 2021-02-01,
+      | 2021 annual：NOT PROBED   |  resolvedAnnualYear=2020）
+S11   | 2024 annual               | P03A + P03B（day probes, 2024）
+S12   | 2025 annual               | P04（day probe, 2025）
+J1/J2 | NOT APPLICABLE            | NOT APPLICABLE
+
+注：
+  - S8 Owen 侧事件日期 = 2016-08（MONTH_ONLY），2016 calendar annual
+    即 resolved annual（同一公历年）；2017 annual 不适用于 S8。
+  - S5 Owen 侧使用 2008 annual（resolved）；2009 calendar annual
+    存在但按精度规则不适用于本事件的年层比较（raw 见 §11 注记）。
+  - S10 Owen 侧 resolvedAnnualYear=2020，2020 与 2021 annual 均
+    NOT PROBED → S10 Owen 年层 = NOT AVAILABLE。
+
+════════════════════════════════════════════════════════════════════════════
+§6 JASSICA OBSERVATION MAPPING
+════════════════════════════════════════════════════════════════════════════
+
+每事件 → Jassica 独立 observation（annual snapshot / event probe）。
+
+Event | Jassica annual layer      | Jassica probe layer
+------+---------------------------+------------------------------------------
+S1    | 2003 annual               | S1（day probe 2003-06-18, resolved 2003）
+S2    | 2003 annual               | NOT PROBED
+S3    | 2005 annual               | NOT PROBED
+S4    | 2005 annual               | S4（day probe 2005-07-05, resolved 2005）
+S5    | 2008 annual：NOT PROBED   | S5（day probe 2009-02-03, resolved 2008）
+      | （2009 calendar annual    |
+      |  存在但不适用）           |
+S6    | 2011 annual               | NOT PROBED
+S7    | 2014 annual               | S7（month probe, evaluationDate=
+      |                           |  2014-04-15, resolved 2014）
+S8    | 2016 annual：NOT PROBED   | S8（month probe, evaluationDate=
+      | （2017 calendar annual    |  2017-01-15, resolved 2016）
+      |  存在但不适用）           |
+S9    | 2017 annual               | NOT PROBED
+S10   | 2021 annual               | NOT PROBED
+S11   | 2024 annual               | NOT PROBED
+S12   | 2025 annual               | NOT PROBED
+J1    | 2004 annual               | NOT PROBED
+J2    | 2009 annual               | NOT PROBED
+
+注：Jassica probe 输出为 identity + N1 + 单行 N2vec；无 R 段输出。
+
+════════════════════════════════════════════════════════════════════════════
+§7 COUPLE SHARED-EVENT MATRIX（主表：全部 raw，verbatim）
+════════════════════════════════════════════════════════════════════════════
+
+每个事件块 = 1 个现实事件 + 2 个独立 chart observations。
+不存在的一律 NONE / NOT PROBED。双侧互不覆盖。
+
+缩写：N2 = annual domainIntensityStates（intensity(coverageMarker)，
+coverage: A=absent, P=present）；R-3 focusDisplayed；R-4 watchDisplayed；
+R-1 windows/standaloneEvents；R-2 eventCandidates（month N2 ∈ {high,extreme}）；
+R-6 temporalFacts；activated = intensity ≠ quiet。
+probe R 段 = NONE（probe 格式无 R 段输出，双侧同）。
+
+──────────────────────────────────────────────────────────────────────────────
+S1 | EXACT_DATE | 2003-06-18 | 结婚
+──────────────────────────────────────────────────────────────────────────────
+双计数原则：本事件 = 1 个现实事件 + 2 个独立 chart observations。
+Cross-registry：Owen = MR01；Jassica = S1（§8: S1↔MR01）。
+年层多义注记：2003 同年另有 S2（E16），年层归属多义，不得事后挑选。
+
+[OWEN]
+  Annual layer（2003 癸未, daYun 丙辰 20-29）:
+    N2: wealth=quiet(A) career=high(A) relationship=quiet(A) health=quiet(A)
+        family=high(A) children=quiet(A) travel=moderate(A) study=quiet(A)
+        legalSocial=quiet(A)
+    N1: career=favorable,broad family=mixed,conflicted travel=unfavorable,isolated
+        其余六域 unknown,none
+    R-3 focus=[career|high|favorable|broad ; family|high|mixed|conflicted ;
+               travel|moderate|unfavorable|isolated]
+    R-3 overflow=[]  R-4 watch=[]
+    R-1: window 3月–4月 unfav[travel] / window 6月–7月 mixed[career,travel] /
+         window 9月–10月 unfav[children] /
+         standalone m3 children unfav, m6 family mixed, m7 family mixed,
+         m10 career fav, m10 family fav, m11 relationship fav, m11 health fav
+    R-2: m3:children=high,unfavorable m6:family=extreme,mixed
+         m6:travel=extreme,unfavorable m7:career=extreme,favorable
+         m7:family=extreme,mixed m10:career=high,favorable
+         m10:family=high,favorable m11:relationship=extreme,favorable
+         m11:health=extreme,favorable
+    R-6: career extreme[7] relationship extreme[11] health extreme[11]
+         family extreme[6,7] children high[3] travel extreme[6]
+  Probe layer（MR01, day, resolvedAnnualYear=2003 癸未, TIER_1）:
+    N2 逐域: wealth=quiet/absent career=high/absent relationship=quiet/absent
+             health=quiet/absent family=high/absent children=moderate/absent
+             travel=quiet/absent study=quiet/absent legalSocial=quiet/absent
+    N1: career act=multiFamily dir=favorable conf=broad PIDs=2 XIDs=5 /
+        family act=multiFamily dir=favorable conf=broad PIDs=2 XIDs=9 /
+        children act=singleFamily dir=unfavorable conf=isolated PIDs=1 XIDs=2 /
+        其余域 quiet
+    R 段: NONE
+  Month probe: NOT PROBED
+
+[JASSICA]
+  Annual layer（2003 癸未, daYun 丙辰 25-34）:
+    N2: wealth=quiet(A) career=quiet(A) relationship=quiet(A) health=quiet(A)
+        family=quiet(P) children=extreme(A) travel=quiet(P) study=quiet(A)
+        legalSocial=quiet(A)
+    N1: family=favorable,broad children=unfavorable,broad travel=favorable,broad
+        其余六域 unknown,none
+    activated=1, mainLineKind=multiFocus
+    R-3 focus=[children|extreme|unfavorable|broad]  R-3 overflow=[]  R-4 watch=[]
+    R-1: window 6-7 unfav[children] /
+         m1 career unfav, m1 family mixed, m3 rel unfav, m3 health unfav,
+         m10 career unfav, m10 family unfav, m10 children mixed,
+         m12 family mixed, m12 travel unfav
+    R-2: m1:career=extreme,unfavorable m1:family=extreme,mixed
+         m3:relationship=high,unfavorable m3:health=high,unfavorable
+         m7:children=high,unfavorable m10:career=high,unfavorable
+         m10:family=high,unfavorable m10:children=high,mixed
+         m12:family=extreme,mixed m12:travel=extreme,unfavorable
+    R-6: career extreme[1] relationship high[3] health high[3]
+         family extreme[1,12] children high[7,10] travel extreme[12]
+  Probe layer（S1, day 2003-06-18, resolvedAnnualYear=2003 癸未,
+               monthP=戊午, dayP=壬戌, daYun 丙辰 25-34）:
+    N1: career multiFamily unfavorable broad
+        （丑戌未三刑：月柱-时柱-流日 + 两支相刑：流日-流年 + 相破：流日-流年）/
+        relationship singleFamily unfavorable isolated /
+        health singleFamily unfavorable isolated /
+        family multiFamily unfavorable broad
+        （丑戌未三刑：月柱-时柱-流日）/
+        children multiFamily mixed conflicted overlap=true
+        （丑戌未三刑：月柱-时柱-流日）
+    N2vec: wealth=quiet(A) career=high(A) relationship=moderate(A)
+           health=moderate(A) family=high(A) children=high(P) travel=quiet(A)
+           study=quiet(A) legalSocial=quiet(A)
+    R 段: NONE
+  Month probe: NOT PROBED
+
+机械登记（S1）：
+  - 年层：Owen activated = [career, family, travel]；Jassica activated = [children]。
+  - Day 层（双方 EXACT_DATE 允许比较）：Owen 非 quiet = [career, family, children]；
+    Jassica 非 quiet = [career, relationship, health, family, children]。
+
+──────────────────────────────────────────────────────────────────────────────
+S2 | YEAR_ONLY | 2003 | 第一套住房
+──────────────────────────────────────────────────────────────────────────────
+双计数原则：本事件 = 1 个现实事件 + 2 个独立 chart observations。
+Cross-registry：Owen = E16；Jassica = §8: S2↔E16。
+年层多义注记：2003 同年另有 S1，年层归属多义，不得事后挑选。
+比较范围：YEAR_ONLY → 仅年层。
+
+[OWEN] 2003 annual：同 S1 OWEN Annual layer 全文（verbatim 复用上文 2003 块）。
+[JASSICA] 2003 annual：同 S1 JASSICA Annual layer 全文（verbatim 复用上文 2003 块）。
+Day probe：双侧 NOT PROBED。Month probe：双侧 NOT PROBED。
+
+机械登记（S2）：见 §8 激活域表 2003 行。
+
+──────────────────────────────────────────────────────────────────────────────
+S3 | YEAR_ONLY | 2005 | 买办公楼
+──────────────────────────────────────────────────────────────────────────────
+双计数原则：本事件 = 1 个现实事件 + 2 个独立 chart observations。
+Cross-registry：Owen = E17（买半层办公楼）；Jassica = §8: S3↔E17。
+年层多义注记：2005 同年另有 S4，年层归属多义，不得事后挑选。
+比较范围：YEAR_ONLY → 仅年层。
+
+[OWEN]
+  Annual layer（2005 乙酉, daYun 丁巳 30-39）:
+    N2: family=low(A) children=moderate(A) travel=low(A)
+        其余六域（wealth/career/relationship/health/study/legalSocial）quiet(A)
+    N1: family=unfavorable,isolated children=unfavorable,isolated
+        travel=unfavorable,isolated 其余六域 unknown,none
+    R-3 focus=[children|moderate|unfavorable|isolated ;
+               family|low|unfavorable|isolated ; travel|low|unfavorable|isolated]
+    R-3 overflow=[]  R-4 watch=[]
+    R-1: window 6-7 mixed[career,travel] / window 9-11 unfav[children] /
+         m3 children unfav, m6 family mixed, m7 family mixed,
+         m11 rel fav, m11 health fav
+    R-2: m3:children=extreme,unfavorable m6:family=high,mixed
+         m6:travel=high,unfavorable m7:career=high,favorable
+         m7:family=high,mixed m11:relationship=high,favorable
+         m11:health=high,favorable
+    R-6: career high[7] rel high[11] health high[11] family high[6,7]
+         children extreme[3] travel high[6]
+[JASSICA]
+  Annual layer（2005 乙酉, daYun 丙辰 25-34）:
+    N2: relationship=moderate(A) health=moderate(A) 其余七域 quiet(A)
+    N1: relationship=unfavorable,broad health=unfavorable,broad
+        其余七域 unknown,none
+    activated=2, mainLineKind=multiFocus
+    R-3 focus=[relationship|moderate|unfavorable|broad ;
+               health|moderate|unfavorable|broad]
+    R-3 overflow=[]  R-4 watch=[]
+    R-1: window 9-10 unfav[relationship,health] /
+         m1 career unfav, m1 family unfav, m3 rel unfav, m3 health unfav,
+         m7 children unfav, m10 career unfav, m10 family unfav,
+         m10 children unfav, m12 family unfav, m12 travel unfav
+    R-2: m1:career=high,unfavorable m1:family=high,unfavorable
+         m3:relationship=extreme,unfavorable m3:health=extreme,unfavorable
+         m7:children=extreme,unfavorable m10:career=high,unfavorable
+         m10:family=high,unfavorable m10:children=high,unfavorable
+         m12:family=high,unfavorable m12:travel=high,unfavorable
+    R-6: career high[1,10] rel extreme[3] health extreme[3]
+         family high[1,10,12] children extreme[7] travel high[12]
+Day probe：双侧 NOT PROBED。Month probe：双侧 NOT PROBED。
+
+机械登记（S3）：见 §8 激活域表 2005 行。
+
+──────────────────────────────────────────────────────────────────────────────
+S4 | EXACT_DATE | 2005-07-05 | 第一个孩子出生
+──────────────────────────────────────────────────────────────────────────────
+双计数原则：本事件 = 1 个现实事件 + 2 个独立 chart observations。
+Cross-registry：Owen = CH01；Jassica = S4（§8: 子女出生记录（候选））。
+年层多义注记：2005 同年另有 S3，年层归属多义，不得事后挑选。
+
+[OWEN]
+  Annual layer（2005）：同 S3 OWEN Annual layer 全文（verbatim 复用上文 2005 块）。
+  Probe layer（CH01, day, 2005 乙酉）:
+    N2 逐域: relationship=moderate/absent health=moderate/absent
+             其余七域 quiet/absent
+    N1: relationship act=multiFamily dir=favorable conf=broad overlap=true
+        （两支相刑：流日-大运；六害：流日-大运）/
+        health act=multiFamily dir=favorable conf=broad overlap=true
+        （两支相刑：流日-大运；六害：流日-大运）
+    R 段: NONE
+  Month probe: NOT PROBED
+
+[JASSICA]
+  Annual layer（2005）：同 S3 JASSICA Annual layer 全文（verbatim 复用上文 2005 块）。
+  Probe layer（S4, day 2005-07-05, 2005 乙酉, monthP=壬午, dayP=庚寅,
+               daYun 丙辰 25-34）:
+    N1: relationship singleFamily favorable corroborated
+        （天干五合：流日-流年）/
+        health singleFamily favorable corroborated（天干五合：流日-流年）
+    N2vec: 全 quiet（relationship=quiet(P) health=quiet(P) 其余七域 quiet(A)）
+    R 段: NONE
+  Month probe: NOT PROBED
+
+机械登记（S4）：
+  - Day 层：Owen 非 quiet = [relationship, health]；
+    Jassica 非 quiet = []（仅 relationship/health coverage present）。
+
+──────────────────────────────────────────────────────────────────────────────
+S5 | EXACT_DATE | 2009-02-03 | 第二个孩子出生（resolvedAnnualYear=2008 戊子）
+──────────────────────────────────────────────────────────────────────────────
+双计数原则：本事件 = 1 个现实事件 + 2 个独立 chart observations。
+Cross-registry：Owen = CH02；Jassica = S5（§8: S5↔E9）。
+立春边界：2009-02-03 在立春前 → resolvedAnnualYear = 2008（戊子）。
+年层比较使用 resolved 2008 annual；2009 calendar annual 存在但按精度规则
+不适用（其 raw 已登记于 §11 注记）。
+
+[OWEN]
+  Annual layer（2008 戊子, daYun 丁巳 30-39）:
+    N2: family=quiet(P) children=low(P)
+        其余七域 quiet(A)（其中 career=quiet(A)）
+    N1: career=favorable,broad family=favorable,broad children=mixed,conflicted
+        其余六域 unknown,none
+    R-3 focus=[children|low|mixed|conflicted]
+    R-3 overflow=[]  R-4 watch=[]
+    R-1: window 3-4 unfav[travel] / window 6-7 mixed[career,travel] /
+         window 9-10 unfav[children] /
+         m3 children unfav, m6 family mixed, m7 family mixed,
+         m11 rel fav, m11 health fav
+    R-2: m3:children=high,unfavorable m6:family=extreme,mixed
+         m6:travel=extreme,unfavorable m7:career=extreme,favorable
+         m7:family=extreme,mixed m11:relationship=extreme,favorable
+         m11:health=extreme,favorable
+    R-6: career extreme[7] rel extreme[11] health extreme[11]
+         family extreme[6,7] children high[3] travel extreme[6]
+  Probe layer（CH02, day, resolvedAnnualYear=2008 戊子）:
+    N2 逐域: family=moderate/absent children=extreme/absent
+             travel=moderate/absent 其余六域 quiet/absent
+    N1: family act=singleFamily dir=unfavorable conf=corroborated overlap=true
+        （子卯刑：流日-流年）/
+        children act=singleFamily dir=unfavorable conf=corroborated
+        （六冲：流日-时柱 children rule-gong-wei sameFamilyDemotion）/
+        travel act=singleFamily dir=unfavorable conf=corroborated overlap=true
+        （子卯刑：流日-流年）
+    R 段: NONE
+  Month probe: NOT PROBED
+
+[JASSICA]
+  Annual layer（resolved 2008）: NOT PROBED（2008 annual 不在
+  Jassica 已探年度内；2009 calendar annual 存在但不适用于本事件年层）。
+  Probe layer（S5, day 2009-02-03, resolvedAnnualYear=2008 戊子,
+               monthP=乙丑, dayP=己卯, daYun 丙辰 25-34）:
+    N1: relationship/health singleFamily unfavorable corroborated
+        （六冲：流日-日柱，rule-gong-wei sameFamilyDemotion）/
+        family/travel singleFamily unfavorable isolated overlap=true
+    N2vec: wealth=quiet(A) career=quiet(A) relationship=extreme(A)
+           health=extreme(A) family=low(A) children=quiet(A) travel=low(A)
+           study=quiet(A) legalSocial=quiet(A)
+    R 段: NONE
+  Month probe: NOT PROBED
+
+机械登记（S5）：
+  - Day 层：Owen 非 quiet = [family, children, travel]；
+    Jassica 非 quiet = [relationship, health, family, travel]。
+  - Jassica 侧 resolved 2008 annual = NOT PROBED（→ §11）。
+
+──────────────────────────────────────────────────────────────────────────────
+S6 | YEAR_ONLY | 2011 | 第二套住宅
+──────────────────────────────────────────────────────────────────────────────
+双计数原则：本事件 = 1 个现实事件 + 2 个独立 chart observations。
+Cross-registry：Owen = E18；Jassica = §8: S6↔E18。
+比较范围：YEAR_ONLY → 仅年层。
+
+[OWEN]
+  Annual layer（2011 辛卯, daYun 丁巳 30-39, SOURCE [O-B] §4）:
+    N2: wealth=quiet(A) career=quiet(A) relationship=quiet(A) health=quiet(A)
+        family=moderate(A) children=high(A) travel=moderate(A) study=quiet(A)
+        legalSocial=quiet(A)
+    N1: family=unfavorable,isolated children=unfavorable,isolated
+        travel=unfavorable,isolated 其余六域 unknown,none
+    quietDomains=[wealth,career,relationship,health,study,legalSocial]
+    annualActivatedCount=3 mainLineKind=multiFocus
+    R-3 focus=[children|high|unfavorable|isolated ;
+               family|moderate|unfavorable|isolated ;
+               travel|moderate|unfavorable|isolated]
+    R-3 overflow=[]  R-4 watch=[]
+    R-1: window 6月–8月 mixed[career,travel] /
+         m3 children unfav, m6 family mixed, m7 family mixed,
+         m11 rel fav, m11 health fav
+    R-2: m3:children=high,unfavorable m6:family=high,mixed
+         m6:travel=high,unfavorable m7:career=high,favorable
+         m7:family=high,mixed m11:relationship=high,favorable
+         m11:health=high,favorable
+    R-6: career high[7] rel high[11] health high[11] family high[6,7]
+         children high[3] travel high[6]
+[JASSICA]
+  Annual layer（2011 辛卯, daYun 丙辰 25-34）:
+    N2: relationship=extreme(A) health=extreme(A) family=low(A) travel=low(A)
+        其余五域 quiet(A)
+    N1: relationship=mixed,conflicted health=mixed,conflicted
+        family=unfavorable,isolated travel=unfavorable,isolated
+        其余五域 unknown,none
+    activated=4, mainLineKind=multiFocus
+    R-3 focus=[relationship|extreme|mixed|conflicted ;
+               health|extreme|mixed|conflicted ; family|low|unfavorable|isolated]
+    R-3 overflow=[travel|low|unfavorable|isolated]
+    R-4 watch=[travel|low|unfavorable|isolated]
+    R-1: window 5-7 unfav[children] / window 9-10 unfav[relationship,health] /
+         m1 career unfav, m1 family unfav, m3 rel mixed, m3 health mixed,
+         m10 career unfav, m10 family unfav, m10 children unfav,
+         m12 family unfav, m12 travel unfav
+    R-2: m1:career=high,unfavorable m1:family=high,unfavorable
+         m3:relationship=extreme,mixed m3:health=extreme,mixed
+         m7:children=high,unfavorable m10:career=high,unfavorable
+         m10:family=high,unfavorable m10:children=high,unfavorable
+         m12:family=high,unfavorable m12:travel=high,unfavorable
+    R-6: career high[1,10] rel extreme[3] health extreme[3]
+         family high[1,10,12] children high[7,10] travel high[12]
+Day probe：双侧 NOT PROBED。Month probe：双侧 NOT PROBED。
+
+机械登记（S6）：见 §8 激活域表 2011 行。
+
+──────────────────────────────────────────────────────────────────────────────
+S7 | MONTH_ONLY | 2014-04 | Jassica 母亲去世
+──────────────────────────────────────────────────────────────────────────────
+双计数原则：本事件 = 1 个现实事件 + 2 个独立 chart observations。
+Cross-registry：Owen = FA01（岳母去世 2014-04-24 EXACT_DATE）；
+Jassica = S7。§8 交叉引用：Jassica 注册表未列 S7 → 登记 discrepancy（§11）。
+精度冲突：Owen 侧 EXACT_DATE（2014-04-24）vs Jassica 侧 MONTH_ONLY（2014-04）
+→ 只登记，不修正（§11）。
+
+[OWEN]
+  Annual layer（2014 甲午, daYun 戊午 40-49）:
+    N2: career=moderate(A) relationship=quiet(P) health=quiet(P) family=high(A)
+        children=quiet(A) travel=high(A) 其余三域（wealth/study/legalSocial）quiet(A)
+    N1: career=favorable,isolated relationship=favorable,isolated
+        health=favorable,isolated family=mixed,conflicted
+        travel=unfavorable,isolated 其余域 unknown,none
+    R-3 focus=[travel|high|unfavorable|isolated ;
+               family|high|mixed|conflicted ; career|moderate|favorable|isolated]
+    R-3 overflow=[]  R-4 watch=[]
+    R-1: window 6-7 mixed[career,travel] / window 9-10 unfav[children] /
+         m3 children unfav, m6 family mixed, m7 family mixed,
+         m11 rel fav, m11 health fav
+    R-2: m3:children=extreme,unfavorable m6:family=high,mixed
+         m6:travel=high,unfavorable m7:career=high,favorable
+         m7:family=high,mixed m11:relationship=extreme,favorable
+         m11:health=extreme,favorable
+    R-6: career high[7] rel extreme[11] health extreme[11] family high[6,7]
+         children extreme[3] travel high[6]
+  Probe layer（FA01, day EXACT_DATE 2014-04-24, resolvedAnnualYear=2014 甲午）:
+    N2 逐域: 九域全 quiet/absent
+    coverage: family=present(resolvingClass) travel=present(resolvingClass)
+              其余七域 absent
+    N1: family act=singleFamily dir=favorable conf=isolated overlap=true /
+        travel act=singleFamily dir=favorable conf=isolated overlap=true
+    R 段: NONE
+  Month probe: NOT PROBED
+
+[JASSICA]
+  Annual layer（2014 甲午, daYun 乙卯 35-44）:
+    N2: career=quiet(P) family=moderate(P) children=moderate(A)
+        travel=moderate(A) 其余五域 quiet(A)
+    N1: career=favorable,broad family=mixed,conflicted
+        children=unfavorable,isolated travel=unfavorable,isolated
+        其余五域 unknown,none
+    activated=3, mainLineKind=multiFocus
+    R-3 focus=[children|moderate|unfavorable|isolated ;
+               travel|moderate|unfavorable|isolated ;
+               family|moderate|mixed|conflicted]
+    R-3 overflow=[]  R-4 watch=[]
+    R-1: window 6-7 unfav[children] / window 9-10 unfav[relationship,health,children] /
+         m1 career unfav, m1 family unfav, m3 rel unfav, m3 health unfav,
+         m10 career mixed, m10 family mixed, m12 family unfav, m12 travel unfav
+    R-2: m1:career=extreme,unfavorable m1:family=extreme,unfavorable
+         m3:relationship=high,unfavorable m3:health=high,unfavorable
+         m7:children=extreme,unfavorable m10:career=high,mixed
+         m10:family=high,mixed m10:children=high,unfavorable
+         m12:family=high,unfavorable m12:travel=high,unfavorable
+    R-6: career extreme[1] rel high[3] health high[3] family extreme[1]
+         children extreme[7] travel high[12]
+  Probe layer（S7, month probe, evaluationDate=2014-04-15 月锚点,
+               resolvedAnnualYear=2014 甲午, monthP=戊辰, daYun 乙卯 35-44）:
+    N1: relationship/health singleFamily favorable isolated /
+        children singleFamily unfavorable isolated
+    N2vec: wealth=quiet(A) career=quiet(A) relationship=quiet(P)
+           health=quiet(P) family=quiet(A) children=low(A) travel=quiet(A)
+           study=quiet(A) legalSocial=quiet(A)
+    R 段: NONE
+
+机械登记（S7）：
+  - 年层：Owen activated = [career, family, travel]；
+    Jassica activated = [children, travel, family]。
+  - Probe 层：Owen FA01 intensity 全 quiet（coverage family/travel present）；
+    Jassica S7 非 quiet = [children(low)]（coverage relationship/health present）。
+
+──────────────────────────────────────────────────────────────────────────────
+S8 | MONTH_ONLY | 2017-01（Jassica 侧）/ 2016-08（Owen 侧）| 从上海搬到美国
+──────────────────────────────────────────────────────────────────────────────
+双计数原则：本事件 = 1 个现实事件 + 2 个独立 chart observations。
+Cross-registry：Owen = M02（2016-08 MONTH_ONLY TIER_2）；Jassica = S8。
+§8 交叉引用：Jassica 注册表未列 S8 → 登记 discrepancy（§11）。
+日期冲突：Owen 2016-08 vs Jassica 2017-01 → 只登记，不修正（§11）。
+立春边界：双侧 resolvedAnnualYear = 2016（丙申）一致。
+年层比较使用 resolved 2016 annual；2017 calendar annual 存在但不适用。
+
+[OWEN]
+  Annual layer（2016 丙申, daYun 戊午 40-49）:
+    N2: relationship=moderate(P) health=moderate(P) family=moderate(A)
+        children=quiet(A) travel=moderate(A)
+        其余四域（wealth/career/study/legalSocial）quiet(A)
+    N1: relationship=favorable,broad health=favorable,broad
+        family=unfavorable,isolated travel=unfavorable,isolated
+        其余五域 unknown,none
+    R-3 focus=[relationship|moderate|favorable|broad ;
+               health|moderate|favorable|broad ; family|moderate|unfavorable|isolated]
+    R-3 overflow=[travel|moderate|unfavorable|isolated]
+    R-4 watch=[travel|moderate|unfavorable|isolated]
+    R-1: window 6-8 mixed[career,travel] /
+         m2 rel fav, m2 health fav, m3 children unfav, m6 family mixed,
+         m7 family mixed, m11 rel fav, m11 health fav
+    R-2: m2:relationship=extreme,favorable m2:health=extreme,favorable
+         m3:children=high,unfavorable m6:family=high,mixed
+         m6:travel=high,unfavorable m7:career=high,favorable
+         m7:family=high,mixed m11:relationship=high,favorable
+         m11:health=high,favorable
+    R-6: career high[7] rel extreme[2] health extreme[2] family high[6,7]
+         children high[3] travel high[6]
+  Probe layer（M02, month probe, 2016-08, resolvedAnnualYear=2016 丙申）:
+    N2 逐域: wealth=quiet/absent career=quiet/absent relationship=moderate/present
+             health=moderate/present family=moderate/absent children=quiet/absent
+             travel=moderate/absent study=quiet/absent legalSocial=quiet/absent
+    N1: relationship act=multiFamily dir=favorable conf=broad overlap=true PIDs=3 /
+        health act=multiFamily dir=favorable conf=broad overlap=true PIDs=3 /
+        family act=singleFamily dir=unfavorable conf=isolated overlap=true PIDs=1 /
+        travel act=singleFamily dir=unfavorable conf=isolated overlap=true PIDs=1
+    R 段: NONE
+
+[JASSICA]
+  Annual layer（resolved 2016）: NOT PROBED（2016 annual 不在 Jassica
+  已探年度内；2017 calendar annual 存在但不适用于本事件年层）。
+  Probe layer（S8, month probe, evaluationDate=2017-01-15,
+               resolvedAnnualYear=2016 丙申, monthP=辛丑, daYun 乙卯 35-44）:
+    N1: career multiFamily unfavorable broad PIDs=2 /
+        relationship/health singleFamily favorable corroborated
+        （天干四冲：流月-大运）/
+        family multiFamily unfavorable broad overlap=true PIDs=3 /
+        travel singleFamily unfavorable isolated overlap=true
+    N2vec: wealth=quiet(A) career=high(A) relationship=moderate(A)
+           health=moderate(A) family=high(A) children=quiet(A) travel=moderate(A)
+           study=quiet(A) legalSocial=quiet(A)
+    R 段: NONE
+
+机械登记（S8）：
+  - Month 层：Owen 非 quiet = [relationship, health, family, travel]；
+    Jassica 非 quiet = [career, relationship, health, family, travel]。
+  - Jassica 侧 resolved 2016 annual = NOT PROBED（→ §11）。
+
+──────────────────────────────────────────────────────────────────────────────
+S9 | YEAR_ONLY | 2017 | 房产交易
+──────────────────────────────────────────────────────────────────────────────
+双计数原则：本事件 = 1 个现实事件 + 2 个独立 chart observations。
+Cross-registry：Owen = P02（购第二栋房）；Jassica = §8: S9↔P02
+（候选待命主确认 → §11 标签差异登记）。
+比较范围：YEAR_ONLY → §10 比较句仅限年层；Owen day probe raw 仍全额登记。
+
+[OWEN]
+  Annual layer（2017 丁酉, daYun 戊午 40-49）:
+    N2: career=moderate(A) family=moderate(P) children=moderate(A)
+        travel=low(P) 其余五域 quiet(A)
+    N1: career=unfavorable,isolated family=mixed,conflicted
+        children=unfavorable,broad travel=mixed,conflicted
+        其余五域 unknown,none
+    R-3 focus=[children|moderate|unfavorable|broad ;
+               career|moderate|unfavorable|isolated ;
+               family|moderate|mixed|conflicted]
+    R-3 overflow=[travel|low|mixed|conflicted]  R-4 watch=[]
+    R-1: window 9-10 unfav[children] /
+         m3 children unfav, m6 family mixed, m6 travel unfav,
+         m7 career mixed, m7 family mixed, m11 rel fav, m11 health fav
+    R-2: m3:children=high,unfavorable m6:family=extreme,mixed
+         m6:travel=extreme,unfavorable m7:career=extreme,mixed
+         m7:family=extreme,mixed m11:relationship=high,favorable
+         m11:health=high,favorable
+    R-6: career extreme[7] rel high[11] health high[11] family extreme[6,7]
+         children high[3] travel extreme[6]
+  Probe layer（P02, day, 2017 丁酉；YEAR_ONLY 事件，raw 全额登记，
+               比较不使用 day 层）:
+    N2 逐域: wealth=quiet/absent career=moderate/present relationship=quiet/absent
+             health=quiet/absent family=extreme/present children=quiet/present
+             travel=extreme/absent study=quiet/absent legalSocial=quiet/absent
+    N1: career act=multiFamily dir=favorable conf=broad overlap=true PIDs=2 /
+        family act=multiFamily dir=mixed conf=conflicted overlap=true PIDs=3
+        （六冲：流日-年柱 family）/
+        children act=singleFamily dir=favorable conf=isolated overlap=true /
+        travel act=singleFamily dir=unfavorable conf=corroborated overlap=true
+        （六冲：流日-年柱 travel）
+    R 段: NONE
+
+[JASSICA]
+  Annual layer（2017 丁酉, daYun 乙卯 35-44）:
+    N2: relationship=moderate(A) health=moderate(A) 其余七域 quiet(A)
+    N1: relationship=unfavorable,isolated health=unfavorable,isolated
+        其余七域 unknown,none
+    activated=2, mainLineKind=multiFocus
+    R-3 focus=[relationship|moderate|unfavorable|isolated ;
+               health|moderate|unfavorable|isolated]
+    R-3 overflow=[]  R-4 watch=[]
+    R-1: window 6-7 unfav[children] /
+         m1 career unfav, m1 family unfav, m3 rel unfav, m3 health unfav,
+         m10 career unfav, m10 family unfav, m10 children unfav,
+         m12 family unfav, m12 travel unfav
+    R-2: m1:career=high,unfavorable m1:family=high,unfavorable
+         m3:relationship=high,unfavorable m3:health=high,unfavorable
+         m7:children=high,unfavorable m10:career=high,unfavorable
+         m10:family=high,unfavorable m10:children=high,unfavorable
+         m12:family=extreme,unfavorable m12:travel=extreme,unfavorable
+    R-6: career high[1,10] rel high[3] health high[3] family extreme[12]
+         children high[7,10] travel extreme[12]
+  Day probe: NOT PROBED  Month probe: NOT PROBED
+
+机械登记（S9）：见 §8 激活域表 2017 行。
+
+──────────────────────────────────────────────────────────────────────────────
+S10 | YEAR_ONLY | 2021 | 卖房子
+──────────────────────────────────────────────────────────────────────────────
+双计数原则：本事件 = 1 个现实事件 + 2 个独立 chart observations。
+Cross-registry：Owen = P01-SALE（售第一套房产 2021-02-01，
+resolvedAnnualYear=2020 庚子）；Jassica = §8: S10↔P01-SALE。
+精度差异：shared registry YEAR_ONLY 2021 vs Owen registry exact-date
+2021-02-01（resolved 2020）→ 只登记，不修正（§11）。
+Owen 侧年层（resolved 2020 与 calendar 2021）均 NOT PROBED → NOT AVAILABLE。
+
+[OWEN]
+  Annual layer（resolved 2020 庚子）: NOT PROBED
+  Annual layer（calendar 2021 辛丑）: NOT PROBED
+  Probe layer（P01-SALE, day 2021-02-01, resolvedAnnualYear=2020 庚子；
+               YEAR_ONLY 事件，raw 全额登记，比较不使用 day 层）:
+    N2 逐域: wealth=quiet/absent career=low/absent relationship=quiet/absent
+             health=quiet/absent family=low/absent children=quiet/present
+             travel=quiet/absent study=quiet/absent legalSocial=quiet/absent
+    N1: career act=singleFamily dir=favorable conf=corroborated
+        （相破：流日-流月）/
+        family act=singleFamily dir=favorable conf=corroborated
+        （相破：流日-流月）/
+        children act=singleFamily dir=favorable conf=isolated
+    R 段: NONE
+
+[JASSICA]
+  Annual layer（2021 辛丑, daYun 乙卯 35-44）:
+    N2: career=high(A) relationship=moderate(A) health=moderate(A)
+        family=high(A) travel=moderate(A) 其余四域 quiet(A)
+    N1: career=unfavorable,broad relationship=favorable,corroborated
+        health=favorable,corroborated family=unfavorable,broad
+        travel=unfavorable,isolated 其余四域 unknown,none
+    activated=5, mainLineKind=multiFocus
+    R-3 focus=[career|high|unfavorable|broad ;
+               family|high|unfavorable|broad ;
+               relationship|moderate|favorable|corroborated]
+    R-3 overflow=[health|moderate|favorable|corroborated ;
+                  travel|moderate|unfavorable|isolated]
+    R-4 watch=[travel|moderate|unfavorable|isolated]
+    R-1: window 5-7 unfav[children] / window 9-10 unfav[relationship,health] /
+         m1 career unfav, m1 family unfav, m3 rel mixed, m3 health mixed,
+         m10 career unfav, m10 family unfav, m10 children unfav,
+         m12 family unfav, m12 travel unfav
+    R-2: m1:career=high,unfavorable m1:family=high,unfavorable
+         m3:relationship=extreme,mixed m3:health=extreme,mixed
+         m7:children=high,unfavorable m10:career=high,unfavorable
+         m10:family=high,unfavorable m10:children=high,unfavorable
+         m12:family=high,unfavorable m12:travel=high,unfavorable
+    R-6: career high[1,10] rel extreme[3] health extreme[3]
+         family high[1,10,12] children high[7,10] travel high[12]
+  Day probe: NOT PROBED  Month probe: NOT PROBED
+
+机械登记（S10）：
+  - 年层：Owen 侧 NOT AVAILABLE（2020/2021 annual 均 NOT PROBED）；
+    Jassica activated = [career, relationship, health, family, travel]。
+
+──────────────────────────────────────────────────────────────────────────────
+S11 | YEAR_ONLY | 2024 | 房产交易
+──────────────────────────────────────────────────────────────────────────────
+双计数原则：本事件 = 1 个现实事件 + 2 个独立 chart observations。
+Cross-registry：Owen = P03A + P03B（2024购房之一/之二，两条独立 day probes）；
+Jassica = §8: S11↔P03A/P03B。
+标签差异：Jassica 侧「房产交易」未细分（→ §11）。
+比较范围：YEAR_ONLY → §10 比较句仅限年层；Owen day probe raw 仍全额登记。
+
+[OWEN]
+  Annual layer（2024 甲辰, daYun 己未 50-59）:
+    N2: career=low(A) relationship=quiet(P) health=quiet(P) family=low(A)
+        children=quiet(P) travel=quiet(A) 其余三域（wealth/study/legalSocial）quiet(A)
+    N1: career=favorable,isolated relationship=favorable,corroborated
+        health=favorable,corroborated family=favorable,isolated
+        children=favorable,isolated 其余四域 unknown,none
+    R-3 focus=[career|low|favorable|isolated ; family|low|favorable|isolated]
+    R-3 overflow=[]  R-4 watch=[]
+    R-1: window 6-7 mixed[career,travel] / window 9-10 unfav[children] /
+         m3 children unfav, m6 family mixed, m7 family mixed,
+         m10 career fav, m10 family fav, m11 rel fav, m11 health fav
+    R-2: m3:children=extreme,unfavorable m6:family=high,mixed
+         m6:travel=high,unfavorable m7:career=high,favorable
+         m7:family=high,mixed m10:career=high,favorable
+         m10:family=high,favorable m11:relationship=extreme,favorable
+         m11:health=extreme,favorable
+    R-6: career high[7,10] rel extreme[11] health extreme[11]
+         family high[6,7,10] children extreme[3] travel high[6]
+  Probe layer（P03A, day, 2024 甲辰；YEAR_ONLY 事件，raw 全额登记）:
+    N2 逐域: career=high/present family=high/present children=moderate/present
+             其余六域 quiet/absent
+    N1: career act=multiFamily dir=favorable conf=broad overlap=true PIDs=3 /
+        family act=multiFamily dir=favorable conf=broad overlap=true PIDs=3 /
+        children act=multiFamily dir=mixed conf=conflicted overlap=true PIDs=2
+    R 段: NONE
+  Probe layer（P03B, day, 2024 甲辰；YEAR_ONLY 事件，raw 全额登记）:
+    N2 逐域: relationship=moderate/present health=moderate/present
+             其余七域 quiet/absent
+    N1: relationship act=multiFamily dir=favorable conf=broad overlap=true PIDs=3 /
+        health act=multiFamily dir=favorable conf=broad overlap=true PIDs=3
+    R 段: NONE
+
+[JASSICA]
+  Annual layer（2024 甲辰, daYun 甲寅 45-54）:
+    N2: children=low(A) 其余八域 quiet
+        （career/relationship/health/family=quiet(P)，travel/study/legalSocial/wealth=quiet(A)）
+    N1: career=favorable,isolated relationship=favorable,isolated
+        health=favorable,isolated family=favorable,isolated
+        children=unfavorable,isolated 其余四域 unknown,none
+    activated=1, mainLineKind=multiFocus
+    R-3 focus=[children|low|unfavorable|isolated]
+    R-3 overflow=[]  R-4 watch=[]
+    R-1: window 6-7 unfav[children] / window 9-10 unfav[relationship,health,children] /
+         m1 career unfav, m1 family unfav, m3 rel unfav, m3 health unfav,
+         m10 career mixed, m10 family mixed, m12 family unfav, m12 travel unfav
+    R-2: m1:career=extreme,unfavorable m1:family=extreme,unfavorable
+         m3:relationship=high,unfavorable m3:health=high,unfavorable
+         m7:children=extreme,unfavorable m10:career=high,mixed
+         m10:family=high,mixed m10:children=high,unfavorable
+         m12:family=high,unfavorable m12:travel=high,unfavorable
+    R-6: career extreme[1] rel high[3] health high[3] family extreme[1]
+         children extreme[7] travel high[12]
+  Day probe: NOT PROBED  Month probe: NOT PROBED
+
+机械登记（S11）：见 §8 激活域表 2024 行。
+
+──────────────────────────────────────────────────────────────────────────────
+S12 | YEAR_ONLY | 2025 | 房产交易
+──────────────────────────────────────────────────────────────────────────────
+双计数原则：本事件 = 1 个现实事件 + 2 个独立 chart observations。
+Cross-registry：Owen = P04（购土地）；Jassica = §8: S12↔P04。
+标签差异：Jassica 侧「房产交易」未细分（→ §11）。
+比较范围：YEAR_ONLY → §10 比较句仅限年层；Owen day probe raw 仍全额登记。
+
+[OWEN]
+  Annual layer（2025 乙巳, daYun 己未 50-59）:
+    N2: 九域全 quiet(A)
+    N1: 九域全 unknown,none
+    R-3 focus=[]  R-3 overflow=[]  R-4 watch=[]
+    R-1: window 6-7 mixed[career,travel] / window 9-11 unfav[children] /
+         m3 children unfav, m6 family mixed, m7 family mixed,
+         m10 career fav, m10 family mixed, m11 rel fav, m11 health fav
+    R-2: m3:children=extreme,unfavorable m6:family=high,mixed
+         m6:travel=high,unfavorable m7:career=high,favorable
+         m7:family=high,mixed m10:career=high,favorable
+         m10:family=high,mixed m11:relationship=high,favorable
+         m11:health=high,favorable
+    R-6: career high[7,10] rel high[11] health high[11] family high[6,7,10]
+         children extreme[3] travel high[6]
+  Probe layer（P04, day, 2025 乙巳；YEAR_ONLY 事件，raw 全额登记）:
+    N2 逐域: relationship=moderate/absent health=moderate/absent
+             其余七域 quiet/absent
+    N1: relationship act=multiFamily dir=favorable conf=broad overlap=true PIDs=2
+        （两支相刑：流日-流年/流日-流月；六害：流日-流年/流日-流月）/
+        health act=multiFamily dir=favorable conf=broad overlap=true PIDs=2
+        （同上）
+    R 段: NONE
+
+[JASSICA]
+  Annual layer（2025 乙巳, daYun 甲寅 45-54）:
+    N2: 九域全 quiet(A)
+    N1: 九域全 unknown,none
+    activated=0, mainLineKind=eventDriven
+    R-3 focus=[]  R-3 overflow=[]  R-4 watch=[]
+    R-1: window 9-10 unfav[relationship,health] /
+         m1 career unfav, m1 family unfav, m3 rel unfav, m3 health unfav,
+         m7 children unfav, m10 career unfav, m10 family unfav,
+         m10 children unfav, m12 family unfav, m12 travel unfav
+    R-2: m1:career=high,unfavorable m1:family=high,unfavorable
+         m3:relationship=extreme,unfavorable m3:health=extreme,unfavorable
+         m7:children=extreme,unfavorable m10:career=high,unfavorable
+         m10:family=high,unfavorable m10:children=high,unfavorable
+         m12:family=high,unfavorable m12:travel=high,unfavorable
+    R-6: career high[1,10] rel extreme[3] health extreme[3]
+         family high[1,10,12] children extreme[7] travel high[12]
+  Day probe: NOT PROBED  Month probe: NOT PROBED
+
+机械登记（S12）：双侧年层 activated 均为 []（九域全 quiet）。
+
+════════════════════════════════════════════════════════════════════════════
+§8 DOMAIN-INDEPENDENT RAW COMPARISON
+════════════════════════════════════════════════════════════════════════════
+
+本表仅机械汇总双侧机器输出的 activated domain 集合（intensity ≠ quiet）。
+不解释原因，不判断对应关系，不计算 accuracy。
+
+[Annual layer]
+Year | Owen activated                              | Jassica activated
+-----+---------------------------------------------+---------------------------------------------
+2003 | [career, family, travel]                    | [children]
+2004 | NOT PROBED                                  | []（coverage career/family present）
+2005 | [children, family, travel]                  | [relationship, health]
+2009 | []（coverage family/travel present）        | [career, family, travel]
+2011 | [family, children, travel]                  | [relationship, health, family, travel]
+2014 | [career, family, travel]                    | [children, travel, family]
+2016 | [relationship, health, family, travel]      | NOT PROBED
+2017 | [career, family, children, travel]          | [relationship, health]
+2021 | NOT PROBED                                  | [career, relationship, health, family, travel]
+2024 | [career(low), family(low)]                  | [children(low)]
+2025 | []                                          | []
+
+[Probe layer]
+Event | Owen 非 quiet（coverage present 另注）       | Jassica 非 quiet（coverage present 另注）
+------+----------------------------------------------+----------------------------------------------
+S1/MR01 | [career, family, children]                 | [career, relationship, health, family, children]
+S4/CH01 | [relationship, health]                     | []（coverage relationship/health present）
+S5/CH02 | [family, children, travel]                 | [relationship, health, family, travel]
+S7/FA01 | []（coverage family/travel present）       | [children(low)]（coverage relationship/health present）
+S8/M02  | [relationship, health, family, travel]     | [career, relationship, health, family, travel]
+S9/P02  | [career, family, travel]（+children cov.） | NOT PROBED
+S10/P01-SALE | [career(low), family(low)]
+        |（+children coverage present）              | NOT PROBED
+S11/P03A+P03B | P03A=[career, family, children]；
+              | P03B=[relationship, health]            | NOT PROBED
+S12/P04 | [relationship, health]                     | NOT PROBED
+
+注：YEAR_ONLY 事件（S9/S10/S11/S12）的 probe 层行仅供登记；
+   §10 比较句不使用其 day 层。S1/S4/S5/S7/S8 为精度允许 probe 层比较的事件。
+
+════════════════════════════════════════════════════════════════════════════
+§9 JASSICA-ONLY EVENTS（J1 / J2）
+════════════════════════════════════════════════════════════════════════════
+
+J1/J2 为 Jassica-only 事件，Owen 侧 NOT APPLICABLE（不做 Owen 侧观察登记，
+不进入跨命盘比较）。仅登记 Jassica 单侧 raw。
+
+──────────────────────────────────────────────────────────────────────────────
+J1 | YEAR_ONLY | 2004 | 开公司（Jassica-only）
+──────────────────────────────────────────────────────────────────────────────
+Owen side: NOT APPLICABLE（no registration, no probe）。
+
+[JASSICA] Annual layer（2004 甲申, daYun 丙辰 25-34）:
+  N2: 九域全 quiet；coverage career=quiet(P) family=quiet(P) 其余七域 quiet(A)
+  N1: career=favorable,isolated family=favorable,isolated 其余七域 unknown,none
+  activated=0, mainLineKind=eventDriven
+  R-3 focus=[]  R-3 overflow=[]  R-4 watch=[]
+  R-1: window 6-7 unfav[children] / window 9-10 unfav[relationship,health,children] /
+       m1 career unfav, m1 family unfav, m3 rel unfav, m3 health unfav,
+       m10 career mixed, m10 family mixed, m12 family unfav, m12 travel unfav
+  R-2: m1:career=extreme,unfavorable m1:family=extreme,unfavorable
+       m3:relationship=high,unfavorable m3:health=high,unfavorable
+       m7:children=extreme,unfavorable m10:career=high,mixed
+       m10:family=high,mixed m10:children=high,unfavorable
+       m12:family=high,unfavorable m12:travel=high,unfavorable
+  R-6: career extreme[1] rel high[3] health high[3] family extreme[1]
+       children extreme[7] travel high[12]
+Day probe / Month probe: NOT PROBED
+
+机械登记（J1）：年层 activated = []。
+
+──────────────────────────────────────────────────────────────────────────────
+J2 | YEAR_ONLY | 2009 | 公司收入创新高（Jassica-only）
+──────────────────────────────────────────────────────────────────────────────
+Owen side: NOT APPLICABLE（no registration, no probe）。
+事件名保持注册表原样：「公司收入创新高」。不得改写为「盈利」、
+「财富增加」或「事业成功」（domain-agnostic 条款；income ≠ profit，
+income ≠ wealth increase，income ≠ career success）。
+
+[JASSICA] Annual layer（2009 己丑, daYun 丙辰 25-34）:
+  N2: career=high(A) family=high(A) travel=moderate(A) 其余六域 quiet(A)
+  N1: career=unfavorable,broad family=unfavorable,broad travel=unfavorable,isolated
+      其余六域 unknown,none
+  activated=3, mainLineKind=multiFocus
+  R-3 focus=[career|high|unfavorable|broad ;
+             family|high|unfavorable|broad ; travel|moderate|unfavorable|isolated]
+  R-3 overflow=[]  R-4 watch=[]
+  R-1: window 6-7 unfav[children] / window 9-10 unfav[relationship,health,children] /
+       m1 career unfav, m1 family unfav, m3 rel unfav, m3 health unfav,
+       m10 career mixed, m10 family mixed, m12 family unfav, m12 travel unfav
+  R-2: m1:career=extreme,unfavorable m1:family=extreme,unfavorable
+       m3:relationship=high,unfavorable m3:health=high,unfavorable
+       m7:children=extreme,unfavorable m10:career=high,mixed
+       m10:family=high,mixed m10:children=high,unfavorable
+       m12:family=high,unfavorable m12:travel=high,unfavorable
+  R-6: career extreme[1] rel high[3] health high[3] family extreme[1]
+       children extreme[7] travel high[12]
+Day probe / Month probe: NOT PROBED
+
+机械登记（J2）：年层 activated = [career, family, travel]。
+
+════════════════════════════════════════════════════════════════════════════
+§10 MECHANICAL CROSS-CHART OBSERVATIONS
+════════════════════════════════════════════════════════════════════════════
+
+本节只描述机器输出（存在/不存在/级别/方向字段），只使用机械句式。
+不解释原因，不判断「命中/未命中」，不合并双侧信号，不计算 accuracy。
+比较范围严格按 §4 精度规则。
+
+S1（EXACT_DATE）:
+  - Day 层：双侧均出现 career/family/children activation。
+    Owen 方向字段 = career favorable / family favorable / children unfavorable；
+    Jassica 方向字段 = career unfavorable / family unfavorable / children mixed。
+    方向字段为 raw 字段登记，不构成判断。
+  - Day 层：relationship/health activation 仅 Jassica 出现
+    （moderate/moderate），Owen 为 quiet/absent。
+  - Annual 层：Owen activated = [career, family, travel]；
+    Jassica activated = [children]。
+  - R-2：Owen 2003 年 m6 有 eventCandidate（m6:family=extreme,mixed
+    m6:travel=extreme,unfavorable）；Jassica 2003 年 R-2 无 m6 条目。
+
+S2（YEAR_ONLY）:
+  - 年层（2003）：同 S1 annual 行。事件归属多义注记适用（§7 S1/S2）。
+
+S3（YEAR_ONLY）:
+  - 年层（2005）：Owen activated = [children, family, travel]；
+    Jassica activated = [relationship, health]。
+    双侧 activated 集合无交集。
+
+S4（EXACT_DATE）:
+  - Day 层：activation 仅 Owen 出现（relationship/health moderate）；
+    Jassica day 层 intensity 全 quiet（relationship/health 仅 coverage present）。
+  - Annual 层（2005）：同 S3 annual 行。
+
+S5（EXACT_DATE，resolvedAnnualYear=2008）:
+  - Day 层：双侧均出现 family/travel activation（Owen family moderate /
+    travel moderate；Jassica family low / travel low）。
+    children activation 仅 Owen 出现（extreme）；Jassica children=quiet(A)。
+    relationship/health activation 仅 Jassica 出现（extreme/extreme）；
+    Owen 为 quiet/absent。
+  - Annual 层（resolved 2008）：Owen activated = [children(low)]；
+    Jassica 侧 resolved 2008 annual = NOT PROBED。
+  - 2009 calendar annual（双侧存在）按精度规则不适用于本事件年层。
+
+S6（YEAR_ONLY）:
+  - 年层（2011）：Owen activated = [family, children, travel]；
+    Jassica activated = [relationship, health, family, travel]。
+    交集 = [family, travel]。
+
+S7（MONTH_ONLY；精度冲突已登记）:
+  - 年层（2014）：Owen activated = [career, family, travel]；
+    Jassica activated = [children, travel, family]。交集 = [family, travel]。
+  - Probe 层（精度允许 month+annual 比较）：
+    Owen FA01（day，2014-04-24）intensity 全 quiet，coverage family/travel
+    present；Jassica S7（month，2014-04-15）非 quiet = [children(low)]，
+    coverage relationship/health present。
+
+S8（MONTH_ONLY；日期冲突已登记；resolvedAnnualYear=2016 双侧一致）:
+  - Month 层：双侧均出现 relationship/health/family/travel activation。
+    Owen = moderate/moderate/moderate/moderate；Jassica = moderate/moderate/
+    moderate/moderate（career 亦 high）。
+    career activation 仅 Jassica 出现；Owen career=quiet/absent。
+  - Annual 层（resolved 2016）：Owen activated =
+    [relationship, health, family, travel]；Jassica 侧 resolved 2016 annual
+    = NOT PROBED。
+  - 2017 calendar annual（双侧存在）按精度规则不适用于本事件年层。
+
+S9（YEAR_ONLY）:
+  - 年层（2017）：Owen activated = [career, family, children, travel]；
+    Jassica activated = [relationship, health]。交集 = []。
+  - Jassica §8 交叉引用 S9↔P02 为「候选待命主确认」（§11）。
+
+S10（YEAR_ONLY；精度差异已登记）:
+  - 年层：Owen 侧 NOT AVAILABLE（resolved 2020 与 calendar 2021 均
+    NOT PROBED）；Jassica（2021）activated =
+    [career, relationship, health, family, travel]。
+  - 年层不做双侧比较（Owen 侧缺失）。
+
+S11（YEAR_ONLY）:
+  - 年层（2024）：Owen activated = [career(low), family(low)]；
+    Jassica activated = [children(low)]。交集 = []。
+
+S12（YEAR_ONLY）:
+  - 年层（2025）：双侧年层均无 domain activation（九域全 quiet）。
+
+J1（YEAR_ONLY，Jassica-only）: 年层 activated = []。Owen NOT APPLICABLE。
+J2（YEAR_ONLY，Jassica-only）: 年层 activated = [career, family, travel]。
+   Owen NOT APPLICABLE。事件名保持原样（§9）。
+
+════════════════════════════════════════════════════════════════════════════
+§11 MISSING EVIDENCE / UNPROBED（含 discrepancy 登记）
+════════════════════════════════════════════════════════════════════════════
+
+只登记，不修正，不补 probe，不重跑 V3。
+
+Discrepancy 登记：
+  D1. S7 精度冲突：Owen FA01 = EXACT_DATE 2014-04-24（岳母去世）；
+      Jassica = MONTH_ONLY 2014-04（母亲去世）。
+      且 Jassica 注册表 §8 未列 S7 交叉引用。
+  D2. S8 日期冲突：Owen M02 = 2016-08；Jassica = 2017-01。
+      双侧 resolvedAnnualYear = 2016（丙申）一致。
+      且 Jassica 注册表 §8 未列 S8 交叉引用。
+  D3. S9/S11/S12 标签差异：Jassica 侧「房产交易」未细分；
+      Owen 侧为具体事件（S9 = P02 购第二栋房，且 Jassica §8 标
+      「候选待命主确认」；S11 = P03A+P03B 两条；S12 = P04 购土地）。
+  D4. S10 精度差异：shared registry = YEAR_ONLY 2021；
+      Owen registry = exact-date 2021-02-01（resolvedAnnualYear=2020）。
+
+NOT PROBED 登记（annual gaps）：
+  - Owen annual 缺失年度：2004 / 2013 / 2015 / 2020 / 2021 / 2022 / 2023。
+  - Jassica annual 缺失年度：2006 / 2007 / 2008 / 2010 / 2012 / 2013 /
+    2015 / 2016 / 2020 / 2022 / 2023。
+
+NOT PROBED 登记（事件层）：
+  - E16（S2）/ E17（S3）/ E18（S6）：Owen 侧无 day probe。
+  - Jassica 全部 YEAR_ONLY 事件（S2/S3/S6/S9/S10/S11/S12）无 day probe、
+    无 month probe。
+  - S1/S4/S5/S7/S8：双侧 month probe 均 NOT PROBED
+    （Jassica 的 S7/S8 为 month probe 本体；EXACT_DATE 事件的 month probe
+    未单独运行）。
+  - S5：Jassica resolved annual（2008）NOT PROBED——2009 calendar annual
+    存在但不适用于本事件年层比较。
+  - S8：Jassica resolved annual（2016）NOT PROBED——2017 calendar annual
+    存在但不适用于本事件年层比较。
+  - S10：Owen resolved annual（2020）与 calendar annual（2021）均
+    NOT PROBED。
+
+年层多义性登记：
+  - 2003 = S1（结婚）+ S2（E16 第一套住房）两个事件共享同一年层。
+  - 2005 = S4（第一个孩子出生）+ S3（E17 买办公楼）两个事件共享同一年层。
+  - 禁止在事件之间事后挑选年层归属。
+  - S4 交叉引用：Jassica §8 为「子女出生记录（候选）」。
+
+════════════════════════════════════════════════════════════════════════════
+§12 INTEGRITY / FROZEN V3 BOUNDARY
+════════════════════════════════════════════════════════════════════════════
+
+本轮（COUPLE HISTORICAL EVIDENCE — DESIGN / READ-ONLY / FORENSIC ANALYSIS）
+逐项禁令确认：
+  - V3Core                ：NO 修改
+  - N1 / N2               ：NO 修改
+  - detectors             ：NO 修改
+  - DomainMapper          ：NO 修改
+  - thresholds            ：NO 修改
+  - calibration           ：NO 修改
+  - cutpoints             ：NO 修改
+  - semantic rules        ：NO 修改
+  - snapshots             ：NO 修改
+  - R-6                   ：NO 修改
+  - Annual M5             ：NO 修改
+  - AI prompts           ：NO 修改
+  - Owen 报告             ：NO 修改
+  - Jassica 登记文件      ：NO 修改
+  - 历史事实 / dataset    ：NO 修改
+  - dataset schema        ：NO 修改
+  - V3 重跑 / 补 probe    ：零次（全部 raw 为既有文件只读转录）
+  - commit / push         ：NO
+
+本报告为唯一新增文件（TEST-ONLY / REPORT-ONLY）：
+  BacktestData/Couple_Shared_Event_Evidence_Matrix_DESIGN_REVIEW_TEST_ONLY_v1.txt
+
+Git HEAD（本报告组装时确认）：2f1b2bf665b74d5c70e93056efba6c92bebaea00
+
+本报告全部内容为 raw 输出登记与描述性结构；不含 accuracy 计算、
+不含「谁更准」比较、不进入 Historical Validation / Calibration 流程。
+
+════════════════════════════════════════════════════════════════════════════
+§13 STOP
+════════════════════════════════════════════════════════════════════════════
+
+报告完成。证据结构建立完毕（S1–S12 shared + J1/J2 Jassica-only，
+全部 raw verbatim 登记，缺失项 NONE / NOT PROBED，冲突项仅登记）。
+
+本阶段到此为止。不开始下一阶段（不进入 Historical Validation /
+Calibration / 任何算法工作）。
+
+STOP.
+════════════════════════════════════════════════════════════════════════════
