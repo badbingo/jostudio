@@ -1,0 +1,921 @@
+================================================================================
+JASSICA FROZEN V3 RAW PROBE — FINAL STRUCTURED REPORT v1
+STATUS: TEST-ONLY / READ-ONLY / RAW EVIDENCE COLLECTION ONLY
+================================================================================
+本报告为 Jassica Frozen V3 Raw Probe 最终输出。§5/§6/§7/§8/§9 内嵌 TEST-ONLY probe
+（护身符Tests/V3JassicaFrozenV3RawProbeTests.swift → testA_Jassica_RawProbe_All）
+机器输出逐字转录（SOURCE = TRUE_V3_PIPELINE），零事件语义。事件标注仅存在于
+report wrapper 层。本报告不做 accuracy / hit / miss / match / score / ranking /
+calibration / threshold 建议 / 事后解释；只记录 Frozen V3 实际输出是什么。
+本轮仅生成 Jassica observation；不合并 Owen output（见 §8 Shared Event Rule）。
+
+================================================================================
+§1 EXECUTION ENVIRONMENT
+================================================================================
+report assembled (local) : 2026-09-27 (America/Los_Angeles)
+machine runUTC           : 2026-09-27T19:12:09Z
+Git HEAD                 : 2f1b2bf665b74d5c70e93056efba6c92bebaea00
+                           （工作树存在本 session 之前既有授权工作的 M/?? 存量；
+                             本轮零新增 production 改动，见 §10）
+Chart（冻结转录）        : 戊午-己未-乙酉-丁丑
+                           registration = Jassica_Dataset_Registration_Design_Review_TEST_ONLY_v1
+                           （VERDICT: READY FOR RAW PROBE，只读转录）
+Birth                    : 1978-07-22, Asia/Shanghai, 杭州·萧山, Female
+                           出生时间约为丑时；本轮以 02:00 作为代表性测试输入
+Gender                   : Female
+Engine / baseline        : Frozen V3（V3Core.evaluate → N1 domainStates →
+                           N2 domainIntensityStates → V3EvaluationResult）；
+                           Year 语义唯一来源 = V3Core.evaluate(.year)，
+                           经生产入口 YearV3SnapshotBuilder.build 装配；
+                           DaYun 链 = ChineseCalendarHelper.calculateDaYunList
+                           + getCurrentDaYun(targetDate:) + PipelineV2.buildDaYunState
+                           （female 阳年逆行由 helper 内部处理，零修改）
+Test harness / probe     : TEST-ONLY 新文件 护身符Tests/V3JassicaFrozenV3RawProbeTests.swift
+                           方法 testA_Jassica_RawProbe_All（方法镜像既有
+                           V3HistoricalProbeHarnessTests / Owen G1 年度 snapshot 口径）：
+                           - runYearProbe(y)：anchor = 该年 6月15日 12:00 Asia/Shanghai
+                             （生产 Year anchor 口径）→ 真实 DaYun 链 →
+                             生产入口 YearV3SnapshotBuilder.build
+                             （V3Core.evaluate(.year) + 12× V3Core.evaluate(.month,
+                             每月15日锚点) → YearV3Derivation：R-1 窗口 /
+                             R-2 eventCandidates / R-3 focus top3+overflow /
+                             R-4 watch top2 / R-6 temporalFacts）
+                           - runEventProbe(r)：EXACT_DATE → 登记日期 12:00 Asia/Shanghai
+                             + viewKind=.day；MONTH_ONLY → 该月 15 日 12:00
+                             + viewKind=.month（与既有 harness 完全同口径）
+                           - reportYear / reportEvent：只读转录全部原始字段
+                             （N1 九域 act/dir/conf/overlap/PIDs/KIDs/XIDs、
+                             N2 九域 intensity/coverage、R-1~R-6、12 月矩阵）
+                           - 结构断言：monthEvaluations.count == 12；
+                             domainIntensityStates.count == 9（全部通过）
+                           - 事件 label 只存在于 report wrapper 层；V3Core.evaluate
+                             签名只接受 natal/daYun/date/viewKind/calendar，
+                             结构上不可能接收事件语义（编译期保证）
+Execution                : xcodebuild test -only-testing:
+                           护身符Tests/V3JassicaFrozenV3RawProbeTests/testA_Jassica_RawProbe_All
+                           destination iPhone 16 / iOS 18.6 (simulator) → TEST SUCCEEDED
+                           （test passed, 0.577s）
+Output provenance        : 每个 probe 区段头部 SOURCE = TRUE_V3_PIPELINE；
+                           全部 probe 无 PROBE_FAILED
+
+================================================================================
+§2 JASSICA INPUT
+================================================================================
+personID                 : Jassica
+Gender                   : Female
+Birth date               : 1978-07-22
+Birth time               : 出生时间约为丑时；本轮以 02:00 作为代表性测试输入
+Birth-time precision     : approximate（knownTimeWindow = 丑时；
+                           representativeTestTime = 02:00；02:00 不代表精确出生分钟）
+Birth location           : 杭州·萧山, China
+Timezone                 : Asia/Shanghai / UTC+8
+Natal（冻结转录）        : 戊午 / 己未 / 乙酉 / 丁丑
+chartID                  : 戊午-己未-乙酉-丁丑
+传统命理（Context Only） : 真从财格 —— 仅登记背景，不进入任何计算
+Upstream authorization   : Jassica_Dataset_Registration_Design_Review_TEST_ONLY_v1
+                           → VERDICT: READY FOR RAW PROBE
+
+================================================================================
+§3 BIRTH-TIME PRECISION DECLARATION
+================================================================================
+本轮全部报告位置（含 probe 机器输出文件头）统一使用：
+
+    「出生时间约为丑时；本轮以 02:00 作为代表性测试输入。」
+
+禁止表述「Jassica 02:00 出生」——本报告全文未使用该表述。
+字段口径（与登记报告一致）：
+    birthTimePrecision      = approximate
+    knownTimeWindow         = 丑时
+    representativeTestTime  = 02:00（仅代表性测试输入）
+Schema Gap（登记报告 M10 已指出，本轮仅重申、零修改）：
+    Owen 26-field event schema 的 person 块无出生时间精度字段；
+    该精度三元组当前只能存在于 report 层文本。
+
+================================================================================
+§4 PROBE METHOD
+================================================================================
+机械、可复现、内容无关（与既有 Owen probe 方法逐字同口径）：
+  * Annual probe   → 该年 6月15日 12:00 Asia/Shanghai 锚点 →
+                     YearV3SnapshotBuilder.build（.year + 12×.month → R-1/R-2/
+                     R-3/R-4/R-6）→ 完整 Snapshot 全字段转录
+  * EXACT_DATE     → 登记日期 12:00 Asia/Shanghai，viewKind = .day
+  * MONTH_ONLY     → 该公历月 15 日 12:00 Asia/Shanghai，viewKind = .month
+                     （不虚构具体日期）
+  * YEAR_ONLY      → 不单独 probe、不升级日期精度；年层证据 = 对应年度
+                     annual snapshot（§5），经 §8 YEAR_ONLY_REF 交叉引用
+Probe scope（与授权一一对应）：
+  A. Annual ×10  : 2003 2004 2005 2009 2011 2014 2017 2021 2024 2025
+  B. Exact-date  : S1 2003-06-18 / S4 2005-07-05 / S5 2009-02-03
+                   （按登记日期原样执行，未根据事件期待选择其他日期）
+  C. Month       : S7 2014-04（母亲去世；MONTH_ONLY，不虚构死亡日期）
+  D. Month       : S8 2017-01（上海→美国；MONTH_ONLY，不虚构搬迁日期）
+  E. YEAR_ONLY   : S2 S3 S6 S9 S10 S11 S12 J1 J2（仅年层证据，见 §8）
+事件隔离声明：历史事件 label 仅存在于 report 层（eventID / eventDatePrecision /
+eventDescription），不进入 V3Core / N1 / N2 / detector / DomainMapper /
+threshold / calibration / semantic interpretation（编译期结构保证）。
+Shared Event Rule：本轮仅生成 Jassica observation；Owen observation 留在
+Owen dataset，两 observation 不合并、不产生任何联合 V3 result。
+Property / Business 语义边界：买房 / 买办公楼 / 房产交易仅登记为房产事件；
+J2 仅登记为公司收入事件（登记原文「公司收入创新高」；不改写为盈利、
+不改写为个人财富增加）。本报告不将任何事件解读为 wealth gain /
+business success / profitability / personal financial gain。
+
+================================================================================
+§5 ANNUAL RAW EVIDENCE（10 年，机器输出逐字转录）
+================================================================================
+═══ SECTION A — ANNUAL RAW EVIDENCE (10 years) ═══
+
+════════ YEAR-SNAPSHOT PROBE [2003] ════════
+SOURCE = TRUE_V3_PIPELINE (YearV3SnapshotBuilder.build → V3Core.evaluate(.year) + 12×V3Core.evaluate(.month) → YearV3Derivation R-1~R-4+R-6)
+── IDENTITY ──
+registration=Jassica_Dataset_Registration_Design_Review_TEST_ONLY_v1 year=2003 yearPillar=癸未 anchor=06-15 12:00 Asia/Shanghai
+daYunPillar=丙辰 daYunAgeRange=25-34
+── ANNUAL V3 (.year) ──
+N2: wealth=quiet(A) career=quiet(A) relationship=quiet(A) health=quiet(A) family=quiet(P) children=extreme(A) travel=quiet(P) study=quiet(A) legalSocial=quiet(A)
+N1: wealth:dir=unknown,shape=none career:dir=unknown,shape=none relationship:dir=unknown,shape=none health:dir=unknown,shape=none family:dir=favorable,shape=broad children:dir=unfavorable,shape=broad travel:dir=favorable,shape=broad study:dir=unknown,shape=none legalSocial:dir=unknown,shape=none
+quietDomains=[wealth,career,relationship,health,family,travel,study,legalSocial] annualActivatedCount=1 eventMonthCount=5
+mainLineKind=multiFocus
+R-3 focusDisplayed=[children|extreme|unfavorable|broad]
+R-3 overflow=[]
+R-4 watchDisplayed=[]
+── R-1 WINDOWS / EVENTS ──
+window 6月–7月 direction=unfavorable domains=[children]
+standaloneEvent month=1 domain=career direction=unfavorable
+standaloneEvent month=1 domain=family direction=mixed
+standaloneEvent month=3 domain=relationship direction=unfavorable
+standaloneEvent month=3 domain=health direction=unfavorable
+standaloneEvent month=10 domain=career direction=unfavorable
+standaloneEvent month=10 domain=family direction=unfavorable
+standaloneEvent month=10 domain=children direction=mixed
+standaloneEvent month=12 domain=family direction=mixed
+standaloneEvent month=12 domain=travel direction=unfavorable
+── R-2 EVENT CANDIDATES (month N2 ∈ {high,extreme}) ──
+m1:career=extreme,unfavorable m1:family=extreme,mixed m3:relationship=high,unfavorable m3:health=high,unfavorable m7:children=high,unfavorable m10:career=high,unfavorable m10:family=high,unfavorable m10:children=high,mixed m12:family=extreme,mixed m12:travel=extreme,unfavorable
+── R-6 TEMPORAL FACTS (per-domain peak over 12 monthly N2) ──
+temporalFact domain=career peakLevel=extreme peakMonths=[1]
+temporalFact domain=relationship peakLevel=high peakMonths=[3]
+temporalFact domain=health peakLevel=high peakMonths=[3]
+temporalFact domain=family peakLevel=extreme peakMonths=[1, 12]
+temporalFact domain=children peakLevel=high peakMonths=[7, 10]
+temporalFact domain=travel peakLevel=extreme peakMonths=[12]
+── MONTHLY N2 MATRIX (12 months, index = calendar month; 每月15日锚点) ──
+month=01 active=4 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,extreme,quiet,quiet,extreme,moderate,moderate,quiet,quiet]
+month=02 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=03 active=4 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,high,high,low,quiet,low,quiet,quiet]
+month=04 active=1 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,low,quiet,quiet,quiet]
+month=05 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=06 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,moderate,moderate,moderate,quiet,quiet]
+month=07 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,low,quiet,quiet,low,high,quiet,quiet,quiet]
+month=08 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=09 active=2 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,moderate,moderate,quiet,quiet,quiet,quiet,quiet]
+month=10 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,high,moderate,moderate,high,high,quiet,quiet,quiet]
+month=11 active=1 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,moderate,quiet,quiet,quiet]
+month=12 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,moderate,low,low,extreme,quiet,extreme,quiet,quiet]
+
+════════ YEAR-SNAPSHOT PROBE [2004] ════════
+SOURCE = TRUE_V3_PIPELINE (YearV3SnapshotBuilder.build → V3Core.evaluate(.year) + 12×V3Core.evaluate(.month) → YearV3Derivation R-1~R-4+R-6)
+── IDENTITY ──
+registration=Jassica_Dataset_Registration_Design_Review_TEST_ONLY_v1 year=2004 yearPillar=甲申 anchor=06-15 12:00 Asia/Shanghai
+daYunPillar=丙辰 daYunAgeRange=25-34
+── ANNUAL V3 (.year) ──
+N2: wealth=quiet(A) career=quiet(P) relationship=quiet(A) health=quiet(A) family=quiet(P) children=quiet(A) travel=quiet(A) study=quiet(A) legalSocial=quiet(A)
+N1: wealth:dir=unknown,shape=none career:dir=favorable,shape=isolated relationship:dir=unknown,shape=none health:dir=unknown,shape=none family:dir=favorable,shape=isolated children:dir=unknown,shape=none travel:dir=unknown,shape=none study:dir=unknown,shape=none legalSocial:dir=unknown,shape=none
+quietDomains=[wealth,career,relationship,health,family,children,travel,study,legalSocial] annualActivatedCount=0 eventMonthCount=5
+mainLineKind=eventDriven
+R-3 focusDisplayed=[]
+R-3 overflow=[]
+R-4 watchDisplayed=[]
+── R-1 WINDOWS / EVENTS ──
+window 6月–7月 direction=unfavorable domains=[children]
+window 9月–10月 direction=unfavorable domains=[relationship,health,children]
+standaloneEvent month=1 domain=career direction=unfavorable
+standaloneEvent month=1 domain=family direction=unfavorable
+standaloneEvent month=3 domain=relationship direction=unfavorable
+standaloneEvent month=3 domain=health direction=unfavorable
+standaloneEvent month=10 domain=career direction=mixed
+standaloneEvent month=10 domain=family direction=mixed
+standaloneEvent month=12 domain=family direction=unfavorable
+standaloneEvent month=12 domain=travel direction=unfavorable
+── R-2 EVENT CANDIDATES (month N2 ∈ {high,extreme}) ──
+m1:career=extreme,unfavorable m1:family=extreme,unfavorable m3:relationship=high,unfavorable m3:health=high,unfavorable m7:children=extreme,unfavorable m10:career=high,mixed m10:family=high,mixed m10:children=high,unfavorable m12:family=high,unfavorable m12:travel=high,unfavorable
+── R-6 TEMPORAL FACTS (per-domain peak over 12 monthly N2) ──
+temporalFact domain=career peakLevel=extreme peakMonths=[1]
+temporalFact domain=relationship peakLevel=high peakMonths=[3]
+temporalFact domain=health peakLevel=high peakMonths=[3]
+temporalFact domain=family peakLevel=extreme peakMonths=[1]
+temporalFact domain=children peakLevel=extreme peakMonths=[7]
+temporalFact domain=travel peakLevel=high peakMonths=[12]
+── MONTHLY N2 MATRIX (12 months, index = calendar month; 每月15日锚点) ──
+month=01 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,extreme,quiet,quiet,extreme,quiet,moderate,quiet,quiet]
+month=02 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=03 active=4 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,high,high,low,quiet,low,quiet,quiet]
+month=04 active=1 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,low,quiet,quiet,quiet]
+month=05 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=06 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,moderate,moderate,moderate,quiet,quiet]
+month=07 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,moderate,moderate,quiet,extreme,quiet,quiet,quiet]
+month=08 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=09 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,moderate,moderate,quiet,moderate,quiet,quiet,quiet]
+month=10 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,high,moderate,moderate,high,high,quiet,quiet,quiet]
+month=11 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=12 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,moderate,low,low,high,quiet,high,quiet,quiet]
+
+════════ YEAR-SNAPSHOT PROBE [2005] ════════
+SOURCE = TRUE_V3_PIPELINE (YearV3SnapshotBuilder.build → V3Core.evaluate(.year) + 12×V3Core.evaluate(.month) → YearV3Derivation R-1~R-4+R-6)
+── IDENTITY ──
+registration=Jassica_Dataset_Registration_Design_Review_TEST_ONLY_v1 year=2005 yearPillar=乙酉 anchor=06-15 12:00 Asia/Shanghai
+daYunPillar=丙辰 daYunAgeRange=25-34
+── ANNUAL V3 (.year) ──
+N2: wealth=quiet(A) career=quiet(A) relationship=moderate(A) health=moderate(A) family=quiet(A) children=quiet(A) travel=quiet(A) study=quiet(A) legalSocial=quiet(A)
+N1: wealth:dir=unknown,shape=none career:dir=unknown,shape=none relationship:dir=unfavorable,shape=broad health:dir=unfavorable,shape=broad family:dir=unknown,shape=none children:dir=unknown,shape=none travel:dir=unknown,shape=none study:dir=unknown,shape=none legalSocial:dir=unknown,shape=none
+quietDomains=[wealth,career,family,children,travel,study,legalSocial] annualActivatedCount=2 eventMonthCount=5
+mainLineKind=multiFocus
+R-3 focusDisplayed=[relationship|moderate|unfavorable|broad ; health|moderate|unfavorable|broad]
+R-3 overflow=[]
+R-4 watchDisplayed=[]
+── R-1 WINDOWS / EVENTS ──
+window 9月–10月 direction=unfavorable domains=[relationship,health]
+standaloneEvent month=1 domain=career direction=unfavorable
+standaloneEvent month=1 domain=family direction=unfavorable
+standaloneEvent month=3 domain=relationship direction=unfavorable
+standaloneEvent month=3 domain=health direction=unfavorable
+standaloneEvent month=7 domain=children direction=unfavorable
+standaloneEvent month=10 domain=career direction=unfavorable
+standaloneEvent month=10 domain=family direction=unfavorable
+standaloneEvent month=10 domain=children direction=unfavorable
+standaloneEvent month=12 domain=family direction=unfavorable
+standaloneEvent month=12 domain=travel direction=unfavorable
+── R-2 EVENT CANDIDATES (month N2 ∈ {high,extreme}) ──
+m1:career=high,unfavorable m1:family=high,unfavorable m3:relationship=extreme,unfavorable m3:health=extreme,unfavorable m7:children=extreme,unfavorable m10:career=high,unfavorable m10:family=high,unfavorable m10:children=high,unfavorable m12:family=high,unfavorable m12:travel=high,unfavorable
+── R-6 TEMPORAL FACTS (per-domain peak over 12 monthly N2) ──
+temporalFact domain=career peakLevel=high peakMonths=[1, 10]
+temporalFact domain=relationship peakLevel=extreme peakMonths=[3]
+temporalFact domain=health peakLevel=extreme peakMonths=[3]
+temporalFact domain=family peakLevel=high peakMonths=[1, 10, 12]
+temporalFact domain=children peakLevel=extreme peakMonths=[7]
+temporalFact domain=travel peakLevel=high peakMonths=[12]
+── MONTHLY N2 MATRIX (12 months, index = calendar month; 每月15日锚点) ──
+month=01 active=4 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,high,quiet,quiet,high,low,moderate,quiet,quiet]
+month=02 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=03 active=4 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,extreme,extreme,low,quiet,low,quiet,quiet]
+month=04 active=1 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,low,quiet,quiet,quiet]
+month=05 active=2 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,moderate,moderate,quiet,quiet,quiet,quiet,quiet]
+month=06 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,moderate,moderate,moderate,quiet,quiet]
+month=07 active=1 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,extreme,quiet,quiet,quiet]
+month=08 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=09 active=2 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,moderate,moderate,quiet,quiet,quiet,quiet,quiet]
+month=10 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,high,moderate,moderate,high,high,quiet,quiet,quiet]
+month=11 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=12 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,moderate,low,low,high,quiet,high,quiet,quiet]
+
+════════ YEAR-SNAPSHOT PROBE [2009] ════════
+SOURCE = TRUE_V3_PIPELINE (YearV3SnapshotBuilder.build → V3Core.evaluate(.year) + 12×V3Core.evaluate(.month) → YearV3Derivation R-1~R-4+R-6)
+── IDENTITY ──
+registration=Jassica_Dataset_Registration_Design_Review_TEST_ONLY_v1 year=2009 yearPillar=己丑 anchor=06-15 12:00 Asia/Shanghai
+daYunPillar=丙辰 daYunAgeRange=25-34
+── ANNUAL V3 (.year) ──
+N2: wealth=quiet(A) career=high(A) relationship=quiet(A) health=quiet(A) family=high(A) children=quiet(A) travel=moderate(A) study=quiet(A) legalSocial=quiet(A)
+N1: wealth:dir=unknown,shape=none career:dir=unfavorable,shape=broad relationship:dir=unknown,shape=none health:dir=unknown,shape=none family:dir=unfavorable,shape=broad children:dir=unknown,shape=none travel:dir=unfavorable,shape=isolated study:dir=unknown,shape=none legalSocial:dir=unknown,shape=none
+quietDomains=[wealth,relationship,health,children,study,legalSocial] annualActivatedCount=3 eventMonthCount=5
+mainLineKind=multiFocus
+R-3 focusDisplayed=[career|high|unfavorable|broad ; family|high|unfavorable|broad ; travel|moderate|unfavorable|isolated]
+R-3 overflow=[]
+R-4 watchDisplayed=[]
+── R-1 WINDOWS / EVENTS ──
+window 6月–7月 direction=unfavorable domains=[children]
+window 9月–10月 direction=unfavorable domains=[relationship,health,children]
+standaloneEvent month=1 domain=career direction=unfavorable
+standaloneEvent month=1 domain=family direction=unfavorable
+standaloneEvent month=3 domain=relationship direction=unfavorable
+standaloneEvent month=3 domain=health direction=unfavorable
+standaloneEvent month=10 domain=career direction=mixed
+standaloneEvent month=10 domain=family direction=mixed
+standaloneEvent month=12 domain=family direction=unfavorable
+standaloneEvent month=12 domain=travel direction=unfavorable
+── R-2 EVENT CANDIDATES (month N2 ∈ {high,extreme}) ──
+m1:career=extreme,unfavorable m1:family=extreme,unfavorable m3:relationship=high,unfavorable m3:health=high,unfavorable m7:children=extreme,unfavorable m10:career=high,mixed m10:family=high,mixed m10:children=high,unfavorable m12:family=high,unfavorable m12:travel=high,unfavorable
+── R-6 TEMPORAL FACTS (per-domain peak over 12 monthly N2) ──
+temporalFact domain=career peakLevel=extreme peakMonths=[1]
+temporalFact domain=relationship peakLevel=high peakMonths=[3]
+temporalFact domain=health peakLevel=high peakMonths=[3]
+temporalFact domain=family peakLevel=extreme peakMonths=[1]
+temporalFact domain=children peakLevel=extreme peakMonths=[7]
+temporalFact domain=travel peakLevel=high peakMonths=[12]
+── MONTHLY N2 MATRIX (12 months, index = calendar month; 每月15日锚点) ──
+month=01 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,extreme,quiet,quiet,extreme,quiet,moderate,quiet,quiet]
+month=02 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=03 active=4 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,high,high,low,quiet,low,quiet,quiet]
+month=04 active=1 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,low,quiet,quiet,quiet]
+month=05 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=06 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,moderate,moderate,moderate,quiet,quiet]
+month=07 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,moderate,moderate,quiet,extreme,quiet,quiet,quiet]
+month=08 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=09 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,moderate,moderate,quiet,moderate,quiet,quiet,quiet]
+month=10 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,high,moderate,moderate,high,high,quiet,quiet,quiet]
+month=11 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=12 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,moderate,low,low,high,quiet,high,quiet,quiet]
+
+════════ YEAR-SNAPSHOT PROBE [2011] ════════
+SOURCE = TRUE_V3_PIPELINE (YearV3SnapshotBuilder.build → V3Core.evaluate(.year) + 12×V3Core.evaluate(.month) → YearV3Derivation R-1~R-4+R-6)
+── IDENTITY ──
+registration=Jassica_Dataset_Registration_Design_Review_TEST_ONLY_v1 year=2011 yearPillar=辛卯 anchor=06-15 12:00 Asia/Shanghai
+daYunPillar=丙辰 daYunAgeRange=25-34
+── ANNUAL V3 (.year) ──
+N2: wealth=quiet(A) career=quiet(A) relationship=extreme(A) health=extreme(A) family=low(A) children=quiet(A) travel=low(A) study=quiet(A) legalSocial=quiet(A)
+N1: wealth:dir=unknown,shape=none career:dir=unknown,shape=none relationship:dir=mixed,shape=conflicted health:dir=mixed,shape=conflicted family:dir=unfavorable,shape=isolated children:dir=unknown,shape=none travel:dir=unfavorable,shape=isolated study:dir=unknown,shape=none legalSocial:dir=unknown,shape=none
+quietDomains=[wealth,career,children,study,legalSocial] annualActivatedCount=4 eventMonthCount=5
+mainLineKind=multiFocus
+R-3 focusDisplayed=[relationship|extreme|mixed|conflicted ; health|extreme|mixed|conflicted ; family|low|unfavorable|isolated]
+R-3 overflow=[travel|low|unfavorable|isolated]
+R-4 watchDisplayed=[travel|low|unfavorable|isolated]
+── R-1 WINDOWS / EVENTS ──
+window 5月–7月 direction=unfavorable domains=[children]
+window 9月–10月 direction=unfavorable domains=[relationship,health]
+standaloneEvent month=1 domain=career direction=unfavorable
+standaloneEvent month=1 domain=family direction=unfavorable
+standaloneEvent month=3 domain=relationship direction=mixed
+standaloneEvent month=3 domain=health direction=mixed
+standaloneEvent month=10 domain=career direction=unfavorable
+standaloneEvent month=10 domain=family direction=unfavorable
+standaloneEvent month=10 domain=children direction=unfavorable
+standaloneEvent month=12 domain=family direction=unfavorable
+standaloneEvent month=12 domain=travel direction=unfavorable
+── R-2 EVENT CANDIDATES (month N2 ∈ {high,extreme}) ──
+m1:career=high,unfavorable m1:family=high,unfavorable m3:relationship=extreme,mixed m3:health=extreme,mixed m7:children=high,unfavorable m10:career=high,unfavorable m10:family=high,unfavorable m10:children=high,unfavorable m12:family=high,unfavorable m12:travel=high,unfavorable
+── R-6 TEMPORAL FACTS (per-domain peak over 12 monthly N2) ──
+temporalFact domain=career peakLevel=high peakMonths=[1, 10]
+temporalFact domain=relationship peakLevel=extreme peakMonths=[3]
+temporalFact domain=health peakLevel=extreme peakMonths=[3]
+temporalFact domain=family peakLevel=high peakMonths=[1, 10, 12]
+temporalFact domain=children peakLevel=high peakMonths=[7, 10]
+temporalFact domain=travel peakLevel=high peakMonths=[12]
+── MONTHLY N2 MATRIX (12 months, index = calendar month; 每月15日锚点) ──
+month=01 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,high,quiet,quiet,high,quiet,moderate,quiet,quiet]
+month=02 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=03 active=4 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,extreme,extreme,low,quiet,low,quiet,quiet]
+month=04 active=1 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,low,quiet,quiet,quiet]
+month=05 active=1 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,moderate,quiet,quiet,quiet]
+month=06 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,moderate,moderate,moderate,quiet,quiet]
+month=07 active=1 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,high,quiet,quiet,quiet]
+month=08 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=09 active=2 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,moderate,moderate,quiet,quiet,quiet,quiet,quiet]
+month=10 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,high,moderate,moderate,high,high,quiet,quiet,quiet]
+month=11 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=12 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,moderate,low,low,high,quiet,high,quiet,quiet]
+
+════════ YEAR-SNAPSHOT PROBE [2014] ════════
+SOURCE = TRUE_V3_PIPELINE (YearV3SnapshotBuilder.build → V3Core.evaluate(.year) + 12×V3Core.evaluate(.month) → YearV3Derivation R-1~R-4+R-6)
+── IDENTITY ──
+registration=Jassica_Dataset_Registration_Design_Review_TEST_ONLY_v1 year=2014 yearPillar=甲午 anchor=06-15 12:00 Asia/Shanghai
+daYunPillar=乙卯 daYunAgeRange=35-44
+── ANNUAL V3 (.year) ──
+N2: wealth=quiet(A) career=quiet(P) relationship=quiet(A) health=quiet(A) family=moderate(P) children=moderate(A) travel=moderate(A) study=quiet(A) legalSocial=quiet(A)
+N1: wealth:dir=unknown,shape=none career:dir=favorable,shape=broad relationship:dir=unknown,shape=none health:dir=unknown,shape=none family:dir=mixed,shape=conflicted children:dir=unfavorable,shape=isolated travel:dir=unfavorable,shape=isolated study:dir=unknown,shape=none legalSocial:dir=unknown,shape=none
+quietDomains=[wealth,career,relationship,health,study,legalSocial] annualActivatedCount=3 eventMonthCount=5
+mainLineKind=multiFocus
+R-3 focusDisplayed=[children|moderate|unfavorable|isolated ; travel|moderate|unfavorable|isolated ; family|moderate|mixed|conflicted]
+R-3 overflow=[]
+R-4 watchDisplayed=[]
+── R-1 WINDOWS / EVENTS ──
+window 6月–7月 direction=unfavorable domains=[children]
+window 9月–10月 direction=unfavorable domains=[relationship,health,children]
+standaloneEvent month=1 domain=career direction=unfavorable
+standaloneEvent month=1 domain=family direction=unfavorable
+standaloneEvent month=3 domain=relationship direction=unfavorable
+standaloneEvent month=3 domain=health direction=unfavorable
+standaloneEvent month=10 domain=career direction=mixed
+standaloneEvent month=10 domain=family direction=mixed
+standaloneEvent month=12 domain=family direction=unfavorable
+standaloneEvent month=12 domain=travel direction=unfavorable
+── R-2 EVENT CANDIDATES (month N2 ∈ {high,extreme}) ──
+m1:career=extreme,unfavorable m1:family=extreme,unfavorable m3:relationship=high,unfavorable m3:health=high,unfavorable m7:children=extreme,unfavorable m10:career=high,mixed m10:family=high,mixed m10:children=high,unfavorable m12:family=high,unfavorable m12:travel=high,unfavorable
+── R-6 TEMPORAL FACTS (per-domain peak over 12 monthly N2) ──
+temporalFact domain=career peakLevel=extreme peakMonths=[1]
+temporalFact domain=relationship peakLevel=high peakMonths=[3]
+temporalFact domain=health peakLevel=high peakMonths=[3]
+temporalFact domain=family peakLevel=extreme peakMonths=[1]
+temporalFact domain=children peakLevel=extreme peakMonths=[7]
+temporalFact domain=travel peakLevel=high peakMonths=[12]
+── MONTHLY N2 MATRIX (12 months, index = calendar month; 每月15日锚点) ──
+month=01 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,extreme,quiet,quiet,extreme,quiet,moderate,quiet,quiet]
+month=02 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=03 active=4 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,high,high,low,quiet,low,quiet,quiet]
+month=04 active=1 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,low,quiet,quiet,quiet]
+month=05 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=06 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,moderate,moderate,moderate,quiet,quiet]
+month=07 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,moderate,moderate,quiet,extreme,quiet,quiet,quiet]
+month=08 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=09 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,moderate,moderate,quiet,moderate,quiet,quiet,quiet]
+month=10 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,high,moderate,moderate,high,high,quiet,quiet,quiet]
+month=11 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=12 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,moderate,low,low,high,quiet,high,quiet,quiet]
+
+════════ YEAR-SNAPSHOT PROBE [2017] ════════
+SOURCE = TRUE_V3_PIPELINE (YearV3SnapshotBuilder.build → V3Core.evaluate(.year) + 12×V3Core.evaluate(.month) → YearV3Derivation R-1~R-4+R-6)
+── IDENTITY ──
+registration=Jassica_Dataset_Registration_Design_Review_TEST_ONLY_v1 year=2017 yearPillar=丁酉 anchor=06-15 12:00 Asia/Shanghai
+daYunPillar=乙卯 daYunAgeRange=35-44
+── ANNUAL V3 (.year) ──
+N2: wealth=quiet(A) career=quiet(A) relationship=moderate(A) health=moderate(A) family=quiet(A) children=quiet(A) travel=quiet(A) study=quiet(A) legalSocial=quiet(A)
+N1: wealth:dir=unknown,shape=none career:dir=unknown,shape=none relationship:dir=unfavorable,shape=isolated health:dir=unfavorable,shape=isolated family:dir=unknown,shape=none children:dir=unknown,shape=none travel:dir=unknown,shape=none study:dir=unknown,shape=none legalSocial:dir=unknown,shape=none
+quietDomains=[wealth,career,family,children,travel,study,legalSocial] annualActivatedCount=2 eventMonthCount=5
+mainLineKind=multiFocus
+R-3 focusDisplayed=[relationship|moderate|unfavorable|isolated ; health|moderate|unfavorable|isolated]
+R-3 overflow=[]
+R-4 watchDisplayed=[]
+── R-1 WINDOWS / EVENTS ──
+window 6月–7月 direction=unfavorable domains=[children]
+standaloneEvent month=1 domain=career direction=unfavorable
+standaloneEvent month=1 domain=family direction=unfavorable
+standaloneEvent month=3 domain=relationship direction=unfavorable
+standaloneEvent month=3 domain=health direction=unfavorable
+standaloneEvent month=10 domain=career direction=unfavorable
+standaloneEvent month=10 domain=family direction=unfavorable
+standaloneEvent month=10 domain=children direction=unfavorable
+standaloneEvent month=12 domain=family direction=unfavorable
+standaloneEvent month=12 domain=travel direction=unfavorable
+── R-2 EVENT CANDIDATES (month N2 ∈ {high,extreme}) ──
+m1:career=high,unfavorable m1:family=high,unfavorable m3:relationship=high,unfavorable m3:health=high,unfavorable m7:children=high,unfavorable m10:career=high,unfavorable m10:family=high,unfavorable m10:children=high,unfavorable m12:family=extreme,unfavorable m12:travel=extreme,unfavorable
+── R-6 TEMPORAL FACTS (per-domain peak over 12 monthly N2) ──
+temporalFact domain=career peakLevel=high peakMonths=[1, 10]
+temporalFact domain=relationship peakLevel=high peakMonths=[3]
+temporalFact domain=health peakLevel=high peakMonths=[3]
+temporalFact domain=family peakLevel=extreme peakMonths=[12]
+temporalFact domain=children peakLevel=high peakMonths=[7, 10]
+temporalFact domain=travel peakLevel=extreme peakMonths=[12]
+── MONTHLY N2 MATRIX (12 months, index = calendar month; 每月15日锚点) ──
+month=01 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,high,moderate,moderate,high,quiet,moderate,quiet,quiet]
+month=02 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=03 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,high,high,low,moderate,low,quiet,quiet]
+month=04 active=1 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,low,quiet,quiet,quiet]
+month=05 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=06 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,moderate,moderate,moderate,quiet,quiet]
+month=07 active=1 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,high,quiet,quiet,quiet]
+month=08 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=09 active=2 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,moderate,moderate,quiet,quiet,quiet,quiet,quiet]
+month=10 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,high,moderate,moderate,high,high,quiet,quiet,quiet]
+month=11 active=2 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,moderate,moderate,quiet,quiet,quiet,quiet,quiet]
+month=12 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,moderate,low,low,extreme,quiet,extreme,quiet,quiet]
+
+════════ YEAR-SNAPSHOT PROBE [2021] ════════
+SOURCE = TRUE_V3_PIPELINE (YearV3SnapshotBuilder.build → V3Core.evaluate(.year) + 12×V3Core.evaluate(.month) → YearV3Derivation R-1~R-4+R-6)
+── IDENTITY ──
+registration=Jassica_Dataset_Registration_Design_Review_TEST_ONLY_v1 year=2021 yearPillar=辛丑 anchor=06-15 12:00 Asia/Shanghai
+daYunPillar=乙卯 daYunAgeRange=35-44
+── ANNUAL V3 (.year) ──
+N2: wealth=quiet(A) career=high(A) relationship=moderate(A) health=moderate(A) family=high(A) children=quiet(A) travel=moderate(A) study=quiet(A) legalSocial=quiet(A)
+N1: wealth:dir=unknown,shape=none career:dir=unfavorable,shape=broad relationship:dir=favorable,shape=corroborated health:dir=favorable,shape=corroborated family:dir=unfavorable,shape=broad children:dir=unknown,shape=none travel:dir=unfavorable,shape=isolated study:dir=unknown,shape=none legalSocial:dir=unknown,shape=none
+quietDomains=[wealth,children,study,legalSocial] annualActivatedCount=5 eventMonthCount=5
+mainLineKind=multiFocus
+R-3 focusDisplayed=[career|high|unfavorable|broad ; family|high|unfavorable|broad ; relationship|moderate|favorable|corroborated]
+R-3 overflow=[health|moderate|favorable|corroborated ; travel|moderate|unfavorable|isolated]
+R-4 watchDisplayed=[travel|moderate|unfavorable|isolated]
+── R-1 WINDOWS / EVENTS ──
+window 5月–7月 direction=unfavorable domains=[children]
+window 9月–10月 direction=unfavorable domains=[relationship,health]
+standaloneEvent month=1 domain=career direction=unfavorable
+standaloneEvent month=1 domain=family direction=unfavorable
+standaloneEvent month=3 domain=relationship direction=mixed
+standaloneEvent month=3 domain=health direction=mixed
+standaloneEvent month=10 domain=career direction=unfavorable
+standaloneEvent month=10 domain=family direction=unfavorable
+standaloneEvent month=10 domain=children direction=unfavorable
+standaloneEvent month=12 domain=family direction=unfavorable
+standaloneEvent month=12 domain=travel direction=unfavorable
+── R-2 EVENT CANDIDATES (month N2 ∈ {high,extreme}) ──
+m1:career=high,unfavorable m1:family=high,unfavorable m3:relationship=extreme,mixed m3:health=extreme,mixed m7:children=high,unfavorable m10:career=high,unfavorable m10:family=high,unfavorable m10:children=high,unfavorable m12:family=high,unfavorable m12:travel=high,unfavorable
+── R-6 TEMPORAL FACTS (per-domain peak over 12 monthly N2) ──
+temporalFact domain=career peakLevel=high peakMonths=[1, 10]
+temporalFact domain=relationship peakLevel=extreme peakMonths=[3]
+temporalFact domain=health peakLevel=extreme peakMonths=[3]
+temporalFact domain=family peakLevel=high peakMonths=[1, 10, 12]
+temporalFact domain=children peakLevel=high peakMonths=[7, 10]
+temporalFact domain=travel peakLevel=high peakMonths=[12]
+── MONTHLY N2 MATRIX (12 months, index = calendar month; 每月15日锚点) ──
+month=01 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,high,quiet,quiet,high,quiet,moderate,quiet,quiet]
+month=02 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=03 active=4 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,extreme,extreme,low,quiet,low,quiet,quiet]
+month=04 active=1 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,low,quiet,quiet,quiet]
+month=05 active=1 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,moderate,quiet,quiet,quiet]
+month=06 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,moderate,moderate,moderate,quiet,quiet]
+month=07 active=1 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,high,quiet,quiet,quiet]
+month=08 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=09 active=2 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,moderate,moderate,quiet,quiet,quiet,quiet,quiet]
+month=10 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,high,moderate,moderate,high,high,quiet,quiet,quiet]
+month=11 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=12 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,moderate,low,low,high,quiet,high,quiet,quiet]
+
+════════ YEAR-SNAPSHOT PROBE [2024] ════════
+SOURCE = TRUE_V3_PIPELINE (YearV3SnapshotBuilder.build → V3Core.evaluate(.year) + 12×V3Core.evaluate(.month) → YearV3Derivation R-1~R-4+R-6)
+── IDENTITY ──
+registration=Jassica_Dataset_Registration_Design_Review_TEST_ONLY_v1 year=2024 yearPillar=甲辰 anchor=06-15 12:00 Asia/Shanghai
+daYunPillar=甲寅 daYunAgeRange=45-54
+── ANNUAL V3 (.year) ──
+N2: wealth=quiet(A) career=quiet(P) relationship=quiet(P) health=quiet(P) family=quiet(P) children=low(A) travel=quiet(A) study=quiet(A) legalSocial=quiet(A)
+N1: wealth:dir=unknown,shape=none career:dir=favorable,shape=isolated relationship:dir=favorable,shape=isolated health:dir=favorable,shape=isolated family:dir=favorable,shape=isolated children:dir=unfavorable,shape=isolated travel:dir=unknown,shape=none study:dir=unknown,shape=none legalSocial:dir=unknown,shape=none
+quietDomains=[wealth,career,relationship,health,family,travel,study,legalSocial] annualActivatedCount=1 eventMonthCount=5
+mainLineKind=multiFocus
+R-3 focusDisplayed=[children|low|unfavorable|isolated]
+R-3 overflow=[]
+R-4 watchDisplayed=[]
+── R-1 WINDOWS / EVENTS ──
+window 6月–7月 direction=unfavorable domains=[children]
+window 9月–10月 direction=unfavorable domains=[relationship,health,children]
+standaloneEvent month=1 domain=career direction=unfavorable
+standaloneEvent month=1 domain=family direction=unfavorable
+standaloneEvent month=3 domain=relationship direction=unfavorable
+standaloneEvent month=3 domain=health direction=unfavorable
+standaloneEvent month=10 domain=career direction=mixed
+standaloneEvent month=10 domain=family direction=mixed
+standaloneEvent month=12 domain=family direction=unfavorable
+standaloneEvent month=12 domain=travel direction=unfavorable
+── R-2 EVENT CANDIDATES (month N2 ∈ {high,extreme}) ──
+m1:career=extreme,unfavorable m1:family=extreme,unfavorable m3:relationship=high,unfavorable m3:health=high,unfavorable m7:children=extreme,unfavorable m10:career=high,mixed m10:family=high,mixed m10:children=high,unfavorable m12:family=high,unfavorable m12:travel=high,unfavorable
+── R-6 TEMPORAL FACTS (per-domain peak over 12 monthly N2) ──
+temporalFact domain=career peakLevel=extreme peakMonths=[1]
+temporalFact domain=relationship peakLevel=high peakMonths=[3]
+temporalFact domain=health peakLevel=high peakMonths=[3]
+temporalFact domain=family peakLevel=extreme peakMonths=[1]
+temporalFact domain=children peakLevel=extreme peakMonths=[7]
+temporalFact domain=travel peakLevel=high peakMonths=[12]
+── MONTHLY N2 MATRIX (12 months, index = calendar month; 每月15日锚点) ──
+month=01 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,extreme,quiet,quiet,extreme,quiet,moderate,quiet,quiet]
+month=02 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=03 active=4 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,high,high,low,quiet,low,quiet,quiet]
+month=04 active=1 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,low,quiet,quiet,quiet]
+month=05 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=06 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,moderate,moderate,moderate,quiet,quiet]
+month=07 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,moderate,moderate,quiet,extreme,quiet,quiet,quiet]
+month=08 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=09 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,moderate,moderate,quiet,moderate,quiet,quiet,quiet]
+month=10 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,high,moderate,moderate,high,high,quiet,quiet,quiet]
+month=11 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=12 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,moderate,low,low,high,quiet,high,quiet,quiet]
+
+════════ YEAR-SNAPSHOT PROBE [2025] ════════
+SOURCE = TRUE_V3_PIPELINE (YearV3SnapshotBuilder.build → V3Core.evaluate(.year) + 12×V3Core.evaluate(.month) → YearV3Derivation R-1~R-4+R-6)
+── IDENTITY ──
+registration=Jassica_Dataset_Registration_Design_Review_TEST_ONLY_v1 year=2025 yearPillar=乙巳 anchor=06-15 12:00 Asia/Shanghai
+daYunPillar=甲寅 daYunAgeRange=45-54
+── ANNUAL V3 (.year) ──
+N2: wealth=quiet(A) career=quiet(A) relationship=quiet(A) health=quiet(A) family=quiet(A) children=quiet(A) travel=quiet(A) study=quiet(A) legalSocial=quiet(A)
+N1: wealth:dir=unknown,shape=none career:dir=unknown,shape=none relationship:dir=unknown,shape=none health:dir=unknown,shape=none family:dir=unknown,shape=none children:dir=unknown,shape=none travel:dir=unknown,shape=none study:dir=unknown,shape=none legalSocial:dir=unknown,shape=none
+quietDomains=[wealth,career,relationship,health,family,children,travel,study,legalSocial] annualActivatedCount=0 eventMonthCount=5
+mainLineKind=eventDriven
+R-3 focusDisplayed=[]
+R-3 overflow=[]
+R-4 watchDisplayed=[]
+── R-1 WINDOWS / EVENTS ──
+window 9月–10月 direction=unfavorable domains=[relationship,health]
+standaloneEvent month=1 domain=career direction=unfavorable
+standaloneEvent month=1 domain=family direction=unfavorable
+standaloneEvent month=3 domain=relationship direction=unfavorable
+standaloneEvent month=3 domain=health direction=unfavorable
+standaloneEvent month=7 domain=children direction=unfavorable
+standaloneEvent month=10 domain=career direction=unfavorable
+standaloneEvent month=10 domain=family direction=unfavorable
+standaloneEvent month=10 domain=children direction=unfavorable
+standaloneEvent month=12 domain=family direction=unfavorable
+standaloneEvent month=12 domain=travel direction=unfavorable
+── R-2 EVENT CANDIDATES (month N2 ∈ {high,extreme}) ──
+m1:career=high,unfavorable m1:family=high,unfavorable m3:relationship=extreme,unfavorable m3:health=extreme,unfavorable m7:children=extreme,unfavorable m10:career=high,unfavorable m10:family=high,unfavorable m10:children=high,unfavorable m12:family=high,unfavorable m12:travel=high,unfavorable
+── R-6 TEMPORAL FACTS (per-domain peak over 12 monthly N2) ──
+temporalFact domain=career peakLevel=high peakMonths=[1, 10]
+temporalFact domain=relationship peakLevel=extreme peakMonths=[3]
+temporalFact domain=health peakLevel=extreme peakMonths=[3]
+temporalFact domain=family peakLevel=high peakMonths=[1, 10, 12]
+temporalFact domain=children peakLevel=extreme peakMonths=[7]
+temporalFact domain=travel peakLevel=high peakMonths=[12]
+── MONTHLY N2 MATRIX (12 months, index = calendar month; 每月15日锚点) ──
+month=01 active=4 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,high,quiet,quiet,high,low,moderate,quiet,quiet]
+month=02 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=03 active=4 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,extreme,extreme,low,quiet,low,quiet,quiet]
+month=04 active=1 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,low,quiet,quiet,quiet]
+month=05 active=2 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,moderate,moderate,quiet,quiet,quiet,quiet,quiet]
+month=06 active=3 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,moderate,moderate,moderate,quiet,quiet]
+month=07 active=1 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,extreme,quiet,quiet,quiet]
+month=08 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=09 active=2 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,moderate,moderate,quiet,quiet,quiet,quiet,quiet]
+month=10 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,high,moderate,moderate,high,high,quiet,quiet,quiet]
+month=11 active=0 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet,quiet]
+month=12 active=5 [wealth,career,relationship,health,family,children,travel,study,legalSocial] = [quiet,moderate,low,low,high,quiet,high,quiet,quiet]
+
+================================================================================
+§6 EXACT-DATE RAW EVIDENCE（S1 / S4 / S5，机器输出逐字转录）
+================================================================================
+登记日期原样执行，未根据事件期待选择其他日期。
+
+════════ PROBE [S1] ════════
+SOURCE = TRUE_V3_PIPELINE (V3Core.evaluate → V3N1.domainStates → V3N2.domainIntensityStates)
+── IDENTITY ──
+registration=Jassica_Dataset_Registration_Design_Review_TEST_ONLY_v1 id=S1 grain=EXACT_DATE eventLabel=结婚 [Shared S1 — REPORT-LAYER-ONLY]
+evaluationDate=2003-06-18 (12:00 Asia/Shanghai) viewKind=day anchor=day
+evaluationID=戊午-己未-乙酉-丁丑|day|2003-06-18
+── CALENDAR/ANCHORS ──
+resolvedAnnualYear=2003 annualPillar=癸未
+monthPillar=戊午 dayPillar=壬戌
+daYunPillar=丙辰 daYunAgeRange=25-34
+── N1 DomainStates (all 9 domains) ──
+[wealth] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=0
+[career] act=multiFamily dir=unfavorable conf=broad overlap=false PIDs=3 KIDs=丑戌未三刑:月柱-时柱-流日|流日|原局|career|rule-gong-wei|sameFamilyDemotion; 两支相刑:流日-流年|流日|流年|-|rule-no-mapping|crossLayerFamilyBridge; 相破:流日-流年|流日|流年|-|rule-no-mapping|crossLayerFamilyBridge XIDs=1
+[relationship] act=singleFamily dir=unfavorable conf=isolated overlap=false PIDs=1 KIDs=none XIDs=1
+[health] act=singleFamily dir=unfavorable conf=isolated overlap=false PIDs=1 KIDs=none XIDs=1
+[family] act=multiFamily dir=unfavorable conf=broad overlap=false PIDs=3 KIDs=丑戌未三刑:月柱-时柱-流日|流日|原局|family|rule-gong-wei|sameFamilyDemotion; 两支相刑:流日-流年|流日|流年|-|rule-no-mapping|crossLayerFamilyBridge; 相破:流日-流年|流日|流年|-|rule-no-mapping|crossLayerFamilyBridge XIDs=5
+[children] act=multiFamily dir=mixed conf=conflicted overlap=true PIDs=3 KIDs=丑戌未三刑:月柱-时柱-流日|流日|原局|children|rule-gong-wei|sameFamilyDemotion XIDs=7
+[travel] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=4
+[study] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=0
+[legalSocial] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=0
+── N2 DomainIntensityStates (all 9 domains) ──
+[wealth] intensity=quiet coverage=absent
+[career] intensity=high coverage=absent
+[relationship] intensity=moderate coverage=absent
+[health] intensity=moderate coverage=absent
+[family] intensity=high coverage=absent
+[children] intensity=high coverage=present(resolvingClass)
+[travel] intensity=quiet coverage=absent
+[study] intensity=quiet coverage=absent
+[legalSocial] intensity=quiet coverage=absent
+N2vec: wealth=quiet(A) career=high(A) relationship=moderate(A) health=moderate(A) family=high(A) children=high(P) travel=quiet(A) study=quiet(A) legalSocial=quiet(A)
+
+════════ PROBE [S4] ════════
+SOURCE = TRUE_V3_PIPELINE (V3Core.evaluate → V3N1.domainStates → V3N2.domainIntensityStates)
+── IDENTITY ──
+registration=Jassica_Dataset_Registration_Design_Review_TEST_ONLY_v1 id=S4 grain=EXACT_DATE eventLabel=第一个孩子出生 [Shared S4 — REPORT-LAYER-ONLY]
+evaluationDate=2005-07-05 (12:00 Asia/Shanghai) viewKind=day anchor=day
+evaluationID=戊午-己未-乙酉-丁丑|day|2005-07-05
+── CALENDAR/ANCHORS ──
+resolvedAnnualYear=2005 annualPillar=乙酉
+monthPillar=壬午 dayPillar=庚寅
+daYunPillar=丙辰 daYunAgeRange=25-34
+── N1 DomainStates (all 9 domains) ──
+[wealth] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=0
+[career] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=1
+[relationship] act=singleFamily dir=favorable conf=corroborated overlap=false PIDs=1 KIDs=天干五合:流日-流年|流日|流年|-|rule-no-mapping|crossLayerFamilyBridge XIDs=3
+[health] act=singleFamily dir=favorable conf=corroborated overlap=false PIDs=1 KIDs=天干五合:流日-流年|流日|流年|-|rule-no-mapping|crossLayerFamilyBridge XIDs=3
+[family] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=2
+[children] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=3
+[travel] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=1
+[study] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=0
+[legalSocial] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=0
+── N2 DomainIntensityStates (all 9 domains) ──
+[wealth] intensity=quiet coverage=absent
+[career] intensity=quiet coverage=absent
+[relationship] intensity=quiet coverage=present(resolvingClass)
+[health] intensity=quiet coverage=present(resolvingClass)
+[family] intensity=quiet coverage=absent
+[children] intensity=quiet coverage=absent
+[travel] intensity=quiet coverage=absent
+[study] intensity=quiet coverage=absent
+[legalSocial] intensity=quiet coverage=absent
+N2vec: wealth=quiet(A) career=quiet(A) relationship=quiet(P) health=quiet(P) family=quiet(A) children=quiet(A) travel=quiet(A) study=quiet(A) legalSocial=quiet(A)
+
+════════ PROBE [S5] ════════
+SOURCE = TRUE_V3_PIPELINE (V3Core.evaluate → V3N1.domainStates → V3N2.domainIntensityStates)
+── IDENTITY ──
+registration=Jassica_Dataset_Registration_Design_Review_TEST_ONLY_v1 id=S5 grain=EXACT_DATE eventLabel=第二个孩子出生 [Shared S5 — REPORT-LAYER-ONLY]
+evaluationDate=2009-02-03 (12:00 Asia/Shanghai) viewKind=day anchor=day
+evaluationID=戊午-己未-乙酉-丁丑|day|2009-02-03
+── CALENDAR/ANCHORS ──
+resolvedAnnualYear=2008 annualPillar=戊子
+monthPillar=乙丑 dayPillar=己卯
+daYunPillar=丙辰 daYunAgeRange=25-34
+── N1 DomainStates (all 9 domains) ──
+[wealth] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=0
+[career] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=4
+[relationship] act=singleFamily dir=unfavorable conf=corroborated overlap=false PIDs=1 KIDs=六冲:流日-日柱|流日|原局|relationship|rule-gong-wei|sameFamilyDemotion XIDs=2
+[health] act=singleFamily dir=unfavorable conf=corroborated overlap=false PIDs=1 KIDs=六冲:流日-日柱|流日|原局|health|rule-gong-wei|sameFamilyDemotion XIDs=2
+[family] act=singleFamily dir=unfavorable conf=isolated overlap=true PIDs=1 KIDs=none XIDs=6
+[children] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=2
+[travel] act=singleFamily dir=unfavorable conf=isolated overlap=true PIDs=1 KIDs=none XIDs=2
+[study] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=0
+[legalSocial] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=0
+── N2 DomainIntensityStates (all 9 domains) ──
+[wealth] intensity=quiet coverage=absent
+[career] intensity=quiet coverage=absent
+[relationship] intensity=extreme coverage=absent
+[health] intensity=extreme coverage=absent
+[family] intensity=low coverage=absent
+[children] intensity=quiet coverage=absent
+[travel] intensity=low coverage=absent
+[study] intensity=quiet coverage=absent
+[legalSocial] intensity=quiet coverage=absent
+N2vec: wealth=quiet(A) career=quiet(A) relationship=extreme(A) health=extreme(A) family=low(A) children=quiet(A) travel=low(A) study=quiet(A) legalSocial=quiet(A)
+
+（机械备注：S5 evaluationDate 2009-02-03 位于立春之前，生产链 resolvedAnnualYear
+ 机械复算 = 2008（戊子年），按原样记录，无判断。）
+
+================================================================================
+§7 MONTH RAW EVIDENCE（S7 / S8，MONTH_ONLY，机器输出逐字转录）
+================================================================================
+不虚构具体日期；按既有 MONTH_ONLY probe 方法（该月 15 日 12:00，viewKind=.month）。
+
+════════ PROBE [S7] ════════
+SOURCE = TRUE_V3_PIPELINE (V3Core.evaluate → V3N1.domainStates → V3N2.domainIntensityStates)
+── IDENTITY ──
+registration=Jassica_Dataset_Registration_Design_Review_TEST_ONLY_v1 id=S7 grain=MONTH_ONLY eventLabel=母亲去世 [Shared S7 — REPORT-LAYER-ONLY; 不虚构具体日期]
+evaluationDate=2014-04-15 (12:00 Asia/Shanghai) viewKind=month anchor=month
+evaluationID=戊午-己未-乙酉-丁丑|month|2014-04
+── CALENDAR/ANCHORS ──
+resolvedAnnualYear=2014 annualPillar=甲午
+monthPillar=戊辰
+daYunPillar=乙卯 daYunAgeRange=35-44
+── N1 DomainStates (all 9 domains) ──
+[wealth] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=0
+[career] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=2
+[relationship] act=singleFamily dir=favorable conf=isolated overlap=false PIDs=1 KIDs=none XIDs=1
+[health] act=singleFamily dir=favorable conf=isolated overlap=false PIDs=1 KIDs=none XIDs=1
+[family] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=4
+[children] act=singleFamily dir=unfavorable conf=isolated overlap=false PIDs=1 KIDs=none XIDs=1
+[travel] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=2
+[study] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=0
+[legalSocial] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=0
+── N2 DomainIntensityStates (all 9 domains) ──
+[wealth] intensity=quiet coverage=absent
+[career] intensity=quiet coverage=absent
+[relationship] intensity=quiet coverage=present(resolvingClass)
+[health] intensity=quiet coverage=present(resolvingClass)
+[family] intensity=quiet coverage=absent
+[children] intensity=low coverage=absent
+[travel] intensity=quiet coverage=absent
+[study] intensity=quiet coverage=absent
+[legalSocial] intensity=quiet coverage=absent
+N2vec: wealth=quiet(A) career=quiet(A) relationship=quiet(P) health=quiet(P) family=quiet(A) children=low(A) travel=quiet(A) study=quiet(A) legalSocial=quiet(A)
+
+════════ PROBE [S8] ════════
+SOURCE = TRUE_V3_PIPELINE (V3Core.evaluate → V3N1.domainStates → V3N2.domainIntensityStates)
+── IDENTITY ──
+registration=Jassica_Dataset_Registration_Design_Review_TEST_ONLY_v1 id=S8 grain=MONTH_ONLY eventLabel=从上海搬到美国 [Shared S8 — REPORT-LAYER-ONLY; 不虚构具体日期]
+evaluationDate=2017-01-15 (12:00 Asia/Shanghai) viewKind=month anchor=month
+evaluationID=戊午-己未-乙酉-丁丑|month|2017-01
+── CALENDAR/ANCHORS ──
+resolvedAnnualYear=2016 annualPillar=丙申
+monthPillar=辛丑
+daYunPillar=乙卯 daYunAgeRange=35-44
+── N1 DomainStates (all 9 domains) ──
+[wealth] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=0
+[career] act=multiFamily dir=unfavorable conf=broad overlap=false PIDs=2 KIDs=none XIDs=0
+[relationship] act=singleFamily dir=favorable conf=corroborated overlap=false PIDs=1 KIDs=天干四冲:流月-大运|流月|大运|-|rule-no-mapping|crossLayerFamilyBridge XIDs=1
+[health] act=singleFamily dir=favorable conf=corroborated overlap=false PIDs=1 KIDs=天干四冲:流月-大运|流月|大运|-|rule-no-mapping|crossLayerFamilyBridge XIDs=1
+[family] act=multiFamily dir=unfavorable conf=broad overlap=true PIDs=3 KIDs=none XIDs=1
+[children] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=0
+[travel] act=singleFamily dir=unfavorable conf=isolated overlap=true PIDs=1 KIDs=none XIDs=1
+[study] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=0
+[legalSocial] act=quiet dir=unknown conf=none overlap=false PIDs=0 KIDs=none XIDs=0
+── N2 DomainIntensityStates (all 9 domains) ──
+[wealth] intensity=quiet coverage=absent
+[career] intensity=high coverage=absent
+[relationship] intensity=moderate coverage=absent
+[health] intensity=moderate coverage=absent
+[family] intensity=high coverage=absent
+[children] intensity=quiet coverage=absent
+[travel] intensity=moderate coverage=absent
+[study] intensity=quiet coverage=absent
+[legalSocial] intensity=quiet coverage=absent
+N2vec: wealth=quiet(A) career=high(A) relationship=moderate(A) health=moderate(A) family=high(A) children=quiet(A) travel=moderate(A) study=quiet(A) legalSocial=quiet(A)
+
+（机械备注：S8 evaluationDate 2017-01-15 位于立春之前，生产链 resolvedAnnualYear
+ 机械复算 = 2016（丙申年），按原样记录，无判断。）
+
+================================================================================
+§8 EVENT REGISTRY CROSS-REFERENCE（report 层 only）
+================================================================================
+事件仅以 eventID / eventDatePrecision / eventDescription 存在于本节与 §5–§7
+wrapper 层；未进入 V3Core / N1 / N2 / detector / DomainMapper / threshold /
+calibration / semantic interpretation。
+
+YEAR_ONLY events → year-level evidence = 对应年度 annual snapshot（SECTION A）:
+YEAR_ONLY_REF|S2|year=2003|label=买第一套住房 [REPORT-LAYER-ONLY]|evidence=annual snapshot 2003|precision=YEAR_ONLY (不升级)
+YEAR_ONLY_REF|S3|year=2005|label=买办公楼 [REPORT-LAYER-ONLY]|evidence=annual snapshot 2005|precision=YEAR_ONLY (不升级)
+YEAR_ONLY_REF|S6|year=2011|label=买第二套住宅 [REPORT-LAYER-ONLY]|evidence=annual snapshot 2011|precision=YEAR_ONLY (不升级)
+YEAR_ONLY_REF|S9|year=2017|label=房产交易 [REPORT-LAYER-ONLY]|evidence=annual snapshot 2017|precision=YEAR_ONLY (不升级)
+YEAR_ONLY_REF|S10|year=2021|label=卖房子 [REPORT-LAYER-ONLY]|evidence=annual snapshot 2021|precision=YEAR_ONLY (不升级)
+YEAR_ONLY_REF|S11|year=2024|label=房产交易 [REPORT-LAYER-ONLY]|evidence=annual snapshot 2024|precision=YEAR_ONLY (不升级)
+YEAR_ONLY_REF|S12|year=2025|label=房产交易 [REPORT-LAYER-ONLY]|evidence=annual snapshot 2025|precision=YEAR_ONLY (不升级)
+YEAR_ONLY_REF|J1|year=2004|label=开公司 [REPORT-LAYER-ONLY]|evidence=annual snapshot 2004|precision=YEAR_ONLY (不升级)
+YEAR_ONLY_REF|J2|year=2009|label=公司收入创新高 [REPORT-LAYER-ONLY]|evidence=annual snapshot 2009|precision=YEAR_ONLY (不升级)
+
+完整登记表（全部 14 条；evidence 位置 = 本报告章节）：
+  eventID | precision   | 登记描述（原样，不改写）      | evidence 位置
+  S1      | EXACT_DATE  | 结婚 2003-06-18              | §6 PROBE [S1]
+  S2      | YEAR_ONLY   | 2003 买第一套住房            | §5 annual 2003（YEAR_ONLY_REF）
+  S3      | YEAR_ONLY   | 2005 买办公楼                | §5 annual 2005（YEAR_ONLY_REF）
+  S4      | EXACT_DATE  | 第一个孩子出生 2005-07-05    | §6 PROBE [S4]
+  S5      | EXACT_DATE  | 第二个孩子出生 2009-02-03    | §6 PROBE [S5]（resolvedAnnualYear=2008 机械记录）
+  S6      | YEAR_ONLY   | 2011 买第二套住宅            | §5 annual 2011（YEAR_ONLY_REF）
+  S7      | MONTH_ONLY  | 2014-04 母亲去世（不虚构日期）| §7 PROBE [S7]
+  S8      | MONTH_ONLY  | 2017-01 上海→美国（不虚构日期）| §7 PROBE [S8]（resolvedAnnualYear=2016 机械记录）
+  S9      | YEAR_ONLY   | 2017 房产交易                | §5 annual 2017（YEAR_ONLY_REF）
+  S10     | YEAR_ONLY   | 2021 卖房子                  | §5 annual 2021（YEAR_ONLY_REF）
+  S11     | YEAR_ONLY   | 2024 房产交易                | §5 annual 2024（YEAR_ONLY_REF）
+  S12     | YEAR_ONLY   | 2025 房产交易                | §5 annual 2025（YEAR_ONLY_REF）
+  J1      | YEAR_ONLY   | 2004 开公司                  | §5 annual 2004（YEAR_ONLY_REF）
+  J2      | YEAR_ONLY   | 2009 公司收入创新高          | §5 annual 2009（YEAR_ONLY_REF）
+
+J2 语义登记声明：J2 仅登记为公司收入事件（登记原文「公司收入创新高」）；
+不改写为「公司盈利创新高」，不改写为「Jassica 财富增加」。S2/S3/S6/S9/S10/
+S11/S12 全部房产事件仅登记为房产事件，不解读为 wealth gain / 个人财务收益。
+
+Shared Event Rule 声明：S1–S12 为现实世界事件，本轮仅生成 Jassica observation
+（如 S1 = 2003-06-18 marriage → 本轮仅记录 Jassica V3 observation）。Owen
+observation 留在 Owen dataset（Owen 侧对应记录见登记报告交叉引用表：
+S1↔MR01、S2↔E16、S3↔E17、S5↔E9、S10↔P01-SALE、S11↔P03A/P03B、S12↔P04、
+S9↔P02 候选）。两个 observation 未合并，未产生任何联合 V3 result。
+
+================================================================================
+§9 FULL RAW V3 OUTPUTS
+================================================================================
+完整性声明：§5（Annual ×10）、§6（Exact-Date ×3）、§7（Month ×2）为本轮
+TEST-ONLY probe 机器输出的完整逐字转录（零截断、零改写），已含全部要求的
+原始字段：probe ID / event ID / date / date precision / viewKind /
+resolved annual year / year pillar / month pillar（event probe）/ DaYun /
+V3 source / N1 output（九域 act-dir-conf-overlap-PIDs-KIDs-XIDs 全保留）/
+N2 output（九域 intensity+coverage 全保留）/ all 9 domain states /
+mainLine / focus / watch / R-1~R-6 temporal fields / 12 月矩阵。
+并非只输出最终 UI wording——本报告不含任何 UI wording。
+
+MACHINE SUMMARY（测试 stdout 逐字转录，作全量索引）：
+YEAR_SUMMARY|2003|pillar=癸未|daYun=丙辰(25-34)|mainLine=multiFocus|annualActivated=1|eventMonths=5|windows=1|standaloneEvents=9|temporalFacts=6|wealth=quiet,career=quiet,relationship=quiet,health=quiet,family=quiet,children=extreme,travel=quiet,study=quiet,legalSocial=quiet
+YEAR_SUMMARY|2004|pillar=甲申|daYun=丙辰(25-34)|mainLine=eventDriven|annualActivated=0|eventMonths=5|windows=2|standaloneEvents=8|temporalFacts=6|wealth=quiet,career=quiet,relationship=quiet,health=quiet,family=quiet,children=quiet,travel=quiet,study=quiet,legalSocial=quiet
+YEAR_SUMMARY|2005|pillar=乙酉|daYun=丙辰(25-34)|mainLine=multiFocus|annualActivated=2|eventMonths=5|windows=1|standaloneEvents=10|temporalFacts=6|wealth=quiet,career=quiet,relationship=moderate,health=moderate,family=quiet,children=quiet,travel=quiet,study=quiet,legalSocial=quiet
+YEAR_SUMMARY|2009|pillar=己丑|daYun=丙辰(25-34)|mainLine=multiFocus|annualActivated=3|eventMonths=5|windows=2|standaloneEvents=8|temporalFacts=6|wealth=quiet,career=high,relationship=quiet,health=quiet,family=high,children=quiet,travel=moderate,study=quiet,legalSocial=quiet
+YEAR_SUMMARY|2011|pillar=辛卯|daYun=丙辰(25-34)|mainLine=multiFocus|annualActivated=4|eventMonths=5|windows=2|standaloneEvents=9|temporalFacts=6|wealth=quiet,career=quiet,relationship=extreme,health=extreme,family=low,children=quiet,travel=low,study=quiet,legalSocial=quiet
+YEAR_SUMMARY|2014|pillar=甲午|daYun=乙卯(35-44)|mainLine=multiFocus|annualActivated=3|eventMonths=5|windows=2|standaloneEvents=8|temporalFacts=6|wealth=quiet,career=quiet,relationship=quiet,health=quiet,family=moderate,children=moderate,travel=moderate,study=quiet,legalSocial=quiet
+YEAR_SUMMARY|2017|pillar=丁酉|daYun=乙卯(35-44)|mainLine=multiFocus|annualActivated=2|eventMonths=5|windows=1|standaloneEvents=9|temporalFacts=6|wealth=quiet,career=quiet,relationship=moderate,health=moderate,family=quiet,children=quiet,travel=quiet,study=quiet,legalSocial=quiet
+YEAR_SUMMARY|2021|pillar=辛丑|daYun=乙卯(35-44)|mainLine=multiFocus|annualActivated=5|eventMonths=5|windows=2|standaloneEvents=9|temporalFacts=6|wealth=quiet,career=high,relationship=moderate,health=moderate,family=high,children=quiet,travel=moderate,study=quiet,legalSocial=quiet
+YEAR_SUMMARY|2024|pillar=甲辰|daYun=甲寅(45-54)|mainLine=multiFocus|annualActivated=1|eventMonths=5|windows=2|standaloneEvents=8|temporalFacts=6|wealth=quiet,career=quiet,relationship=quiet,health=quiet,family=quiet,children=low,travel=quiet,study=quiet,legalSocial=quiet
+YEAR_SUMMARY|2025|pillar=乙巳|daYun=甲寅(45-54)|mainLine=eventDriven|annualActivated=0|eventMonths=5|windows=1|standaloneEvents=10|temporalFacts=6|wealth=quiet,career=quiet,relationship=quiet,health=quiet,family=quiet,children=quiet,travel=quiet,study=quiet,legalSocial=quiet
+SUMMARY|S1|day|2003-06-18|daYun=丙辰(25-34)|annual=2003:癸未|quietAbsent=4|quietResolvingPresent=0|active=5|wealth=quiet(A) career=high(A) relationship=moderate(A) health=moderate(A) family=high(A) children=high(P) travel=quiet(A) study=quiet(A) legalSocial=quiet(A)
+SUMMARY|S4|day|2005-07-05|daYun=丙辰(25-34)|annual=2005:乙酉|quietAbsent=7|quietResolvingPresent=2|active=0|wealth=quiet(A) career=quiet(A) relationship=quiet(P) health=quiet(P) family=quiet(A) children=quiet(A) travel=quiet(A) study=quiet(A) legalSocial=quiet(A)
+SUMMARY|S5|day|2009-02-03|daYun=丙辰(25-34)|annual=2008:戊子|quietAbsent=5|quietResolvingPresent=0|active=4|wealth=quiet(A) career=quiet(A) relationship=extreme(A) health=extreme(A) family=low(A) children=quiet(A) travel=low(A) study=quiet(A) legalSocial=quiet(A)
+SUMMARY|S7|month|2014-04-15|daYun=乙卯(35-44)|annual=2014:甲午|quietAbsent=6|quietResolvingPresent=2|active=1|wealth=quiet(A) career=quiet(A) relationship=quiet(P) health=quiet(P) family=quiet(A) children=low(A) travel=quiet(A) study=quiet(A) legalSocial=quiet(A)
+SUMMARY|S8|month|2017-01-15|daYun=乙卯(35-44)|annual=2016:丙申|quietAbsent=4|quietResolvingPresent=0|active=5|wealth=quiet(A) career=high(A) relationship=moderate(A) health=moderate(A) family=high(A) children=quiet(A) travel=moderate(A) study=quiet(A) legalSocial=quiet(A)
+
+执行完整性：probe 总数 = 10 annual + 3 exact-date + 2 month = 15；
+PROBE_FAILED = 0；全部 SOURCE = TRUE_V3_PIPELINE。
+
+================================================================================
+§10 INTEGRITY / MODIFICATION CHECK
+================================================================================
+production files modified        : 0
+test files modified              : 新增 1（护身符Tests/V3JassicaFrozenV3RawProbeTests.swift，
+                                   纯新增 TEST-ONLY 文件）；既有测试文件改动 0
+frozen V3 files modified         : 0（V3Core / N1 / N2 / detectors / DomainMapper /
+                                   thresholds / calibration / semantic rules /
+                                   Pipeline / Snapshot production architecture /
+                                   Adapter / UI 全部零改动）
+Owen dataset modified            : 0（Owen_Backtest_Dataset_v1.json /
+                                   v1.2_FREEZE.json / 全部 Owen 报告零改动）
+Jassica dataset modified         : 0（登记报告
+                                   Jassica_Dataset_Registration_Design_Review_TEST_ONLY_v1.txt
+                                   零改动；本轮仅新增本 probe 报告文件）
+historical facts modified        : 0（事件 label 按登记原样转录，未升级精度、
+                                   未改写语义）
+commit                           : NO
+push                             : NO
+
+TEST-ONLY test method 声明（按授权 §10 要求逐项列出）：
+  * 文件：护身符Tests/V3JassicaFrozenV3RawProbeTests.swift（新建）
+  * 新增内容：frozen Jassica input 转录 + 15 条 probe（10 annual 经
+    YearV3SnapshotBuilder.build，3 EXACT_DATE 经 V3Core.evaluate(.day)，
+    2 MONTH_ONLY 经 V3Core.evaluate(.month)）+ reportYear/reportEvent
+    只读转录 + testA_Jassica_RawProbe_All 写盘本报告 raw 区段
+  * 是否仅测试 harness：是（@testable import 护身符，全部调用既有
+    production 入口，只读消费；无任何 production 符号被修改）
+  * 是否改变 production behavior：否（编译期与运行期均不影响 app target）
+
+================================================================================
+§11 LIMITATIONS
+================================================================================
+1. Birth-time precision：出生时间约为丑时（approximate）；02:00 仅为代表性
+   测试输入。丑时窗口内 hour pillar 丁丑 不变（登记报告 M10 已核验窗口
+   不变性），但窗口边界（≤01:00 → 丙子 / ≥03:00 → 戊寅）之外的敏感性
+   未在本轮 probe 内重跑；本轮全部输出仅对 02:00 代表输入有效。
+2. DaYun 边界：DaYun 链由 production helper 解析（female 阳年逆行由 helper
+   内部处理）；本轮观测到 25-34（2003–2011）→ 35-44（2014–2021）→
+   45-54（2024–2025）三段，均为机械记录，起运精确日未在本轮单独核验。
+3. 机械观察（仅记录、无成因判断、无正确性判断）：2004 / 2009 / 2014 / 2024
+   四年的 MONTHLY N2 MATRIX 逐行完全一致（12 行逐值相同），且 R-1/R-2/R-6
+   区段在多年间存在逐字重复；各年 ANNUAL V3 (.year) 层 N2/N1 则各年不同。
+   本报告按机器原样转录，不对该现象做任何解释或结论。
+4. R-5 未出现在 YearV3SnapshotBuilder 输出中（现有 derivation = R-1/R-2/
+   R-3/R-4/R-6）；按「已存在的 derivation fields（如适用）」口径原样记录。
+5. 立春边界机械结果：S5（2009-02-03）resolvedAnnualYear=2008、S8
+   （2017-01-15）resolvedAnnualYear=2016，均为生产链机械复算结果，按原样
+   记录；不构成对该两个事件年度归属的任何判断。
+6. 本轮为 Jassica 首次 Frozen V3 执行；chart 内部一致性（戊午/己未/乙酉/
+   丁丑、1978 无中国 DST → UTC+8）在登记报告中已核验，本轮未重复验算。
+7. 本轮不做且未做：hit/miss、match/mismatch、accuracy、success rate、score、
+   ranking、winner、calibration、threshold recommendation、algorithm
+   recommendation、semantic correction、post-hoc explanation，以及任何
+   「符合/不符合现实」「捕捉到/未捕捉到」类判断。
+
+================================================================================
+§12 STOP
+================================================================================
+本报告完成即 STOP。
+  * 不继续 Couple Shared-Event Matrix
+  * 不修改 Owen 报告 / Owen dataset
+  * 不修改 Frozen V3
+  * 不进行历史验证分析
+
+FINAL VERDICT: RAW EVIDENCE COLLECTION COMPLETE
+================================================================================
