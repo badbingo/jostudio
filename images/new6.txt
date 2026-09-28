@@ -1,0 +1,1206 @@
+V4 EVENT SEMANTICS — NEW-6 CONTRACT RESOLUTION
+EventSnapshot Contribution / School-Dependent Specificity-Lift
+DESIGN-ONLY REPORT v1
+
+STATUS: READ-ONLY / ANALYZE-ONLY / CONTRACT RESOLUTION — THIS ROUND IS DESIGN ONLY.
+NO IMPLEMENTATION. NO FILE MODIFICATION OF ANY KIND EXCEPT THIS REPORT.
+NEW-1 (CORE LOGIC CLOSED) AND NEW-4 (CORE SEMANTICS CLOSED / CONTRACT
+CLOSURE-READY) ARE NOT REOPENED. NEW-6 IS AN INDEPENDENT DOWNSTREAM
+CONTRACT TRACK.
+
+================================================================================
+§0 EXECUTIVE ANSWER
+
+Resolved issue: NEW-6 / EventSnapshot Contribution + School-Dependent
+Specificity-Lift.
+
+PRIMARY QUESTION (task §5): CAN THE EXISTING EVENTSNAPSHOT CONTRACT
+EXPRESS core L1 EXISTENCE + PLUGIN CONTRIBUTION + L2 REACHABILITY +
+SCHOOL DEPENDENCY?
+
+ANSWER: PARTIALLY. The current contract is PARTIAL:
+- PLUGIN-OFF side: COMPLETE — every required assertion is carried by
+  existing Hardened §17.2 fields (NEW-4 CLOSED, assertion set
+  N4-O1..N4-O8).
+- L1 LINEAGE: EXPRESSIBLE — Hardened §15.5 defines "这个候选如果关闭
+  所有 school plugins，还会不会存在？" as a Snapshot-MUST-ANSWER
+  existence question, mechanically answered by
+  coreEvidenceState.status ∈ {supported, conflicted, unresolved} via
+  derivedPluginIndependence; Registry §17.3 keeps the L1 record
+  coexisting with the L2 record.
+- PLUGIN CONTRIBUTION (the SUPPORT layer): EXPRESSIBLE —
+  pluginEvidenceState.modules[].contribution = corroboration-added
+  (Hardened §15.4) with addedEvidenceRefs.
+- THREE SEMANTIC CARRIERS ARE MISSING (all on the plugin-ON semantic
+  layer):
+  (1) SPECIFICITY-LIFT contribution value — the §15.4 contribution
+      enum (none / corroboration-added / lifted-insufficient-to-
+      supported / ...) has NO value meaning "ADD-only evidence that
+      enables L2 specificity/reachability" (Protocol Audit 缺口 2,
+      verbatim). lifted-insufficient-to-supported is an EVIDENCE-STATE
+      lift (insufficient→supported), NOT a SPECIFICITY lift (L1→L2);
+      the two dimensions are distinct and MT-1 needs the latter.
+  (2) SCHOOL-DEPENDENCY carrier — schoolModulesUsed records WHICH
+      modules were used (Hardened §17.2 Q13); it does NOT record THAT
+      the candidate's L2 identity DEPENDS on them. schoolModulesUsed
+      != proof of specificity dependency; the contract nowhere binds
+      the two. No snapshot-level school-dependent status exists.
+  (3) SNAPSHOT-LEVEL LIFT ANNOTATION — the fact "this L2 became
+      reachable BECAUSE of plugin ADD through the class school gate"
+      has no carrier; without (1)+(2) a gate-enabling ADD is
+      indistinguishable from a purely corroborating ADD.
+
+DOES THIS REQUIRE A NEW ENUM? YES at the vocabulary level:
+NEW-6 CONTRACT CHANGE REQUIRED (declared per task §6) — one
+specificity-lift contribution semantic slot must be defined inside the
+Hardened §15.4 OPEN enum (the trailing "/ ..." is Hardened's own
+reservation for extension), under the §15.3 explicit-registration
+discipline. Semantic requirement only; NOT implemented; final naming
+deferred to the implementation round.
+
+DOES THIS REQUIRE AN EVENTSNAPSHOT SCHEMA CHANGE? NO.
+EVENTSNAPSHOT SCHEMA CHANGE REQUIRED = NO. Both missing carriers are
+expressible WITHOUT adding or changing any §17.2 field:
+- the lift value fills the EXISTING open enum slot on the EXISTING
+  pluginEvidenceState.modules[].contribution field;
+- the school-dependent status is a DERIVED semantic (the §15.5 DPI
+  precedent: mechanically derived from the class's R1 SCHOOL-DEPENDENT
+  declaration + master matrix "core 判据不足以独立达 L2" + the record's
+  own schoolModulesUsed / pluginEvidenceState), not a new stored field.
+
+MINIMUM CONTRACT REPAIR: DEFINED — MCP-N6-1 (contribution vocabulary
+extension + §15.3-style registration discipline), MCP-N6-2 (Registry
+EventSnapshot-contract derived school-dependency note + §18.2 S6
+assertion-set extension), MCP-N6-3 (cross-reference web + NEW-4
+deferred-item takeover note). All DESIGN-ONLY, NOT IMPLEMENTED.
+
+MODEL COMPARISON (task §15): MODEL B = VALID (a dedicated
+plugin-contribution SUPPORT/LIFT distinction is required);
+MODEL A / MODEL C / MODEL D = INVALID (§12).
+
+Firewalls: Specificity-lift direction PRESERVED (§8); NEW-1 = PASS;
+NEW-4 = PASS; HD-5 = PASS; SECOND-V3 RISK = ABSENT; DOUBLE/NUMERIC
+RISK = ABSENT.
+
+CLOSURE (task §22): C1-C14 ALL PASS; C1-C12 pass but the two snapshot
+carriers are missing today → per the task's own branch rule:
+  NEW-6 CORE SEMANTICS = CLOSED
+  NEW-6 CONTRACT     = NOT CLOSURE-READY
+(The third branch "CONTRACT CHANGE REQUIRED" as a FINAL-STATUS value is
+NOT triggered: that branch applies when a required carrier CANNOT be
+expressed without changing the EventSnapshot schema — here both
+carriers ARE expressible without schema change.)
+
+SCOPE NOTE (mandatory honesty): Protocol Audit registers NEW-6 with TWO
+sub-items (Audit L737-738): "(a) EventSnapshot 显式并发 unresolved flag
+字段 + (b) MT-1 场景 contribution 枚举值缺位". This task book targets
+ONLY sub-item (b) — contribution + school-dependent specificity-lift.
+Sub-item (a) (the concurrency unresolved-flag explicit field, 缺口 1 /
+IP-5 other half) is OUT OF SCOPE for this round and REMAINS REGISTERED,
+untouched (§2, §20 RR-1). Resolving (b) does not silently close (a).
+
+================================================================================
+§1 FIXED INPUTS / SHA VERIFICATION
+
+All seven fixed inputs verified locally (shasum -a 256). All MATCH.
+
+1. V3_Bazi_Event_Observability_Architecture_Audit_TEST_ONLY_v1.txt
+   f797e48377e57407695a291da241e12f140121d149d63a3d4a0f520a48d5ccf4
+   MATCH (task-book value).
+
+2. V4_Event_Semantics_Architecture_HARDENED_DESIGN_v1.txt
+   8a559f8e88b151ce6684f5f89464c34b51d67b52149d258721b0ff89f70bacab
+   MATCH (repository-registered authority value).
+
+3. V4_Event_Semantics_Registry_Specification_DESIGN_ONLY_v1.txt
+   c80d7d760de22b373d1e432dee021925a160cea52bf19ef2e33020a984734772
+   MATCH (repository-registered value).
+
+4. V4_Event_Semantics_Protocol_Contract_Audit_DESIGN_ONLY_v1.txt
+   0ac0c0b761e168fcd4c36f9cd33a2bb5dfa7260681ca7bca1ffd201c3dc9acbe
+   MATCH (repository-registered value).
+
+5. V4_Event_Semantics_NEW1_MT1_Contradiction_Resolution_DESIGN_ONLY_v1.txt
+   7aff5e84e174e6ac4880ea1b339ddfe11781e22b7845884864f0540be7933eb9
+   MATCH (task-book value).
+
+6. V4_Event_Semantics_NEW1_MT1_Resolution_Closure_DESIGN_ONLY_v1.txt
+   f4fb9d1b8c1f0ab32ad10cc216c2f14cc84c00ab2a640702fa85a19d5032bc12
+   MATCH (task-book value).
+
+7. V4_Event_Semantics_NEW4_MT1_FPO_Contract_Resolution_DESIGN_ONLY_v1.txt
+   47effe48cfa2c53affa011924d1fb7ff5cc9fd2b076f89637e136728c066760d
+   MATCH (task-book value). Immediate upstream authority together with
+   #6.
+
+No mismatch. No STOP condition triggered. No version substituted.
+
+================================================================================
+§2 NEW-6 PROBLEM STATEMENT
+
+2.1 Registration source (Protocol Contract Audit)
+- NEW-6 registered (Audit L737-738): "NEW-6 EventSnapshot 显式并发
+  unresolved flag 字段 + MT-1 场景 contribution 枚举值缺位（IP-5 范围）".
+- 缺口 1 (Audit L646): 并发 unresolved flag 无显式命名字段.
+- 缺口 2 (Audit L647-650): "MT-1 的『plugin 启用使 L2 identity 可达』
+  场景在 §15.4 contribution 枚举（none / corroboration-added /
+  lifted-insufficient-to-supported / …）中无定义值 → NEW-6 / IP-5 范围".
+- IP-5 (Audit L773): EventSnapshot review 范围含 NEW-6.
+
+SCOPE SPLIT (this round): the task book (§0/§3) targets the
+contribution / school-dependency / specificity-lift track — 缺口 2 and
+the §3 A-E representation gaps. 缺口 1 (concurrency unresolved-flag
+field) is a DIFFERENT sub-item of NEW-6, not named by this task book,
+and REMAINS REGISTERED unchanged. This report neither closes nor
+absorbs it.
+
+2.2 Upstream closed state (must not be reopened)
+- NEW-1 (Closure report): coreEvidenceState / derivedPluginIndependence
+  answer CORE condition independence ONLY; DPI=YES and plugin-off L2
+  unreachability are simultaneously valid; five-concept separation
+  (core independence / family existence / L2 reachability / ceiling /
+  plugin contribution) is CLOSED.
+- NEW-4 (this round's immediate predecessor): MODEL B VALID — plugin
+  OFF yields family=Movement, level=L1, eventClass=nil, supported,
+  DPI=YES, ceiling=L2, NO L2 identity; plugin ON yields L1∥L2
+  coexistence. MT-1-FPO assertion set N4-O1..N4-O8 (OFF, complete) and
+  N4-N1..N4-N4 (ON, state fields) DEFINED; three items (N6-1 school-
+  dependent annotation carrier, N6-2 lift contribution value, N6-3
+  full plugin-on contribution semantics) were explicitly DEFERRED TO
+  NEW-6. Those three deferred items are exactly THIS round's object.
+
+2.3 The five representation gaps (task §3 A-E)
+The current contract does not explicitly represent:
+  A. "this plugin added corroborating evidence"
+  B. "this plugin contribution is what allowed L2 specificity to
+     become reachable"
+  C. "the candidate would remain at L1 with all plugins OFF"
+  D. "the plugin did NOT independently create the candidate"
+  E. "the L2 identity is school-dependent"
+Per task §3 these must be analyzed SEPARATELY; one field must not be
+assumed to carry all five. The per-concept audit is §3; the verdict is
+that A/C/D are already carried, B and E are not.
+
+================================================================================
+§3 EXISTING EVENTSNAPSHOT CONTRACT AUDIT
+
+3.1 Field inventory (Hardened §17.2, L813-841, verbatim structure)
+EventSnapshot: snapshotVersion / registryVersion+registryHash /
+  v3SnapshotRef (input binding) / scopeAnchor / anchorDate /
+  pluginManifest ([ModuleID+Version], §15.6) / candidates:
+  [EventCandidate] / buildProvenance.
+EventCandidate: candidateID / family (L1) + semanticBranch /
+  eventClass: EventClass? (L2, nullable) / specificity: Specificity?
+  (L3, nullable) / level (L1/L2/L3) / status (§12.3 vocabulary) /
+  evidenceRefs: [EventEvidence] (§16.3 full provenance) /
+  missingPremises: [PremiseID] / branchConflicts: [BranchConflict] /
+  coreEvidenceState: EvidenceState (§11 three fields) /
+  pluginEvidenceState: PluginState (§15.4) /
+  derivedPluginIndependence: Bool / timingResolution
+  (YEAR_ONLY/MONTH_ONLY/EXACT_DATE/UNRESOLVED) / timingWindow: Window? /
+  ambiguityClass (A/B/C) / specificityCeiling (L1/L2/L3) /
+  schoolModulesUsed: [ModuleID] / aggregate: Bool (L1-X only).
+Hardened §17.3 disciplines: immutable / deterministic / Codable
+  (新增字段 default = [] 沿现有兼容性惯例) / registry-version-bound /
+  provenance-bound / zero Double / no random / no locale dependence /
+  no AI write-back.
+
+3.2 Protocol Audit expressiveness table (Audit §12, L621-643)
+All 17 audited concepts are "有承载" (carried), including
+pluginEvidenceState (row 9), derivedPluginIndependence (row 10, §16.3
+mechanical map), schoolModulesUsed (row 13), evidenceRefs (row 14),
+provenance (row 15) — with exactly two registered gaps (L645-651):
+缺口 1 unresolved flag (out of scope, §2) and 缺口 2 MT-1 contribution
+enum value (THIS round).
+
+3.3 Per-concept classification (task §5 classes:
+EXPRESSIBLE / PARTIALLY EXPRESSIBLE / NOT EXPRESSIBLE / AMBIGUOUS)
+
+CONCEPT A — "this plugin added corroborating evidence"
+  EXPRESSIBLE.
+  Carrier: pluginEvidenceState.modules[] entries carry
+  {moduleID, moduleVersion, addedEvidenceRefs, contribution:
+  corroboration-added} (Hardened §15.4, L701-709). schoolModulesUsed
+  and pluginManifest disclose usage. The SUPPORT layer is complete.
+
+CONCEPT B — "this plugin contribution is what allowed L2 specificity
+to become reachable"
+  NOT EXPRESSIBLE.
+  The §15.4 enum has no value for gate-enabling ADD. The only lift
+  value, lifted-insufficient-to-supported, is an EVIDENCE-STATE lift
+  governed by §15.3 ("若 plugin evidence 使原本 insufficient 的候选达到
+  supported…contribution = lifted-insufficient-to-supported"): its
+  precondition is coreEvidenceState.status = insufficient, which MT-1
+  does NOT satisfy (MT-1 core is supported throughout; only the L2
+  reachability changes). Using corroboration-added for MT-1's S-YM1
+  would make a gate-enabling ADD indistinguishable from a purely
+  corroborating ADD — exactly Protocol Audit 缺口 2.
+
+CONCEPT C — "the candidate would remain at L1 with all plugins OFF"
+  EXPRESSIBLE.
+  Hardened §15.5 (L711-715) makes this a Snapshot-MUST-ANSWER
+  existence question: "这个候选如果关闭所有 school plugins，还会不会
+  存在？答 = coreEvidenceState.status ∈ {supported, conflicted,
+  unresolved}". For MT-1: supported → derivedPluginIndependence = YES
+  → survives plugins-OFF. Registry §17.3 keeps the L1 broad-family
+  record as an independent output layer (NEW-4 MODEL B, CLOSED).
+  Note: this is FAMILY-level lineage — the contract's existence
+  question is about the candidate (family), not about a per-record
+  L2→L1 pointer; a candidateID-level lineage reference is NOT required
+  by any contract text and is NOT proposed (no over-design).
+
+CONCEPT D — "the plugin did NOT independently create the candidate"
+  EXPRESSIBLE.
+  Same §15.5 mechanical chain: coreEvidenceState = supported ∧
+  derivedPluginIndependence = YES proves the candidate family is
+  core-backed and would exist with plugins OFF; Hardened §15.2 X-2
+  (plugin 不得无中生有产生独立 Event Candidate) and HD-5 forbid the
+  contrary; the plugin-side ADD-only role is visible in
+  pluginEvidenceState.modules[] (ADD evidence, not create candidate).
+
+CONCEPT E — "the L2 identity is school-dependent"
+  NOT EXPRESSIBLE (snapshot level).
+  Registry MT-1 R1 declares SCHOOL-DEPENDENT at CLASS level, and the
+  Hardened master matrix MT-1 row states "core 判据不足以独立达 L2 时
+  停 L1 Movement family" — but NO §17.2 field or derivation rule
+  carries a school-dependent STATUS onto the L2 record.
+  schoolModulesUsed: [ModuleID] answers only Hardened §17.2 Q13
+  ("使用了哪些 school modules？", L806-807). See §5 (school dependency
+  audit) for the three-way distinction and the carrier decision.
+
+3.4 Task §5 candidate-level verdicts
+
+PLUGIN-OFF candidate (family=Movement, level=L1, eventClass=nil,
+coreEvidenceState=supported, DPI=YES, specificityCeiling=L2):
+  ALL SIX ITEMS EXPRESSIBLE — carried by existing §17.2 fields
+  (family / eventClass=nil / level / coreEvidenceState /
+  derivedPluginIndependence / specificityCeiling); "L2 identity
+  unreachable" is expressed by the ABSENCE of any L2 record plus
+  ceiling=L2 (NEW-4 CLOSED: N4-O1..N4-O8). Zero gaps.
+
+PLUGIN-ON candidate (family=Movement, level=L2, eventClass=MT-1,
+supported, DPI=YES, ceiling=L2, school-dependent=true, plugin
+contribution=present, L1 fallback provenance=preserved):
+  - family / level / eventClass / coreEvidenceState / DPI / ceiling:
+    EXPRESSIBLE (existing fields; L1∥L2 two-record coexistence per
+    Registry §17.3).
+  - school-dependent = true: NOT EXPRESSIBLE (no snapshot-level
+    status; see §5).
+  - plugin contribution = present: PARTIALLY EXPRESSIBLE (SUPPORT
+    layer = corroboration-added exists; the LIFT semantics is the
+    missing value — §4).
+  - L1 fallback provenance = preserved: EXPRESSIBLE (§15.5
+    existence-must-answer + DPI=YES mechanical derivation + the L1
+    record still present in the candidates array; family-level
+    lineage is what the contract demands — §3.3 CONCEPT C).
+
+OVERALL: EVENTSNAPSHOT CURRENT EXPRESSIBILITY = PARTIAL.
+PLUGIN-OFF side complete; plugin-ON state fields complete; the
+plugin-ON semantic layer (B + E + lift annotation) is the residual gap.
+
+================================================================================
+§4 CONTRIBUTION VOCABULARY AUDIT
+
+4.1 Complete current vocabulary (Hardened §15.4, L701-709)
+pluginEvidenceState = {modules: [{moduleID, moduleVersion,
+  addedEvidenceRefs, contribution: none / corroboration-added /
+  lifted-insufficient-to-supported / ...}], aggregateNote}
+两态永不合并成一个数值或一个 ordinal。 (two states never merge into
+one number or one ordinal — dual-state separation discipline)
+
+Values:
+  none                          — no plugin contribution.
+  corroboration-added           — ADD-only corroborating evidence
+                                  (the PLUGIN_SUPPORT semantic).
+  lifted-insufficient-to-supported — EVIDENCE-STATE lift: plugin
+                                  evidence raised an insufficient core
+                                  to supported; governed by the §15.3
+                                  explicit-registration discipline
+                                  (coreEvidenceState.status = insufficient
+                                  原样保留; 绝不能呈现为「Core
+                                  independently detected event」).
+  ...                           — OPEN enum tail: Hardened's own
+                                  reservation for future values.
+
+4.2 Does any existing value mean "ADD-only evidence that enables
+specificity/reachability"? NO.
+- corroboration-added = SUPPORT only; it does not assert that the
+  candidate's reachable specificity changed because of the ADD.
+- lifted-insufficient-to-supported = EVIDENCE-STATE lift, with
+  precondition coreEvidenceState.status = insufficient. MT-1 keeps
+  coreEvidenceState = supported in BOTH plugin states (NEW-4 CLOSED:
+  truth-table row 1 unchanged); the transition is in REACHABILITY
+  (L1-only → L1+L2), not in evidence status. Applying
+  lifted-insufficient-to-supported to MT-1 would be a category error:
+  it would assert a false evidence-state transition AND collide with
+  NEW-4's row 1.
+- The two lifts live on DIFFERENT dimensions:
+    EVIDENCE-STATE lift:  insufficient → supported  (core-side status)
+    SPECIFICITY lift:     L1 reachable → L2 reachable (reachability)
+  They are NOT interchangeable and the contract needs BOTH.
+
+4.3 Is the PLUGIN_SUPPORT vs PLUGIN_SPECIFICITY_LIFT distinction
+genuinely required? YES — by contract evidence, not preference:
+  (i) Protocol Audit 缺口 2 names the missing value verbatim.
+  (ii) Hardened §15.3 establishes the governing discipline for ALL
+       plugin-caused lifts: explicit registration, core state
+       preserved verbatim, never presentable as "Core independently
+       detected event". A specificity lift is the same discipline
+       applied one dimension over; without a dedicated value the
+       discipline CANNOT be executed for MT-1 (there is nothing to
+       register with).
+  (iii) NEW-4 (CLOSED) made "L2 reachable ONLY via the explicit
+       SCHOOL-DEPENDENT school gate" a load-bearing plugin-ON
+       semantic; an unloadable assertion is not an auditable one.
+  (iv) Auditability/OFF-ON reproducibility: with only
+       corroboration-added, a W-1-style pure corroboration ADD and an
+       MT-1-style gate-enabling ADD are snapshot-indistinguishable;
+       the OFF/ON differential then cannot be mechanically attributed.
+
+4.4 DECLARATION (per task §6):
+  NEW-6 CONTRACT CHANGE REQUIRED.
+  Semantic requirement ONLY (no implementation, no final naming):
+  one contribution semantic slot must be defined in the §15.4 open
+  enum with ALL of the following semantics:
+    - ADD-only: the module added evidence; it created nothing
+      (HD-5 / X-2 compatible).
+    - Target precondition: the candidate family is core-backed —
+      coreEvidenceState = supported ∧ derivedPluginIndependence = YES
+      (NEW-4 CLOSED rows 1-2 unchanged).
+    - Effect: the class-specific school gate became satisfiable with
+      the module's ADD, making the L2 identity REACHABLE (specificity
+      reached moves L1 → L2; ceiling unchanged).
+    - Non-effects: coreEvidenceState unchanged (status/breadth/
+      corroboration core-side); no V3 fact produced; no numeric
+      weight; not presentable as core-independent output (§15.3
+      discipline extended to the specificity dimension).
+  The value lives on the EXISTING
+  pluginEvidenceState.modules[].contribution field of the L2 record's
+  contributing module entry (S-YM1). No schema change.
+
+================================================================================
+§5 SCHOOL DEPENDENCY AUDIT
+
+5.1 The three distinct claims (task §7)
+  1. A plugin was used.
+     Carrier EXISTS: pluginManifest (§15.6, module+version) and
+     schoolModulesUsed ([ModuleID], Hardened §17.2 Q13).
+  2. A plugin contributed evidence.
+     Carrier EXISTS: pluginEvidenceState.modules[] with
+     contribution != none + addedEvidenceRefs (§15.4).
+  3. The candidate DEPENDS on that plugin for L2 REACHABILITY.
+     Carrier DOES NOT EXIST (snapshot level). This is the gap.
+
+The three are NOT automatically equivalent — each has an independent
+falsifier: (1) can hold with contribution = none (module enabled, no
+evidence added); (2) can hold with no L2 effect (a corroboration-only
+ADD on family-level evidence); (3) can hold with (1) false in the OFF
+run (dependency exists even while the plugin is disabled — the OFF run
+has empty schoolModulesUsed yet MT-1's L2 REMAINS school-dependent by
+class declaration). (3) is a property of the CLASS + candidate state,
+not of module usage.
+
+5.2 The §7 test: schoolModulesUsed != proof of specificity dependency
+VERDICT: CONFIRMED — the contract does NOT explicitly say otherwise.
+Hardened §17.2 declares schoolModulesUsed: [ModuleID] with no
+semantics beyond usage disclosure (Q13); no Registry clause binds it
+to L2 dependency. A counterexample within the existing contract
+confirms non-equivalence: plugin enabled + corroboration-only ADD on
+an L1-family evidence item → schoolModulesUsed non-empty, zero L2
+dependency. Therefore a separate semantic carrier IS required for
+claim 3.
+
+5.3 Carrier decision (DO NOT add the field — task §7)
+REQUIRED CARRIER = a DERIVED-SEMANTIC registration rule (the Hardened
+§15.5 precedent: derivedPluginIndependence: Bool is mechanically
+derived from coreEvidenceState — derived facts need no independent
+storage):
+  For any candidate whose eventClass belongs to a class with
+  R1 = SCHOOL-DEPENDENT (Registry) — equivalently, whose master-matrix
+  row states "core 判据不足以独立达 L2":
+    the record's school-dependency status for its L2 identity is
+    mechanically TRUE, derived from (class declaration + master
+    matrix); schoolModulesUsed (and, when ON,
+    pluginEvidenceState.modules[].moduleID) DISCLOSES the concrete
+    module(s) through which the gate is satisfied.
+  Scope guards (semantic overload prevention):
+    - Applies ONLY to L2 records of SCHOOL-DEPENDENT classes.
+    - NEVER annotates an L1 record (L1 family existence is
+      core-backed; NEW-4 X-7 forbids school-dependent annotation on
+      the L1 record).
+    - Adds no field, no enum, no numeric; pure derivation rule text in
+      the Registry EventSnapshot contract.
+This carrier, together with the §4 lift value, makes claim 3 explicit,
+auditable, and mechanically checkable WITHOUT schema change.
+
+================================================================================
+§6 PLUGIN-OFF / PLUGIN-ON FORMAL TRUTH TABLE (21 rows)
+
+Assumption: R5 = MT-1.1 ∧ MT-1.2 ∧ MT-1.3 satisfied (all core).
+Only existing vocabulary; UNREPRESENTED where impossible.
+
+ #  Dimension                        PLUGIN OFF            PLUGIN ON
+ 1  core condition set               MT-1.1∧MT-1.2∧MT-1.3  (same; all core)
+ 2  coreEvidenceState                supported             supported
+ 3  derivedPluginIndependence        YES                   YES
+ 4  family candidate                 Movement exists       Movement exists
+                                                           (family of both
+                                                           records)
+ 5  candidate level                  L1 (one record)       L1 ∥ L2 coexist
+                                                           (two records,
+                                                           Registry §17.3)
+ 6  eventClass                       nil (L1 record)       MT-1 (L2 record;
+                                                           L1 record keeps
+                                                           nil)
+ 7  specificityCeiling               L2                    L2
+ 8  L2 reachability                  NO                    YES (class school
+                                                           gate satisfied via
+                                                           S-YM1 ADD)
+ 9  plugin used                      NO (pluginManifest    YES (S-YM1 in
+                                     empty/absent;         pluginManifest;
+                                     schoolModulesUsed     schoolModulesUsed
+                                     empty)                = [S-YM1])
+10  plugin contribution              none                  SUPPORT layer:
+                                                           corroboration-
+                                                           added (existing
+                                                           value); LIFT
+                                                           semantics
+                                                           (gate-enabling
+                                                           ADD):
+                                                           UNREPRESENTED →
+                                                           MCP-N6-1
+11  school dependency                not applicable to     L2 identity school-
+                                     the OFF state (no    dependent = TRUE:
+                                     L2 record; L1 record status derivable
+                                     never carries the    only AFTER
+                                     annotation)          MCP-N6-2 derived
+                                                           rule; today:
+                                                           UNREPRESENTED at
+                                                           snapshot level
+                                                           (class-level R1
+                                                           declaration
+                                                           exists but is not
+                                                           carried onto the
+                                                           record)
+12  specificity lift                 none (no L2)          OCCURRED (L1→L2
+                                                           reachability
+                                                           transition):
+                                                           UNREPRESENTED →
+                                                           MCP-N6-1 value +
+                                                           §5 derived rule
+13  candidate status                 L1 record active;     L1 record active;
+                                     L2 stop-level         L2 record active
+                                     dormant (Hardened     (gate satisfied)
+                                     §13.2)
+14  evidence status                  core: supported       core: supported
+                                     (plugin side absent)  (UNCHANGED —
+                                                           §15.4 dual-state;
+                                                           plugin: supported-
+                                                           contributing on
+                                                           the L2 record's
+                                                           module entry)
+15  evidence breadth                 narrow (R5 minimal    narrow (plugin ADD
+                                     set satisfied,        does not widen the
+                                     Registry §15.3)       CORE minimal set)
+16  corroboration                    core-side: the R9     core-side: same;
+                                     corroboration-only    plugin-side:
+                                     temporal item         corroboration-added
+                                                           (SUPPORT layer)
+17  timing resolution                MONTH_ONLY            MONTH_ONLY
+                                     (R9 mechanical)       (same)
+18  ambiguity class                  B                     B
+19  L1 fallback existence            YES (the record       YES (the L1 record
+                                     itself)               remains; lineage
+                                                           preserved, §17.3)
+20  "plugin independently            NO                    NO (DPI=YES
+    created candidate?"                                    mechanically
+                                                           entails NO; X-2/
+                                                           HD-5)
+21  "would candidate survive         YES (this column      YES (Hardened
+    all plugins OFF?"                IS the OFF state)     §15.5 existence-
+                                                           must-answer via
+                                                           DPI=YES)
+
+Row attribution:
+  UNREPRESENTED cells: row 10 (LIFT semantic value), row 11
+  (snapshot-level school-dependent status), row 12 (lift annotation) —
+  all confined to the PLUGIN-ON semantic layer; all three are exactly
+  the MCP-N6-1 + MCP-N6-2 objects.
+  All other cells: EXPRESSIBLE with existing vocabulary.
+  UNCHANGED rows (1, 2, 4, 7, 14-core, 15, 17, 18, 20, 21): the core
+  side is invariant under the plugin switch — MT-1's defining
+  invariance.
+  CHANGED rows (5, 6, 8, 9, 13, 16-plugin-side, 19-context): the
+  reachability/plugin side.
+
+================================================================================
+§7 SIX-CONCEPT TEST (task §9)
+
+Q1. Does the core L1 candidate exist without plugins?
+    MT-1 answer: YES. Mechanically expressible: Hardened §15.5
+    existence-must-answer (coreEvidenceState = supported) + NEW-4
+    MODEL B (CLOSED). → EXPRESSIBLE.
+Q2. Does the core condition set independently hold?
+    YES. coreEvidenceState / derivedPluginIndependence (§15.5).
+    → EXPRESSIBLE.
+Q3. Did a plugin add evidence?
+    Depends on plugin ON/OFF: OFF = NO; ON = YES. Expressible via
+    pluginEvidenceState.modules[] (contribution ≠ none,
+    addedEvidenceRefs) + schoolModulesUsed. → EXPRESSIBLE.
+Q4. Would the L2 identity be unreachable without that plugin?
+    YES (for MT-1). NOT EXPRESSIBLE as a snapshot-level assertion:
+    the contract has no counterfactual carrier. It IS derivable —
+    class R1 SCHOOL-DEPENDENT + master matrix "core 不足以独立达 L2" +
+    coreEvidenceState unchanged across the switch — but the derivation
+    rule is NOT WRITTEN anywhere today. → Missing carrier = the
+    MCP-N6-2 derived rule.
+Q5. Is the L2 identity explicitly school-dependent?
+    YES. NOT EXPRESSIBLE at snapshot level (§5). → Missing carrier =
+    the same MCP-N6-2 derived rule (disclosure via existing
+    schoolModulesUsed).
+Q6. Did the plugin create the candidate from nothing?
+    NO. EXPRESSIBLE: DPI=YES mechanically entails the family is
+    core-backed (§15.5) and X-2/HD-5 forbid creation. → EXPRESSIBLE.
+
+Expected conceptual answers confirmed: Q1=YES, Q2=YES, Q3=depends
+(YES iff ON), Q4=YES, Q5=YES, Q6=NO.
+
+EXACT MISSING CARRIERS (complete list — nothing else is missing):
+  MC-1. §15.4 open-enum specificity-lift contribution value
+        (gate-enabling ADD semantics) — carried on the existing
+        pluginEvidenceState.modules[].contribution field.
+  MC-2. Registry derived-semantics rule binding school-dependency
+        onto L2 records of SCHOOL-DEPENDENT classes (input: class R1
+        declaration + master matrix + record's own
+        schoolModulesUsed/pluginEvidenceState; output: auditable
+        school-dependent status), plus the §18.2 S6 assertion-set
+        extension to assert it.
+
+================================================================================
+§8 SPECIFICITY-LIFT FIREWALL (task §10 — mandatory)
+
+ALLOWED direction (and only this):
+  CORE: L1 candidate exists
+    ↓
+  PLUGIN ADD evidence (ADD-only; registered on the module entry)
+    ↓
+  class-specific school gate satisfied
+    ↓
+  L2 becomes reachable
+FORBIDDEN direction:
+  PLUGIN → creates MT-1 candidate from nothing.
+
+Lineage test (task §10):
+  Plugin OFF: L1 exists — truth-table row 4/19 = YES (NEW-4 CLOSED).
+  Plugin ON: L1 still exists conceptually — row 19 = YES (the L1
+  record remains in candidates[]; Registry §17.3 "L1 broad family 视图
+  与 L2 并存不属合并"); L2 becomes reachable — row 8 = YES.
+
+Does the proposed contract preserve that lineage? YES:
+  - MCP-N6-1's value semantics PRECONDITION the family being
+    core-backed (coreEvidenceState = supported ∧ DPI = YES); a plugin
+    cannot emit a lift value for a family that would not survive OFF
+    (that combination is contract-illegal by construction).
+  - MCP-N6-2's derived rule annotates ONLY the L2 identity of
+    SCHOOL-DEPENDENT classes; the L1 record is constitutionally
+    core-backed and un-annotated.
+  - The forbidden direction is doubly blocked: X-2 (plugin 不得无中生有
+    产生独立 Event Candidate) + HD-5 remain in force; no NEW-6
+    mechanism adds any creation path.
+RESULT: lineage PRESERVED. NO CONTRACT VIOLATION.
+The lift is a specificity/REACHABILITY transition on an EXISTING
+core-backed family — never candidate creation.
+
+================================================================================
+§9 NEW-1 COMPATIBILITY (task §11)
+
+NEW-6 must NOT alter derivedPluginIndependence.
+  Plugin OFF: DPI = YES (NEW-4 CLOSED row 3).
+  Plugin ON:  DPI = YES (row 3; Hardened §15.5 mechanical map is
+              plugin-state-independent).
+DPI answers "Are the core conditions independently satisfied?" —
+MCP-N6-1/2/3 touch NOTHING in that chain: no coreEvidenceState input
+change, no §15.5 map change, no §16.3 mapping change.
+DPI does NOT answer "Is L2 reachable?" — NEW-6's carriers live on a
+DIFFERENT axis (pluginEvidenceState contribution value; school-
+dependency derived status). No proposed field or interpretation
+conflates the two axes:
+  - The lift value PRECONDITIONS DPI=YES; it never IMPLIES DPI (the
+    implication direction is one-way and about the family, not L2).
+  - The school-dependency rule annotates L2 records only; DPI is
+    family-level.
+NEW-1 five-concept separation re-verified on the §6 truth table:
+  core independence (rows 1-3, unchanged) / family existence (rows 4,
+  19, unchanged) / L2 reachability (row 8, changes) / ceiling (row 7,
+  unchanged) / plugin contribution (rows 9-12, plugin-side only) —
+  mutually independent; the switch moves only the plugin/reachability
+  side.
+NEW-1 COMPATIBILITY = PASS. NEW-1 CORE LOGIC = CLOSED remains intact.
+
+================================================================================
+§10 NEW-4 COMPATIBILITY (task §12)
+
+NEW-4 established and CLOSED (must not change):
+  Plugin OFF: family=Movement, level=L1, eventClass=nil,
+  coreEvidenceState=supported, DPI=YES, ceiling=L2, no L2 identity
+  (assertion set N4-O1..N4-O8).
+
+Verification:
+  OFF → L1: UNCHANGED. MCP-N6-1/2/3 add NOTHING to the OFF run: the
+  OFF snapshot contains no plugin module entry, no school-dependent
+  annotation, no lift value. Every N4-O assertion remains exactly as
+  defined. (The §5 derived school-dependency rule does not fire on the
+  OFF run — there is no L2 record.)
+  ON → L1 lineage + L2 reachable: the plugin-ON representation is an
+  ADDITIONAL state layered on top of the same core state — rows 1-4,
+  7, 19 unchanged; rows 5/6/8 gain the L2 record. The OFF fallback
+  semantics are preserved BY CONSTRUCTION: DPI=YES (§15.5) guarantees
+  the family survives OFF; the L1 record's continued presence carries
+  it visibly.
+  NOT "OFF → no candidate" (that was MODEL A, adjudicated INVALID in
+  NEW-4); NOT "ON → new independent candidate" (forbidden by X-2/HD-5;
+  the L2 record shares family=Movement with the pre-existing L1
+  record; the lift value's precondition encodes exactly this).
+
+Deferred-item takeover (NOT a reopening):
+  NEW-4's MCP-N4-2 carried three items marked DEFERRED TO NEW-6
+  (N6-1 school-dependent carrier, N6-2 lift value, N6-3 full plugin-on
+  contribution semantics). THIS round defines their semantic
+  requirements (MCP-N6-1/2). NEW-4's status is untouched:
+  CORE SEMANTICS = CLOSED, CONTRACT = CLOSURE-READY — the deferred
+  markers were design-level placeholders pointing HERE, and here they
+  are answered. Implementation remains NOT GRANTED for both rounds.
+NEW-4 COMPATIBILITY = PASS.
+
+================================================================================
+§11 HD-5 COMPATIBILITY (task §13)
+
+HD-5: plugin cannot independently create candidate; plugin can only
+ADD evidence.
+
+Does the existing contract lack a way to PROVE this? Partially — and
+the missing provenance pieces are exactly the NEW-6 carriers:
+  ADD-evidence provenance: ALREADY CARRIED —
+  pluginEvidenceState.modules[] {moduleID, moduleVersion,
+  addedEvidenceRefs, contribution} gives per-module, per-ref ADD
+  registration (§15.4); pluginManifest gives enablement provenance
+  (§15.6); evidenceRefs/buildProvenance give the §16.3 provenance
+  chain back to V3.
+  NON-creation proof: ALREADY CARRIED — DPI=YES (§15.5) mechanically
+  proves the family is core-backed; X-2/HD-5 forbid the contrary.
+  GATE-ENABLING provenance (which ADD enabled WHICH reachability):
+  MISSING today — this is MC-1/MC-2 (§7). After MCP-N6-1/2, the L2
+  record's module entry (contribution = the lift value, moduleID =
+  S-YM1) plus the derived school-dependency rule close the proof:
+  "this named module's ADD, through this class's named school gate,
+  made this L2 reachable — and nothing was created (DPI=YES)."
+HD-5 itself is NOT violated by anything proposed: no creation path is
+added; the lift value's semantics are ADD-only by definition (§4.4).
+HD-5 = PASS.
+
+================================================================================
+§12 CONTRIBUTION MODEL COMPARISON (task §15)
+
+Criteria set (task §15): auditability / OFF-ON reproducibility / NEW-1 /
+NEW-4 / HD-5 / school dependency / L1 fallback / L2 reachability /
+no hidden second V3 / deterministic serialization.
+
+MODEL A: "Existing generic supporting contribution is sufficient."
+  VERDICT: INVALID.
+  corroboration-added cannot distinguish SUPPORT from gate-enabling
+  ADD (§4.2-4.3); auditability and OFF-ON reproducibility fail (the
+  OFF/ON differential cannot be attributed); school dependency and L2
+  reachability stay unassertable; collides with Protocol Audit 缺口 2
+  which the corpus itself registered. NEW-1/NEW-4/HD-5 are not
+  directly violated by MODEL A as a reading, but A leaves B/E of task
+  §3 unrepresentable — failing the task's own primary question.
+
+MODEL B: "A dedicated plugin-contribution distinction is required."
+  VERDICT: VALID.
+  A SUPPORT/LIFT distinction inside the §15.4 open enum:
+  - auditability: per-module contribution value + addedEvidenceRefs
+    (existing fields) make the ADD's ROLE machine-checkable.
+  - OFF-ON reproducibility: OFF run has no module entry; ON run
+    carries the lift value on the S-YM1 entry — the differential is
+    deterministic.
+  - NEW-1: untouched (DPI axis separate). NEW-4: OFF set unchanged;
+    deferred items taken over. HD-5: ADD-only semantics built into the
+    value definition. School dependency: paired with the MCP-N6-2
+    derived rule. L1 fallback: precondition "family core-backed" is
+    part of the value semantics. L2 reachability: the value IS the
+    reachability-change annotation. No hidden second V3: consumes V3
+    refs + registered module evidence only. Deterministic
+    serialization: enum value on an existing Codable field (§17.3).
+
+MODEL C: "A dedicated specificity-lift carrier is required in addition
+to plugin contribution."
+  VERDICT: INVALID (redundant).
+  The "in addition" carrier (a separate EventCandidate field such as a
+  lift record) would duplicate what MODEL B's value + the §15.5-style
+  derived rule already carry: Hardened's own precedent for lifts is a
+  CONTRIBUTION VALUE (lifted-insufficient-to-supported), not a
+  dedicated field (§15.3); the DPI precedent shows derived facts take
+  derivation rules, not storage (§15.5); §17.3's 新增字段 default=[]
+  convention exists but nothing here REQUIRES it. A second carrier
+  would create two places stating one fact — an inconsistency surface
+  with zero audit gain, violating minimum repair.
+
+MODEL D: "No EventSnapshot change is required; evidenceRefs +
+schoolModulesUsed are sufficient."
+  VERDICT: INVALID.
+  evidenceRefs is a provenance REFERENCE set (§16.3 chain) — it
+  carries no contribution-role semantics; schoolModulesUsed answers
+  only Q13 usage disclosure (§5.2 counterexample). The pair cannot
+  mechanically answer Q4/Q5 or represent task-§3 B/E; the SUPPORT/LIFT
+  distinction (§4.3) is unrealizable. MODEL D denies gaps the corpus
+  itself registered (缺口 2) — it is refuted by the fixed inputs.
+
+SELECTION: MODEL B = VALID; A/C/D = INVALID. (No ranking used; each
+verdict is evidence-forced.)
+
+================================================================================
+§13 MINIMUM CONTRACT REPAIR (task §16)
+
+All DESIGN-ONLY, NOT IMPLEMENTED. The repair may concern contribution
+semantics / school-dependency semantics / specificity-lift semantics /
+EventSnapshot provenance; it must NOT and DOES NOT change V3, N1/N2,
+R5, R7, the DPI definition, domain semantics, thresholds, calibration.
+
+--------------------------------------------------------------------------------
+MCP-N6-1 — Contribution vocabulary extension (specificity lift)
+  Classification: REQUIRED FOR NEW-6.
+  Location: Registry contribution vocabulary, under the Hardened §15.4
+  OPEN-enum authorization (the trailing "/ ..." reservation), applying
+  the Hardened §15.3 explicit-registration discipline extended to the
+  specificity dimension.
+  Current semantic contract: contribution enum
+  {none, corroboration-added, lifted-insufficient-to-supported, ...} —
+  no value for gate-enabling ADD (缺口 2).
+  Proposed semantic contract: define ONE additional contribution
+  semantic slot with the semantics listed in §4.4 (ADD-only; family
+  core-backed precondition coreEvidenceState=supported ∧ DPI=YES;
+  effect = L2 reachable via the class school gate, specificity
+  reached L1→L2; ceiling unchanged; coreEvidenceState verbatim
+  preserved; never presentable as core-independent output). It is
+  emitted on the L2 record's contributing module entry
+  (pluginEvidenceState.modules[].contribution).
+  Why required: §4.3 (i)-(iv); fills Protocol Audit 缺口 2.
+  Compatibility: NEW-1 PASS (§9); NEW-4 PASS (§10); HD-5 PASS (§11);
+  Hardened text unchanged (open-enum fill within Hardened's own
+  reservation; the §15.3 discipline ALREADY mandates such
+  registration for lifts — this extends the mandated pattern one
+  dimension, it does not contradict any Hardened clause).
+  Schema impact: NONE (existing field, existing enum slot).
+  Status: NOT IMPLEMENTED.
+
+--------------------------------------------------------------------------------
+MCP-N6-2 — School-dependency derived-semantics rule + S6 extension
+  Classification: REQUIRED FOR NEW-6.
+  Location: Registry EventSnapshot contract (§18.2 S6 assertion-set
+  vehicle), cross-referencing Registry MT-1 R1 and the Hardened master
+  matrix.
+  Current semantic contract: schoolModulesUsed discloses usage only
+  (Q13); no snapshot-level school-dependency status; S6's field-level
+  assertion list (status / identity / ambiguity / timing resolution /
+  evidenceState / coreEvidenceState / derivedPluginIndependence)
+  contains no school-dependent / plugin-contribution assertion slots.
+  Proposed semantic contract: (a) the derived rule of §5.3 (L2 records
+  of SCHOOL-DEPENDENT classes carry a mechanically derived
+  school-dependent status for their L2 identity; disclosure via
+  existing schoolModulesUsed; L1 records never annotated); (b) extend
+  S6's assertion list with two plugin-side assertion slots —
+  school-dependency status (derived) and per-module contribution
+  (including the §4.4 lift semantics) — so that a fixture can assert
+  the full plugin-ON semantic layer with existing fields + the two new
+  semantic definitions.
+  Why required: §5.2 (schoolModulesUsed != proof of dependency);
+  task §3 E; makes Q4/Q5 answerable.
+  Compatibility: NEW-1/NEW-4/HD-5 PASS (§9-§11); no field added.
+  Schema impact: NONE.
+  Status: NOT IMPLEMENTED.
+
+--------------------------------------------------------------------------------
+MCP-N6-3 — Cross-reference web + NEW-4 takeover note
+  Classification: REQUIRED FOR NEW-6.
+  Location: cross-reference between Registry §16.1 (S-YM1 row),
+  Registry §18.2 S6, Registry MT-1 R1/R7/R10, Registry §17.3, Hardened
+  §15.3/§15.4/§15.5, and NEW-4 MCP-N4-2.
+  Content: (a) bind the §4.4 lift semantics to the S-YM1 plugin rule
+  row and to MT-1's SCHOOL-DEPENDENT declaration; (b) record that
+  NEW-4's three DEFERRED items (N6-1/N6-2/N6-3 of MCP-N4-2) are
+  defined by MCP-N6-1/2 of THIS round — takeover note only, NEW-4's
+  status untouched; (c) state that NEW-6's OTHER sub-item (缺口 1
+  concurrency unresolved-flag field) remains registered and out of
+  scope.
+  Why required: without the web, the lift value and the derived rule
+  are orphaned definitions; with it, NEW-1/NEW-4/NEW-6 form one
+  auditable chain.
+  Compatibility: PASS (no semantic content of its own).
+  Status: NOT IMPLEMENTED.
+
+--------------------------------------------------------------------------------
+OPTIONAL FUTURE ENHANCEMENT (explicitly NOT required now):
+  - Hardened §15.4 enum explicit recataloging of the new value (a
+    future Hardened revision may list it verbatim; the open enum makes
+    this unnecessary for correctness).
+  - A dedicated stored school-dependency field under §17.3's 新增字段
+    default=[] convention, IF a future audit demands record-level
+    independent storage instead of derivation.
+  - candidateID-level L2→source-L1 lineage reference (no contract text
+    requires it; family-level lineage via §15.5 is the contract's own
+    demand).
+--------------------------------------------------------------------------------
+NOT REQUIRED (explicitly):
+  - Any V3 / N1 / N2 modification.
+  - Any R5 / R7 modification.
+  - Any derivedPluginIndependence definition modification.
+  - Any domain semantics / threshold / calibration modification.
+  - Any EventSnapshot schema field addition or type change.
+  - Any numeric / weighted / averaged quantity (§18).
+  - The NEW-6 concurrency unresolved-flag sub-item (缺口 1) — separate
+    track, remains registered.
+
+================================================================================
+§14 REGISTRY BOUNDARY (task §17)
+
+CURRENT LOCATION:
+  - Contribution vocabulary: Hardened §15.4
+    (pluginEvidenceState.modules[].contribution enum).
+  - School-plugin rules: Registry §16.1 (S-YM1 row: R7 supporting ADD;
+    core-off "L2 停 L1") + Hardened master matrix MT-1 + FX-E.
+  - EventSnapshot contract: Hardened §17.2 (fields) + §17.3
+    (disciplines) + Registry §18.2 S6 (assertion vehicle).
+  - Lift registration discipline (evidence-state lift): Hardened
+    §15.3.
+  - Existence/lineage question: Hardened §15.5.
+
+REQUIRED LOCATION (for the NEW-6 repair):
+  - The specificity-lift contribution value: Registry contribution
+    vocabulary — defined under the Hardened §15.4 open-enum
+    reservation, bound to §15.3's registration discipline, anchored on
+    the Registry §16.1 S-YM1 row. (Hardened text itself need not
+    change; the open enum is Hardened's own extension authorization.)
+  - The school-dependency derived rule: Registry EventSnapshot
+    contract — §18.2 S6 extension block, cross-referencing MT-1 R1
+    and the master matrix.
+  - T-PO linkage: Registry §18.1 (as two-branched by NEW-4 MCP-N4-1)
+    references the lift semantics for Branch 2 classes.
+
+MINIMUM CROSS-REFERENCE:
+  Hardened §15.4 (open enum) ↔ Registry §16.1 (S-YM1 row) ↔ Registry
+  §18.2 S6 (assertion slots) ↔ Registry MT-1 R1/R7/R10 ↔ Registry
+  §17.3 (coexistence) ↔ Hardened §15.3 (lift discipline) / §15.5
+  (existence must-answer) ↔ NEW-4 MCP-N4-2 (deferred takeover).
+
+No location is edited in this round (report only, per task §17).
+
+================================================================================
+§15 FUTURE FIXTURE REQUIREMENTS (task §18)
+
+DO NOT create or modify fixtures; no fixture data; no expected values
+added to the repository. Conceptual determination only — what a future
+MT-1-FPO-family fixture would need to PROVE:
+
+A. OFF Snapshot — REQUIRED. Already fully assertable (NEW-4 N4-O1..
+   N4-O8; no NEW-6 dependency).
+B. ON Snapshot — REQUIRED. State fields assertable today (N4-N1..
+   N4-N4); the full semantic layer requires MCP-N6-1/2 vocabulary.
+C. Comparison between OFF and ON — REQUIRED. This is the mechanical
+   locus of the lift proof: rows 1-4/7/19 identical; rows 5/6/8
+   differ; coreEvidenceState verbatim-preserved across the pair
+   (§15.3 discipline made checkable).
+D. Evidence provenance — REQUIRED. pluginEvidenceState.modules[]
+   (moduleID + version + addedEvidenceRefs + contribution value) +
+   pluginManifest; the lift value names WHICH module's ADD enabled
+   WHAT.
+E. School dependency — REQUIRED. The derived school-dependent status
+   on the L2 record (MCP-N6-2) + schoolModulesUsed disclosure; L1
+   record un-annotated.
+F. Specificity transition — REQUIRED. specificity reached L1→L2 with
+   ceiling constant at L2 and no evidence-state transition (rows 7/14
+   constant) — the exact shape distinguishing lift from creation.
+G. Preservation of L1 lineage — REQUIRED. The L1 record present and
+   value-identical in both runs (row 19) + DPI=YES (§15.5).
+
+All seven are needed; A/C/G are expressible TODAY; B/D/E/F become
+fully assertable after MCP-N6-1/2 (design level; nothing implemented
+here).
+
+================================================================================
+§16 HISTORICAL DATA FIREWALL (task §19)
+
+Not used anywhere in this report, as rule input or semantic evidence:
+  - Owen events
+  - Jassica events
+  - marriage/children/property historical correspondence
+  - backtest results
+NEW-6 semantics were derived exclusively from contract text (Hardened,
+Registry, Protocol Audit, and the three upstream resolution reports).
+This is purely an architecture/contract question; historical data must
+not influence the rule.
+
+================================================================================
+§17 NO-SECOND-V3 AUDIT (task §20 — mandatory)
+
+Question: does any proposed NEW-6 mechanism cause V4 to become
+"raw Bazi → hidden structural detector → event candidate"?
+
+NO. SECOND-V3 RISK = ABSENT.
+  - The allowed architecture remains: V3 structural authority → V4
+    event semantics → supplementary semantic/plugin evidence →
+    auditable candidate specificity.
+  - MCP-N6-1's lift value is an ANNOTATION on an existing core-backed
+    candidate's plugin evidence — it consumes (a) the candidate's
+    existing core state (already derived from V3 facts via the §16.3
+    provenance chain) and (b) the registered school module's ADD
+    evidence. It derives NO structural fact.
+  - MCP-N6-2's derived rule consumes class-level Registry declarations
+    (R1 / master matrix) and the record's own fields — it re-derives a
+    DISCLOSURE status, not any V3-owned concept (no
+    InteractionKind, no N1/N2, no domain attribution, no temporal
+    evaluation — all V3-owned per Hardened §16.1).
+  - No new detector, no new raw-Bazi input path, no hidden structural
+    layer is introduced by either carrier.
+V4 continues to consume V3 evidence and authorized supplementary
+semantic evidence only; it does not silently recreate V3
+InteractionKind/N1/N2/domain detection.
+
+================================================================================
+§18 DOUBLE / NUMERIC FIREWALL (task §21)
+
+Verified:
+  - No Double is introduced. (MCP-N6-1: an enum value on an existing
+    enum-typed field. MCP-N6-2: a derived Boolean-style status from
+    declarations. MCP-N6-3: references only.)
+  - No numeric score, no numeric confidence, no weighted plugin score,
+    no averaging, no threshold recalibration.
+  - Ordinal/set/membership semantics ONLY — matching Hardened §17.2's
+    "零 Double；全部枚举/序数/引用" and §15.4's "两态永不合并成一个数值
+    或一个 ordinal" (dual states never merge into one number or
+    ordinal — the lift value lives strictly on the plugin side and
+    never blends into coreEvidenceState).
+DOUBLE / NUMERIC RISK = ABSENT.
+
+================================================================================
+§19 CLOSURE CRITERIA (task §22)
+
+[C1] Core independence remains separate from L2 reachability.
+     PASS — §6 rows 1-3 vs row 8; §9 (DPI axis separate from the lift/
+     dependency axis).
+[C2] Plugin OFF L1 fallback remains explicit.
+     PASS — rows 4/19; NEW-4 CLOSED assertion set untouched.
+[C3] Plugin ON L2 reachability is explicit.
+     PASS — row 8; after MCP-N6-1/2 the reachability change is
+     annotated (lift value + derived dependency status) rather than
+     implicit.
+[C4] Plugin cannot independently create candidate.
+     PASS — §8 forbidden direction doubly blocked (X-2/HD-5); lift
+     value precondition encodes core-backed family.
+[C5] Plugin contribution is auditable.
+     PASS — §15.4 per-module {moduleID, version, addedEvidenceRefs,
+     contribution} + MCP-N6-1 role value.
+[C6] School dependency is auditable.
+     PASS — MCP-N6-2 derived rule + schoolModulesUsed disclosure;
+     class-level R1 declaration anchored.
+[C7] Specificity lift is auditable.
+     PASS — MCP-N6-1 value + MCP-N6-2 rule + the OFF/ON comparison
+     protocol (§15-C) make the lift mechanically checkable.
+[C8] L1 lineage is preserved.
+     PASS — §8 lineage test; §15.5 existence-must-answer; Registry
+     §17.3 coexistence.
+[C9] NEW-1 remains unchanged and valid.
+     PASS — §9.
+[C10] NEW-4 remains unchanged and valid.
+     PASS — §10 (OFF set untouched; deferred items taken over without
+     status change).
+[C11] No hidden second V3 is introduced.
+     PASS — §17.
+[C12] No numeric scoring / Double is introduced.
+     PASS — §18.
+[C13] Required contract changes are precisely identified.
+     PASS — MCP-N6-1/2/3 with location, semantics, compatibility, and
+     schema impact each stated; OPTIONAL/NOT REQUIRED separated
+     (§13).
+[C14] No implementation is performed.
+     PASS — zero code/fixture/Registry/Hardened modification; this
+     report is the only artifact.
+
+BRANCH DETERMINATION (task §22's own decision rule):
+  - C1-C12: ALL PASS.
+  - "If the contract can already express everything → CLOSURE-READY":
+    NOT the case — MC-1/MC-2 are missing today (§3.4, §7).
+  - "If C1-C12 pass but an EventSnapshot carrier is missing →
+    NEW-6 CORE SEMANTICS = CLOSED / NEW-6 CONTRACT = NOT
+    CLOSURE-READY": THIS BRANCH APPLIES — the two snapshot-level
+    carriers (lift value; school-dependency derived status) are
+    missing in the current contract.
+  - "If a required carrier cannot be expressed without changing the
+    EventSnapshot schema → NEW-6 CONTRACT CHANGE REQUIRED": NOT
+    triggered — both carriers ARE expressible without schema change
+    (§4.4/§5.3); the task book's FINAL-STATUS field
+    EVENTSNAPSHOT SCHEMA CHANGE REQUIRED = NO.
+
+  NEW-6 CORE SEMANTICS = CLOSED
+  NEW-6 CONTRACT       = NOT CLOSURE-READY
+  (with MINIMUM CONTRACT REPAIR = DEFINED; NOT IMPLEMENTED.
+   The §6-level declaration NEW-6 CONTRACT CHANGE REQUIRED = YES
+   refers to the REQUIRED VOCABULARY EXTENSION — a contract change IS
+   required and is precisely defined; the FINAL-STATUS value
+   NOT CLOSURE-READY states the closure consequence: until implemented,
+   the contract cannot yet fully express the plugin-ON semantic layer.)
+
+================================================================================
+§20 RESIDUAL RISKS
+
+RR-1 — NEW-6's OTHER sub-item remains open.
+  Protocol Audit NEW-6 = 缺口 1 (concurrency unresolved-flag explicit
+  field) + 缺口 2 (MT-1 contribution enum value). This round resolves
+  ONLY the 缺口 2 track (contribution / school-dependency / lift).
+  缺口 1 stays REGISTERED (IP-5 scope, other half) and is NOT closed,
+  NOT absorbed, NOT declared solved by this report. Any "NEW-6 fully
+  resolved" claim would be false until 缺口 1 has its own resolution.
+
+RR-2 — Open-enum fill vs future Hardened recataloging.
+  MCP-N6-1 relies on Hardened §15.4's trailing open enum ("/ ...") as
+  the extension authorization. If a future Hardened revision prefers
+  explicit recataloging, that revision is an OPTIONAL FUTURE
+  ENHANCEMENT (§13), not a correctness dependency. If, contrary to
+  this reading, a future authority round rules that open-enum fills
+  require Hardened text changes, then MCP-N6-1's location moves to
+  that Hardened revision — the SEMANTICS defined here are unchanged.
+
+RR-3 — Derived-rule scope guards must survive implementation.
+  MCP-N6-2's school-dependency derivation is defined ONLY for L2
+  records of SCHOOL-DEPENDENT classes. Implementation-phase drift
+  (annotating L1 records, or applying the rule to non-SCHOOL-
+  DEPENDENT classes) would violate NEW-4 X-7 and re-open the
+  family/identity separation. The scope guards in §5.3 are part of
+  the contract, not implementation advice.
+
+RR-4 — S6 extension must stay interface-consistent with NEW-4.
+  MCP-N6-2 extends §18.2 S6's assertion list; NEW-4's MCP-N4-2
+  assertion sets (N4-O*/N4-N*) are the OFF/ON anchors. The ON-run
+  deferred markers in MCP-N4-2 must resolve to exactly the MCP-N6-1/2
+  semantics — no third vocabulary may appear. Implementation rounds
+  should treat NEW-4 + NEW-6 as one assertion-set contract.
+
+RR-5 — Naming deferred.
+  The task book's PLUGIN_SUPPORT / PLUGIN_SPECIFICITY_LIFT are
+  conceptual labels. Final identifier naming (and its placement in the
+  Registry vocabulary section) belongs to the implementation round;
+  this report fixes SEMANTICS ONLY and deliberately does not mint the
+  identifier (no new enum value is created in this round).
+
+================================================================================
+§21 FINAL STATUS
+
+The authoritative FINAL STATUS block is the terminal block of this
+report (after §22 Integrity), exactly as required by task §25.
+
+================================================================================
+§22 INTEGRITY
+
+Verified at completion:
+- Git HEAD: 2f1b2bf665b74d5c70e93056efba6c92bebaea00 — unchanged
+  before and after this report was written.
+- Registry: UNCHANGED (sha c80d7d76…984734772 re-verified identical).
+- Hardened Design: UNCHANGED (sha 8a559f8e…f70bacab re-verified
+  identical).
+- EventSnapshot implementation: UNCHANGED. Swift: UNCHANGED.
+- Fixtures: UNCHANGED. Fixture tests: UNCHANGED.
+- V3: UNCHANGED. N1/N2: UNCHANGED. DomainMapper: UNCHANGED.
+- Thresholds: UNCHANGED. Calibration: UNCHANGED.
+- AI prompt: UNCHANGED. UI: UNCHANGED.
+- Probe: none executed. Backtest: none executed. Historical rerun:
+  none.
+- Commit: none. Push: none.
+- Workspace: git status --porcelain count = 102, identical to the
+  pre-task count. BacktestData/ presents as a single untracked
+  directory entry, so this new report file does not change the count.
+  This task changed nothing except creating this DESIGN-ONLY report.
+- All seven FIXED INPUT sha256 values re-verified MATCH (§1).
+- This report contains no self-referential sha256 (computed externally
+  after writing).
+
+================================================================================
+FINAL STATUS
+
+TARGET:
+NEW-6 / EventSnapshot Contribution + School-Dependent Specificity-Lift
+
+EVENTSNAPSHOT CURRENT EXPRESSIBILITY:
+PARTIAL
+
+PLUGIN CONTRIBUTION:
+REQUIRES CONTRACT CARRIER
+
+SCHOOL DEPENDENCY:
+REQUIRES CONTRACT CARRIER
+
+SPECIFICITY LIFT:
+REQUIRES CONTRACT CARRIER
+
+L1 LINEAGE:
+EXPRESSIBLE
+
+PLUGIN-OFF:
+VALID
+
+PLUGIN-ON:
+VALID
+
+HD-5:
+PASS
+
+NEW-1 COMPATIBILITY:
+PASS
+
+NEW-4 COMPATIBILITY:
+PASS
+
+SECOND-V3 RISK:
+ABSENT
+
+DOUBLE / NUMERIC RISK:
+ABSENT
+
+MINIMUM CONTRACT REPAIR:
+DEFINED
+
+EVENTSNAPSHOT SCHEMA CHANGE REQUIRED:
+NO
+
+NEW-6 CORE SEMANTICS:
+CLOSED
+
+NEW-6 CONTRACT:
+NOT CLOSURE-READY
+
+REGISTRY:
+UNCHANGED
+
+HARDENED DESIGN:
+UNCHANGED
+
+EVENTSNAPSHOT IMPLEMENTATION:
+UNCHANGED
+
+FIXTURE:
+UNCHANGED
+
+TEST:
+UNCHANGED
+
+V3:
+UNCHANGED
+
+COMMIT:
+NONE
+
+PUSH:
+NONE
+
+IMPLEMENTATION AUTHORIZATION:
+NOT GRANTED
+
+STOP
