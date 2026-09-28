@@ -1,0 +1,970 @@
+================================================================================
+FROZEN V3 HISTORICAL EVENT CORRESPONDENCE REVIEW — TEST ONLY v1
+================================================================================
+reportId   : V3_Historical_Event_Correspondence_Review_TEST_ONLY_v1
+version    : v1 (2026-09-27, America/Los_Angeles)
+STATUS     : TEST-ONLY / READ-ONLY / FORENSIC / DESCRIPTIVE
+             NO V3 EXECUTION / NO NEW PROBE / NO CODE CHANGE / NO DATA CHANGE
+             NO CALIBRATION / NO SCORING / NO HIT-RATE / NO RANKING
+             NO REGISTRY CHANGE / NO H1 CHANGE / NO COMMIT / NO PUSH
+Git HEAD   : 2f1b2bf665b74d5c70e93056efba6c92bebaea00（全程未变，报告落盘后复核）
+授权       : EXECUTION AUTHORIZED FOR THIS REVIEW ONLY（Protocol Owner 2026-09-27 指令）
+性质       : 描述性、证据驱动的逐事件对应比较。不是统计 backtest，
+             不是算法有效性认证。只观察，不修正。
+
+──────────────────────────────────────────────────────────────────────────────
+输入资产（本轮全部只读；sha256 于报告撰写前现场计算）
+──────────────────────────────────────────────────────────────────────────────
+  IN-1  BacktestData/Couple_Shared_Event_Evidence_Matrix_DESIGN_REVIEW_TEST_ONLY_v1.txt
+        sha256 = f357b46f4da5275e907ccd05b11e5bb96da7c0350a59feb9ecce77287b012d9a
+  IN-2  BacktestData/V3_Owen_Validation_V2_Report_TEST_ONLY_v1.txt
+        sha256 = 12fe7923a752bf42d8606c6d8d0e37b0a1309eae6df5f04cf5bba118e595894b
+  IN-3  BacktestData/V3_Owen_Validation_V2_YearSnapshot_Probe_Output_TEST_ONLY_v1.txt
+        sha256 = d81f77fa3f7d11a775100c878ec36e11aa7595474450c56cc5c4d15bb8281a98
+  IN-4  BacktestData/V3_Historical_Probe_Output_TEST_ONLY_v1.txt
+        sha256 = 5cc39f652123212412a6fe4c4390d37a1eac173910dd885446aa8dbb480d364b
+  IN-5  BacktestData/V3_Owen_Validation_G1_Annual_2010_2012_Probe_TEST_ONLY_v1.txt
+        sha256 = f10f19040d0edab888af4982357cb8bf023d1a791634037eafbc06bffc7311cb
+  IN-6  BacktestData/Jassica_Frozen_V3_Raw_Probe_TEST_ONLY_v1.txt
+        sha256 = 3f2946016f28942670d3fb6ebc92001775974ec0b9b58db8ffd8d9899c01c7d9
+  IN-7  BacktestData/Jassica_Evidence_FREEZE_v1.0.json
+        sha256 = 795386607e2ef16676fc55b834080388a486f4f3d2978869b97d9d4b7c35933b
+  IN-8  BacktestData/Owen_Backtest_Dataset_v1.2_FREEZE.json
+        sha256 = ae186dfbeef6474d87a750f983462ed1811c59e3fe2f31017fd1ef055e2a653c
+  IN-9  BacktestData/Owen_Backtest_Dataset_v1.json
+        sha256 = 6c1cb7036ccf80bf18c821d76fce1f142a42a0d272999a546e52bcf4ab31dd11
+  IN-10 BacktestData/H1_Historical_Validation_Protocol_DESIGN_REVIEW_TEST_ONLY_v1.txt
+        sha256 = 4f0dcb9d09f494f8ecaf92755ec9719a6acef06966dd9d64656cb75971859054
+        （仅用于理解日期精度 / missing-state / event semantics 既有规则）
+
+  HASH REGISTRATION NOTE（只登记，不修正，不推断）：
+  H1 protocol §2 在「Owen_Backtest_Dataset_v1.2_FREEZE.json」名下登记的
+  hash 前缀 6c1cb703…f4ab31dd11，与盘上 Owen_Backtest_Dataset_v1.json 的
+  完整 sha256 一致；盘上 Owen_Backtest_Dataset_v1.2_FREEZE.json 的实际
+  sha256 = ae186dfb…a653c（本报告 IN-8）。两文件 mtime 均为 2026-09-20，
+  早于本轮全部工作。该并置差异仅作登记；本轮不判断成因，不修改任何文件。
+
+══════════════════════════════════════════════════════════════════════════════
+§1 SCOPE AND INTEGRITY
+══════════════════════════════════════════════════════════════════════════════
+
+1.1 性质
+  本轮为 Frozen V3 Historical Event Correspondence Review：
+  把 Owen 与 Jassica 已登记的重大真实事件，与 Frozen V3 已产生的
+  raw output（annual snapshot / month probe / exact-day probe /
+  R-1/R-2/R-3/R-4/R-6）逐事件并置，描述两者在哪里对应、在哪里不对应、
+  哪里因数据缺口无法判断。
+
+1.2 边界确认（逐项）
+  - V3 source / test / BacktestData / event registry / H1 protocol /
+    Phase A–C 规则 / N1 / N2 / thresholds / calibration / DomainMapper /
+    V3Core / Snapshot / State / Adapter / UI ：零修改。
+  - 不根据历史事件反向调整算法；不提出新算法规则；
+    不修改 domain / severity / cutpoint / magnitude / focus / watch / mainLine。
+  - 不运行任何 V3 / 不补 probe / 不重跑。全部 raw 为既有冻结文件只读转录。
+  - 不 commit / 不 push。
+  - 历史事实只作为 comparison target，不作为算法设计输入。
+
+1.3 认知暴露披露（强制原文）
+  Event-domain registration was previously exposed to assistant influence;
+  therefore this review is descriptive/forensic and is NOT claimed to be a
+  fully blinded H1 validation.
+  本轮不执行 H1 Phase A（不执行任何 PI、不创建 v1.2 / transcript、
+  不重新登记、不重新询问任何事件、不要求 blind classification）。
+  该暴露不妨碍对已冻结事件事实与 Frozen V3 raw output 的逐事件描述性比较。
+
+1.4 对应性四档词汇（本轮统一用语）
+  CLEAR CORRESPONDENCE      ：V3 已有输出与实际事件在事件语义、时间窗口
+                              和/或 domain signal 上存在明显对应。
+  PARTIAL CORRESPONDENCE    ：存在相关信号，但时间、domain、方向或粒度
+                              只有部分对应。
+  NO CLEAR CORRESPONDENCE   ：已有 raw evidence 中没有明显与该事件对应的
+                              V3 signal。
+  INDETERMINATE             ：因日期精度不足、所需 annual snapshot 不存在、
+                              月/日未 probe、事件语义不足以判断或其他明确
+                              数据缺口，目前不能判断。
+  辅助用语：evidence present / evidence absent / evidence insufficient。
+
+1.5 与 V2 报告五档词汇的映射（登记，不改写 V2 原文）
+  V2「clear structural」→ CLEAR；V2「partial」→ PARTIAL；
+  V2「weak」→ PARTIAL(weak)；V2「no clear correspondence」→ NO CLEAR；
+  V2「insufficient / not assessable」→ INDETERMINATE。
+  凡 V2 已有分级的事件，本轮在引用时保留其原始分级词并给出映射。
+
+1.6 日期精度规则（沿用 H1 §5/§6，零放宽）
+  - EXACT_DATE：年/月/日三层各自独立登记，互不替代。
+  - MONTH_ONLY：只做月粒度比较；月锚点（15 日）不当作事件真实日期；
+    禁止虚构具体日期。
+  - YEAR_ONLY：只做年层比较；一侧既有 day probe raw（S9/P02、
+    S10/P01-SALE、S11/P03A+P03B、S12/P04）仅登记为证据覆盖事实，
+    不作为年层对应证据。
+  - Calendar Year vs Resolved V3 Year 分离登记：
+    S5  2009-02-03 → resolvedV3Year = 2008（立春前）
+    S8  2017-01（Owen 侧 2016-08）→ 双侧 resolvedV3Year = 2016
+    S10 2021-02-01 → resolvedV3Year = 2020
+    禁止用 calendar-year snapshot 顶替 resolved-year snapshot。
+
+1.7 语义规则（本轮强制）
+  - Property 语义规则：买房 / 买办公楼 / 房产交易 ≠ Owen business success、
+    ≠ profit、≠ personal wealth increase（大部分房产购买主要来自
+    Jassica 收入）。V3 wealth signal 与 property event 之间最多只能说
+    「语义上存在一定关联」，不得写「正确对应财富增加」。
+  - J2 语义规则：「公司收入创新高」= revenue record。income ≠ profit、
+    income ≠ wealth increase、income ≠ career success。事件名保持注册表原样。
+  - E6 事实基线（Owner 修正后，本轮唯一采用版本）：
+    P1 2006 项目启动、大额投入；P2 2007 严重技术问题、延误；
+    P3 2008 持续延误、时间与资金压力增加；
+    P4 2009 项目进入 launch / operations transition（不是最终失败）；
+    P5 2009–约2012 公司继续运营、项目继续产生大量成本；
+    P6 约2012 开始准备停止项目；
+    Outcome 约2012+ 最终结束，累计总投入超过 $3M，总体严重亏损。
+    禁止表述「2009 年项目最终失败 / 2009 年巨亏结束」。
+    [PROVENANCE NOTE] V2 报告 §7.2 表 P4 行标签为「上线失败损失>$3M」，
+    系修正前事实表述。本轮按修正后事实解释 E6；该措辞差异不影响
+    V3 raw 输出本身（2009 年层九域全 quiet 在两种事实读数下相同），
+    P4 的对应性结论在两种读数下不变（NO CLEAR）。
+
+1.8 每事件输出结构
+  A. Real-world event（ID / 事实 / calendar 日期 / 精度 / resolved year）
+  B. Owen V3 evidence（只引用实际 raw，不推导不存在的结果）
+  C. Jassica V3 evidence（同上；Jassica-only 事件则 Owen = NOT APPLICABLE）
+  D. Correspondence（四档之一；双侧分别给出后再给事件级合并档）
+
+══════════════════════════════════════════════════════════════════════════════
+§2 EXECUTIVE SUMMARY（只做事实总结，不给总体准确率，不给总评）
+══════════════════════════════════════════════════════════════════════════════
+
+2.1 出现较明显对应（CLEAR，含单侧 CLEAR）的事件：
+  - S5（2009-02-03 次子出生）— Owen 侧：exact-day children=extreme
+    （六冲：流日-时柱）+ resolved-2008 年层 focus children=low mixed；
+    域 + 强度 + 时点三重对应，direction=unfavorable 另记。
+    Jassica 侧 INDETERMINATE（resolved 2008 annual NOT PROBED）。
+  - S8（搬到美国；Owen 2016-08 / Jassica 2017-01，双侧 resolved 2016）—
+    双侧 event-month 层 travel 域均激活（Owen travel=moderate unfavorable；
+    Jassica travel=moderate unfavorable isolated），且 Owen 年层
+    travel=moderate + R-4 watch=[travel|moderate|unfav] 同向存在。
+    direction 字段为 unfavorable，原样登记。
+  - J2（2009 公司收入创新高，Jassica-only）— 2009 年层 career=high(A)
+    unfavorable broad（R-3 focus 首位），事件注册域 = career，
+    域 + 年份对应明显；direction=unfavorable 另记；wealth=quiet 另记。
+
+2.2 只有部分对应（PARTIAL）的事件：
+  S1（双侧；结构强但直接域 relationship 双侧沉默/错位）、
+  S4（Owen 侧；Jassica 侧 NO CLEAR）、S6、S9（Owen 侧；Jassica 侧
+  NO CLEAR）、S10（Jassica 侧；Owen 侧 INDETERMINATE）、
+  S11（Owen 侧；Jassica 侧 NO CLEAR）；
+  Owen-only：E1、E2(weak)、E3(weak)、E4（复合）、E6-P1(weak)、E6-P2(weak)、
+  E11、E12、E14（= S8/S9/S11 Owen 侧的 Owen-only 视角）、E18(=S6)。
+
+2.3 目前没有明显对应（NO CLEAR）的事件：
+  S2、S3、S7、S12（双侧）、S4（Jassica 侧）、S9（Jassica 侧）、
+  S11（Jassica 侧）、J1；
+  Owen-only：E5、E6-P3、E6-P4、E6-P5、E6-P6、E6 周期级、E15、E16、E17。
+
+2.4 无法判断（INDETERMINATE）的事件/读数：
+  S5（Jassica 侧：resolved 2008 annual NOT PROBED；day 层 children quiet
+  已登记）、S8（Jassica 侧年层：resolved 2016 annual NOT PROBED——月层
+  仍可判，见 2.1）、S10（Owen 侧：resolved 2020 与 calendar 2021 annual
+  均 NOT PROBED）、E13（数据集读数 2021-02-01 → resolved 2020 年层缺失；
+  任务书读数 2019 下为 NO CLEAR）、E6-Outcome（生命周期级累计结果，
+  无单一年份可比）。
+
+2.5 反复出现的结构形态（描述性，详见 §10/§11）：
+  - 婚姻/子女出生等 exact-date 事件的直接域（relationship / children）
+    在 day 层双侧均未激活，信号由 family / relationship+health 承接。
+  - 全部 9 个房产/融资事件年（2003/2005/2011/2016/2017/2019/2021/2024/2025）
+    双侧 wealth 年层恒 quiet。
+  - 月层 R-2/R-6 背景模式跨年高度同构（m6/m7/m11），Jassica 2004 与 2009
+    的 R-1/R-2/R-6 逐字相同而年层 N2 不同——年层具跨年区分度，
+    月层背景不具事件判别力（与 V2 §10 一致）。
+  - 年层方向字段（favorable/unfavorable）与事件吉凶结构常常不同构
+    （J2 收入创新高年 career=unfavorable；S8 搬迁年 travel=unfavorable）。
+
+══════════════════════════════════════════════════════════════════════════════
+§3 SHARED EVENTS S1–S12
+══════════════════════════════════════════════════════════════════════════════
+
+§3.0 总表（每行可溯源至 §3.1–§3.12 与 IN-1/IN-2 逐字登记）
+
+Event | Real Event            | Owen Evidence（年层/probe 要点）              | Jassica Evidence（年层/probe 要点）          | Correspondence            | Main Issue
+S1    | 2003-06-18 结婚        | day family=high fav；annual family=high；     | day relationship unfav isolated；            | PARTIAL（双侧）           | 直接域 relationship 双侧沉默/错位
+      | EXACT_DATE            | relationship quiet                           | annual children=extreme unfav                |                           |
+S2    | 2003 第一套房          | wealth quiet；family=high（与 S1 共享）       | wealth quiet；children=extreme（无关域）      | NO CLEAR（双侧）          | wealth 双侧沉默；2003 年层多义
+      | YEAR_ONLY             |                                              |                                              |                           |
+S3    | 2005 办公楼            | wealth/career quiet；family/travel low unfav  | wealth quiet；rel/health moderate unfav      | NO CLEAR（双侧）          | 房产语义域双侧零对应
+      | YEAR_ONLY             |                                              |                                              |                           |
+S4    | 2005-07-05 长女出生    | day rel/health fav；children quiet；          | day rel/health fav corroborated；            | PARTIAL（Owen）/          | 直接域 children day 双侧沉默
+      | EXACT_DATE            | annual children=moderate unfav               | children quiet；annual rel/health unfav      | NO CLEAR（Jassica）       |
+S5    | 2009-02-03 次子出生    | day children=extreme unfav（六冲）；          | day children quiet；rel/health extreme unfav；| CLEAR（Owen）/            | Jassica resolved 2008 annual
+      | EXACT_DATE→2008       | resolved-2008 focus children=low mixed       | resolved 2008 annual NOT PROBED              | INDETERMINATE（Jassica）  | NOT PROBED
+S6    | 2011 第二套住宅        | wealth quiet；family=moderate unfav；         | wealth quiet；family=low unfav；             | PARTIAL(weak)（双侧）     | wealth 双侧沉默；family 关联不确定
+      | YEAR_ONLY             | children=high unfav                          | rel/health=extreme mixed                     |                           |
+S7    | 2014-04 母亲去世       | month(4月) family=low/travel=quiet；          | month(4-15) children=low unfav；             | NO CLEAR（双侧）          | 事件月两层沉默；年层 family=high
+      | MONTH_ONLY            | day FA01 全 quiet（supplemental）；           | annual family=moderate mixed                 |                           | 归属不唯一（峰值月 6/7）
+      |                       | annual family=high mixed                     |                                              |                           |
+S8    | 搬美（Owen 2016-08 /  | month M02 travel=moderate unfav +            | month(2017-01-15) travel=moderate unfav      | CLEAR（双侧月层）         | 双侧 travel 域 event-month 激活；
+      | Jassica 2017-01）     | rel/health=fav；annual travel=moderate+watch | isolated；resolved 2016 annual NOT PROBED    |                           | Jassica 年层缺失
+      | MONTH_ONLY→2016       |                                              |                                              |                           |
+S9    | 2017 房产交易          | annual family=moderate mixed；wealth quiet；  | annual 仅 rel/health moderate unfav；        | PARTIAL（Owen）/          | Jassica 侧无可对应域；
+      | YEAR_ONLY             | day P02 仅登记                                | wealth quiet                                 | NO CLEAR（Jassica）       | Owen day 不用于年层比较
+S10   | 2021 卖房              | resolved 2020 + 2021 annual 均 NOT PROBED；   | annual career/family=high unfav broad；      | INDETERMINATE（Owen）/    | Owen 年层缺失；
+      | YEAR_ONLY（实际       | day P01-SALE 仅登记                           | wealth quiet                                 | PARTIAL（Jassica）        | Jassica family/career high 关联
+      | 2021-02-01→2020）     |                                              |                                              |                           | 不确定
+S11   | 2024 房产              | annual career/family=low fav；day m10 峰      | annual 仅 children=low unfav；               | PARTIAL（Owen）/          | Owen day/月峰与年层 low 不匹配；
+      | YEAR_ONLY             | （仅登记）；wealth quiet                      | wealth quiet                                 | NO CLEAR（Jassica）       | Jassica 侧无对应
+S12   | 2025 房产              | annual 九域全 quiet；R-6 m10 career/family    | annual 九域全 quiet；focus=[]                 | NO CLEAR（双侧）          | 双侧年层全静的活跃房产年
+      | YEAR_ONLY             | high fav（月度事实，仅登记）                   |                                              |                           |
+
+──────────────────────────────────────────────────────────────────────────────
+§3.1 S1 — 2003-06-18 结婚（EXACT_DATE）
+──────────────────────────────────────────────────────────────────────────────
+A. Real-world event
+   Event ID = S1；Actual = 结婚；Calendar = 2003-06-18；precision = EXACT_DATE；
+   resolvedV3Year = 2003（无立春边界问题）。
+B. Owen V3 evidence（IN-1 §7 S1 块；IN-2 §5 E7；IN-4 MR01）
+   Annual 2003：career=high；family=high；travel=moderate；
+   relationship=quiet；wealth=quiet。
+   Day probe MR01（2003-06-18）：career=high favorable；
+   family=high favorable（丑戌未三刑）；children=moderate unfavorable；
+   relationship 未激活。
+   R-2（2003）：m6:family=extreme,mixed；m6:travel=extreme,unfavorable
+   （事件月 = 6 月，R-2 在事件月有条目）。
+C. Jassica V3 evidence（IN-1 §7 S1 块；IN-6）
+   Annual 2003：children=extreme(A) unfavorable（R-3 唯一 focus）；
+   activated=[children]。
+   Day probe S1（2003-06-18）：relationship=moderate unfavorable isolated；
+   children=mixed conflicted；career unfavorable；family unfavorable；
+   health=moderate。
+   R-2（2003）：无 m6 条目。
+D. Correspondence
+   Owen 侧：PARTIAL — exact-day family=high favorable 与年层 family=high
+   同域同层同向呼应，时点精确、强度高；但婚姻直接域 relationship 在
+   day 与 annual 两层均 quiet，域归属由 family 承接（V2 分级 partial，
+   映射 PARTIAL）。
+   Jassica 侧：PARTIAL — day 层 relationship 激活（域对应成立）但
+   direction=unfavorable isolated；年层无 relationship 信号
+   （children=extreme unfavorable 为当年唯一 focus，与事件无语义关联）。
+   事件级：PARTIAL CORRESPONDENCE（双侧均为部分对应；
+   强度/时点结构对应强，直接域归属错位为共同问题）。
+
+──────────────────────────────────────────────────────────────────────────────
+§3.2 S2 — 2003 购买第一套住房（YEAR_ONLY；= Owen E16）
+──────────────────────────────────────────────────────────────────────────────
+A. Event ID = S2；Actual = 购买第一套住房；Calendar = 2003；YEAR_ONLY。
+B. Owen：2003 年层 wealth=quiet；career=high、family=high、travel=moderate
+   （family=high 与 S1 共享同一年层——年层多义性，IN-1 §11 登记，
+   禁止事后把年层 high 单独归因于购房）。无 S2 专属 day/month probe。
+C. Jassica：2003 年层 wealth=quiet；唯一 activated 域 = children
+   （extreme unfavorable）。无 probe。
+D. Correspondence：双侧 wealth evidence absent → NO CLEAR CORRESPONDENCE
+   （双侧）。按 §1.7 property 语义规则：family=high（Owen）只能说与
+   「住所」语义存在一定关联且该年层已被 S1 占用，不构成独立对应证据。
+
+──────────────────────────────────────────────────────────────────────────────
+§3.3 S3 — 2005 购买办公楼 / 半层办公楼（YEAR_ONLY；= Owen E17）
+──────────────────────────────────────────────────────────────────────────────
+A. Event ID = S3；Calendar = 2005；YEAR_ONLY。
+B. Owen：2005 年层 wealth=quiet；career=quiet；children=moderate unfavorable；
+   family=low unfavorable；travel=low unfavorable（IN-1 §7 S3 块）。
+C. Jassica：2005 年层 relationship=moderate unfavorable；
+   health=moderate unfavorable；wealth=quiet。
+D. Correspondence：NO CLEAR CORRESPONDENCE（双侧）。
+   房产/事业语义相关域（wealth、career）双侧年层 evidence absent；
+   Owen 侧激活域（children/family/travel，均 unfavorable）与
+   Jassica 侧激活域（relationship/health）与「购买办公楼」无
+   可辨识的语义对应。
+
+──────────────────────────────────────────────────────────────────────────────
+§3.4 S4 — 2005-07-05 第一个孩子出生（EXACT_DATE；= Owen E8）
+──────────────────────────────────────────────────────────────────────────────
+A. Event ID = S4；Calendar = 2005-07-05；EXACT_DATE；resolvedV3Year = 2005。
+B. Owen（IN-4 CH01）
+   Day（2005-07-05）：relationship=moderate favorable；health=moderate
+   favorable；multiFamily overlap=true；children 未激活（quiet）。
+   Annual 2005：children=moderate unfavorable；family=low unfavorable；
+   travel=low unfavorable。
+C. Jassica（IN-1 §7 S4 块；IN-6）
+   Day（2005-07-05）：relationship/health favorable corroborated
+   （天干五合）；N2vec 全 quiet（children=quiet，仅 coverage present）。
+   Annual 2005：relationship/health=moderate unfavorable；
+   children=quiet。
+D. Correspondence
+   Owen 侧：PARTIAL — 年层 children=moderate 为直接域信号
+   （evidence present），但 day 层 children evidence absent，
+   且年层方向 unfavorable；day 层信号落在 relationship/health。
+   Jassica 侧：NO CLEAR — children 在已 probe 的两层均 evidence absent；
+   激活域（relationship/health）非事件直接域。
+   事件级：PARTIAL（Owen）/ NO CLEAR（Jassica）。
+   共同结构问题：子女出生日双侧 day 层 children 均未激活。
+
+──────────────────────────────────────────────────────────────────────────────
+§3.5 S5 — 2009-02-03 第二个孩子出生（EXACT_DATE；resolved 2008；= Owen E9）
+──────────────────────────────────────────────────────────────────────────────
+A. Event ID = S5；Calendar = 2009-02-03；EXACT_DATE；
+   resolvedV3Year = 2008（立春前）。禁止与 2009 calendar annual 比较。
+B. Owen（IN-4 CH02；IN-1 §7 S5 块；IN-2 §5 E9）
+   Day（2009-02-03）：children=extreme unfavorable corroborated
+   （六冲：流日-时柱）；family=moderate；travel=moderate。
+   Annual resolved 2008：R-3 focus=[children|low|mixed|conflicted]；
+   annualActivated=1（children=low）。
+   （2009 calendar annual：九域全 quiet——按精度规则不适用本事件年层，
+   仅登记。）
+C. Jassica（IN-1 §7 S5 块；IN-6）
+   Day（2009-02-03）：relationship=extreme unfavorable；
+   health=extreme unfavorable（六冲：流日-日柱）；family=low unfavorable；
+   travel=low unfavorable；children=quiet（N2vec children quiet）。
+   resolved 2008 annual：NOT PROBED（2009 calendar annual 存在但
+   按精度规则不适用）。
+D. Correspondence
+   Owen 侧：CLEAR — exact-day children=extreme（20+17 条既有证据中
+   子女域最高强度）+ resolved-2008 年层 focus children=low，
+   域 + 强度 + 时点三重对应；direction=unfavorable 原样登记，
+   不作吉凶解释（V2 分级 strong structural correspondence → CLEAR）。
+   Jassica 侧：INDETERMINATE — 所需 resolved 2008 annual 不存在；
+   可用的 day 层 children evidence absent（quiet）。
+   事件级：CLEAR（Owen）/ INDETERMINATE（Jassica）。
+
+──────────────────────────────────────────────────────────────────────────────
+§3.6 S6 — 2011 购买第二套住宅（YEAR_ONLY；= Owen E18）
+──────────────────────────────────────────────────────────────────────────────
+A. Event ID = S6；Calendar = 2011；YEAR_ONLY。
+B. Owen：2011 年层 wealth=quiet；career=quiet；children=high unfavorable
+   isolated；family=moderate unfavorable isolated；travel=moderate
+   unfavorable isolated（R-3 focus 三域，IN-5 §4）。无 S6 专属 probe。
+C. Jassica：2011 年层 relationship=extreme mixed,conflicted；
+   health=extreme mixed,conflicted；family=low unfavorable；
+   travel=low unfavorable；wealth=quiet；activated=4。
+D. Correspondence：双侧 wealth evidence absent；family 域双侧均激活
+   （Owen moderate / Jassica low，均 unfavorable）——与「住宅」语义
+   存在一定关联，但强度低、方向 unfavorable、且 Owen 侧 children=high
+   为当年最高激活（与购房无语义关联）。
+   事件级：PARTIAL CORRESPONDENCE（weak；双侧）。
+   按 §1.7：不写 wealth 对应，不写「预测了购房」。
+
+──────────────────────────────────────────────────────────────────────────────
+§3.7 S7 — 2014-04 岳母/母亲去世（MONTH_ONLY；= Owen E10）
+──────────────────────────────────────────────────────────────────────────────
+A. Event ID = S7；Calendar = 2014-04；MONTH_ONLY（精度冲突 D1 已登记于
+   IN-1 §11：Owen FA01 = EXACT_DATE 2014-04-24 仅作 supplemental day probe，
+   不当作真实死亡日期，不升级精度）。
+B. Owen（IN-2 §6 E10；IN-3；IN-4 FA01）
+   Month（m4，2014-04-15 锚点）：family=low；travel=quiet；career=low；
+   余全 quiet。
+   Day FA01（2014-04-24，supplemental）：九域全 quiet；
+   family/travel = quiet + present(resolvingClass)（KindTier EXCLUDED）。
+   Annual 2014：family=high mixed,conflicted；travel=high unfavorable
+   isolated；career=moderate favorable。
+   R-6：family peakLevel=high, peakMonths=[6,7]；travel peakLevel=high,
+   peakMonths=[6]。
+C. Jassica（IN-1 §7 S7 块；IN-6 S7 month probe）
+   Month（2014-04-15 锚点）：children=low(A) unfavorable isolated；
+   coverage relationship/health present；family=quiet。
+   Annual 2014：children=moderate unfavorable；travel=moderate unfavorable；
+   family=moderate mixed。
+D. Correspondence
+   Owen 侧：NO CLEAR — 事件月两层（月矩阵、day 补充）family/travel
+   evidence absent；年层 family=high 存在但峰值月（6/7）与事件月（4）
+   错位，且年层归属不具唯一性（V2 §11 Q1–Q9 逐问核查，结论
+   no clear correspondence（事件时点）→ NO CLEAR；年层不作为对应证据）。
+   Jassica 侧：NO CLEAR — 事件月 probe family evidence absent
+   （唯一非 quiet 域为 children，非事件直接域）；年层 family=moderate
+   mixed 归属同样不唯一，不作对应证据。
+   事件级：NO CLEAR CORRESPONDENCE（双侧；年层歧义登记不修正）。
+
+──────────────────────────────────────────────────────────────────────────────
+§3.8 S8 — 搬到美国（Owen 2016-08 / Jassica 2017-01；MONTH_ONLY；
+      双侧 resolvedV3Year = 2016 丙申；日期冲突 D2 已登记）
+──────────────────────────────────────────────────────────────────────────────
+A. Event ID = S8；Actual = 上海搬到美国（跨国家庭搬迁）；
+   Owen 侧 calendar = 2016-08，Jassica 侧 calendar = 2017-01；
+   双侧 resolvedV3Year = 2016；MONTH_ONLY（Owen 侧 M02 = 2016-08-15 月锚；
+   Jassica 侧 S8 probe = 2017-01-15 月锚）。
+B. Owen（IN-2 §4 E11；IN-4 M02；IN-1 §7 S8 块）
+   Month M02（2016-08-15）：relationship=moderate favorable（multiFamily，
+   PIDs=3）；health=moderate favorable；family=moderate unfavorable；
+   travel=moderate unfavorable；career=quiet。
+   Annual 2016：relationship=moderate favorable broad；
+   health=moderate favorable broad；family=moderate unfavorable；
+   travel=moderate unfavorable（R-3 overflow + R-4 watch=
+   [travel|moderate|unfav]）。
+   Day P01（2016-05-25，登记备用）：career=extreme；family=extreme；
+   children=moderate；travel=moderate。
+C. Jassica（IN-1 §7 S8 块；IN-6 S8 month probe）
+   Month（2017-01-15）：career=high(A) unfavorable multiFamily；
+   family=high unfavorable；relationship/health favorable corroborated；
+   travel=moderate unfavorable isolated。
+   resolved 2016 annual：NOT PROBED（2017 calendar annual 存在但
+   按精度规则不适用）。
+D. Correspondence
+   Owen 侧：CLEAR — 事件月 travel 域激活（moderate）+ 年层 travel=moderate
+   并入 R-4 watch，域 + 时间对应明确；direction=unfavorable 原样登记。
+   Jassica 侧：CLEAR（月层）— 事件月 travel=moderate unfavorable isolated
+   （域 + 时间对应）；resolved 年层缺失不影响月层判定（月为本精度下
+   最细可用层），年层缺口登记。
+   事件级：CLEAR CORRESPONDENCE（双侧月层 travel 域对应；
+   方向字段 unfavorable 另记；Jassica 年层 INDETERMINATE 已登记）。
+
+──────────────────────────────────────────────────────────────────────────────
+§3.9 S9 — 2017 房产交易（YEAR_ONLY；= Owen E12）
+──────────────────────────────────────────────────────────────────────────────
+A. Event ID = S9；Calendar = 2017；YEAR_ONLY（标签差异 D3 已登记：
+   Jassica 侧未细分；Owen 侧 = P02 购第二栋房，且 Jassica 注册表 §8 标
+   「候选待命主确认」）。
+B. Owen：2017 年层 career=moderate unfavorable；family=moderate
+   mixed,conflicted；children=moderate unfavorable；travel=low
+   mixed,conflicted；wealth=quiet。
+   Day P02（2017-05-31，仅登记，YEAR_ONLY 比较不引用）：
+   family=extreme/present mixed；travel=extreme unfavorable corroborated；
+   career=moderate favorable。
+C. Jassica：2017 年层 relationship=moderate unfavorable；
+   health=moderate unfavorable；wealth=quiet。无 probe。
+D. Correspondence
+   Owen 侧：PARTIAL — 年层 family 域激活（moderate mixed）与房产语义
+   存在一定关联；wealth evidence absent；年层 travel=low 弱。
+   Jassica 侧：NO CLEAR — 激活域（relationship/health）与房产交易
+   无可辨识语义对应；wealth evidence absent。
+   事件级：PARTIAL（Owen）/ NO CLEAR（Jassica）。
+
+──────────────────────────────────────────────────────────────────────────────
+§3.10 S10 — 2021 卖房（YEAR_ONLY；实际 2021-02-01 → resolved 2020；
+       = Owen E13 读数B）
+──────────────────────────────────────────────────────────────────────────────
+A. Event ID = S10；Calendar = 2021（实际成交 2021-02-01）；
+   shared registry precision = YEAR_ONLY（精度差异 D4 已登记）；
+   Owen 侧 resolvedV3Year = 2020（立春前）。
+B. Owen：resolved 2020 annual = NOT PROBED；calendar 2021 annual =
+   NOT PROBED → 年层 NOT AVAILABLE。
+   Day P01-SALE（2021-02-01，仅登记，不用于年层比较）：
+   career=low；family=low；favorable corroborated（相破：流日-流月）。
+C. Jassica：2021 年层 career=high(A) unfavorable broad；
+   family=high(A) unfavorable broad；relationship/health favorable
+   corroborated；activated=5；wealth=quiet。
+D. Correspondence
+   Owen 侧：INDETERMINATE — 两个相关年层（resolved 2020 / calendar 2021）
+   均不存在，无法做年层判断；day probe 仅登记。
+   Jassica 侧：PARTIAL — family=high unfavorable broad（域与「房产处置」
+   存在一定关联、时间同年、强度高）+ career=high unfavorable broad；
+   wealth evidence absent；方向 unfavorable 且域归属不确定
+   （family high 亦可由其他家庭语义承载），故为 PARTIAL 而非 CLEAR。
+   事件级：INDETERMINATE（Owen）/ PARTIAL（Jassica）。
+
+──────────────────────────────────────────────────────────────────────────────
+§3.11 S11 — 2024 房产交易（YEAR_ONLY；= Owen E14）
+──────────────────────────────────────────────────────────────────────────────
+A. Event ID = S11；Calendar = 2024；YEAR_ONLY（Owen 侧数据集含两条
+   day 记录 P03A/P03B，仅登记）。
+B. Owen：2024 年层 career=low favorable isolated；family=low favorable
+   isolated（N1 五域 favorable）；wealth=quiet。
+   Day P03A（2024-06-03，仅登记）：career=high favorable；family=high；
+   children=moderate。Day P03B（2024-06-25，仅登记）：
+   relationship=moderate；health=moderate。
+   R-6（月度事实）：m10 career=high favorable + family=high favorable
+   （17 年中独有 m10 峰；R-6 career high[7,10]、family high[6,7,10]）。
+C. Jassica：2024 年层 children=low unfavorable（唯一 activated）；
+   wealth=quiet。无 probe。
+D. Correspondence
+   Owen 侧：PARTIAL — family/career 双低激活（favorable）+ 事件日内
+   family/career=high favorable（day 仅登记）+ 独有 m10 月峰；
+   年层强度（low）与 day/月峰强度不匹配；wealth evidence absent。
+   Jassica 侧：NO CLEAR — 唯一激活域 children 与房产交易无可辨识
+   语义对应。
+   事件级：PARTIAL（Owen）/ NO CLEAR（Jassica）。
+
+──────────────────────────────────────────────────────────────────────────────
+§3.12 S12 — 2025 房产交易（YEAR_ONLY；= Owen E15）
+──────────────────────────────────────────────────────────────────────────────
+A. Event ID = S12；Calendar = 2025；YEAR_ONLY（Owen 侧 = P04 购土地，
+   仅登记）。
+B. Owen：2025 年层九域全 quiet；annualActivated=0；mainLine=eventDriven；
+   focus=[]。R-6 月度事实：m10 career=high favorable + family=high
+   favorable（背景模式变体；YEAR_ONLY 事件不作月层归因，仅登记）。
+   Day P04（2025-05-21，仅登记）：relationship=moderate；health=moderate。
+C. Jassica：2025 年层九域全 quiet；focus=[]。无 probe。
+D. Correspondence：NO CLEAR CORRESPONDENCE（双侧）。
+   双侧年层九域 evidence absent；Owen day 层房产相关域
+   （family/wealth/career）亦 evidence absent（P04 仅 rel/health）；
+   Owen R-6 m10 月峰因 YEAR_ONLY 精度不作事件归因。
+
+══════════════════════════════════════════════════════════════════════════════
+§4 JASSICA-ONLY EVENTS J1–J2
+══════════════════════════════════════════════════════════════════════════════
+
+§4.1 J1 — 2004 开始公司（YEAR_ONLY；Owen side = NOT APPLICABLE）
+A. Event ID = J1；Actual = 开始公司；Calendar = 2004；YEAR_ONLY。
+B. Owen：NOT APPLICABLE（no registration, no probe）。
+C. Jassica（IN-1 §9 J1 块；IN-6 2004 annual）
+   Annual 2004 甲申（daYun 丙辰 25-34）：九域全 quiet；
+   coverage career=quiet(P)、family=quiet(P)、其余七域 quiet(A)；
+   N1：career=favorable,isolated；family=favorable,isolated；
+   其余七域 unknown,none；activated=0；mainLineKind=eventDriven；
+   R-3 focus=[]、overflow=[]、R-4 watch=[]。
+   R-1/R-2/R-6（月度背景）：window 6-7 unfav[children] /
+   window 9-10 unfav[relationship,health,children]；
+   m1 career=extreme,unfavorable；m1 family=extreme,unfavorable；
+   m3 rel/health=high unfavorable；m10 career/family=high mixed；
+   m10 children=high unfavorable；m12 family/travel=high unfavorable；
+   R-6：career extreme[1]、family extreme[1]、children extreme[7]、
+   rel/health high[3]、travel high[12]。
+   Day probe / Month probe：NOT PROBED。
+D. Correspondence：NO CLEAR CORRESPONDENCE。
+   事件注册域（career，Phase A 登记 PRIMARY career）年层 intensity
+   evidence absent（quiet）；仅 N1 coverage career=favorable,isolated
+   存在（coverage-only 信号，无强度）；月层 m1 career=extreme unfavorable
+   为背景模式（与 2009 逐字相同，见 §10），不作事件归因。
+   数据限制：YEAR_ONLY + 无 day/month probe。
+
+§4.2 J2 — 2009 公司收入达到历史高点（YEAR_ONLY；Owen side = NOT APPLICABLE）
+A. Event ID = J2；Actual = 公司收入达到历史高点（保持注册表原样；
+   income ≠ profit ≠ wealth increase ≠ career success）；
+   Calendar = 2009；YEAR_ONLY。
+B. Owen：NOT APPLICABLE。
+C. Jassica（IN-1 §9 J2 块；IN-6 2009 annual）
+   Annual 2009 己丑（daYun 丙辰 25-34）：career=high(A) unfavorable
+   broad；family=high(A) unfavorable broad；travel=moderate(A)
+   unfavorable isolated；其余六域 quiet(A)；activated=3；
+   mainLineKind=multiFocus；R-3 focus=[career|high|unfavorable|broad；
+   family|high|unfavorable|broad；travel|moderate|unfavorable|isolated]；
+   overflow=[]、watch=[]。R-1/R-2/R-6 与 2004 逐字相同（月度背景模式）。
+   wealth=quiet。Day probe / Month probe：NOT PROBED。
+D. Correspondence：CLEAR（结构层）。
+   事件注册域（career）在事件年呈当年最高强度激活之一
+   （career=high(A)，R-3 focus 首位）且年份精确对应——域 + 时间对应
+   明显。direction=unfavorable 原样登记、不作吉凶解释；
+   wealth=quiet 另记（收入事件不映射 wealth，§1.7）。
+   数据限制：YEAR_ONLY + 无 day/month probe（无更细粒度可核对）。
+
+══════════════════════════════════════════════════════════════════════════════
+§5 OWEN-ONLY MAJOR EVENTS
+══════════════════════════════════════════════════════════════════════════════
+口径：Owen chart 单侧；E7/E8/E9/E10–E18 与 shared events 的对应关系
+以交叉引用给出，不重复计数（一个现实事件仍只有一个 Event ID）。
+
+E1 1987 全家移民美国（year-only）
+   Annual 1987：children=extreme unfavorable broad（focus#1）；
+   career=moderate unfavorable isolated；family=moderate mixed,conflicted；
+   travel=moderate mixed,conflicted（R-3 overflow）。
+   Window 9–10月[children,unfav]；R-2 m6 family+travel=extreme、
+   m7 career+family=extreme。
+   判定：PARTIAL — travel+family 双 moderate 与「跨国搬迁」语义存在
+   一定关联且同年；children=extreme 为当年最高激活但 Owen 时年 14 岁，
+   该域指本人子女，属与事件无关的背景信号（V2 §10.4 登记；
+   V2 分级 partial）。
+
+E2 1991 大学教育（year-only）
+   Annual 1991：career=high favorable broad；family=high mixed,conflicted；
+   travel=moderate；study=quiet。
+   判定：PARTIAL(weak) — 直接域 study evidence absent；
+   career=high favorable 为当年最高激活，可与「进入职业轨道的教育」
+   弱关联（V2 分级 weak）。
+
+E3 1994 毕业（year-only）
+   Annual 1994：career=moderate；family=moderate；children=moderate；
+   study=quiet。Window 6–7月[career,travel] + 9–10月[children]。
+   判定：PARTIAL(weak) — career=moderate 可弱关联「进入工作」；
+   study evidence absent（V2 分级 weak）。
+
+E4 1997 美国→上海创业（year-only；复合 = 搬迁 + 创业）
+   Annual 1997：career=moderate unfavorable；family=moderate；
+   children=moderate；travel=quiet。
+   Month M01（1997-07-15）：career=extreme favorable；family=extreme；
+   travel=moderate（与 1997 年矩阵 m7 career=extreme、R-6 career
+   peak ext[7] 一致，IN-2 §2.4）。
+   判定：PARTIAL（复合分解：创业成分 PARTIAL — 月层 career=extreme
+   强信号、年层 moderate unfavorable；搬迁成分 PARTIAL(weak) —
+   年层 travel evidence absent、月层 travel=moderate；两层方向语义
+   不一致。V2 分级 partial；两成分分别报告，不合并计分）。
+
+E5 2000 成立新公司 + 约 $1M 风投（year-only；复合）
+   Annual 2000：career=low；family=low；wealth=quiet（annualActivated=2
+   全为 low）。R-2 m6/m7/m11 high/extreme（背景）。
+   判定：NO CLEAR — 重大 career+wealth 事件年，直接域 career=low、
+   wealth evidence absent，方向性倒置、无强度对应（V2 分级
+   no clear correspondence）。
+
+E6 2006–约2012 项目生命周期（单一样本；按 §1.7 修正后事实分相位）
+   精度限制（沿用 V2 §7）：数据集无分相位日期（C06 UNSUPPORTED），
+   相位级只能按自然年近似。
+   ┌──────┬────────┬────────────────────────────┬───────────────────────────────────────┬───────────────┐
+   │ 相位 │ 年份   │ 修正后事实                  │ Owen Annual V3 raw（含月层背景）        │ 相位级判定     │
+   ├──────┼────────┼────────────────────────────┼───────────────────────────────────────┼───────────────┤
+   │ P1   │ 2006   │ 项目启动、大额投入           │ career/family/children/travel 全        │ PARTIAL(weak) │
+   │      │        │                            │ moderate（broad moderate 激活）；        │               │
+   │      │        │                            │ window 6–8月[career,travel]；           │               │
+   │      │        │                            │ m6 family/travel ext、m7 career ext     │               │
+   ├──────┼────────┼────────────────────────────┼───────────────────────────────────────┼───────────────┤
+   │ P2   │ 2007   │ 严重技术问题、延误           │ relationship=high favorable corroborated；│ PARTIAL(weak) │
+   │      │        │                            │ health=high favorable corroborated；    │               │
+   │      │        │                            │ career=moderate unfavorable isolated；  │               │
+   │      │        │                            │ R-4 watch=[children moderate unfav]     │               │
+   ├──────┼────────┼────────────────────────────┼───────────────────────────────────────┼───────────────┤
+   │ P3   │ 2008   │ 持续延误、时间与资金压力增加  │ 仅 children=low（annualActivated=1，    │ NO CLEAR      │
+   │      │        │                            │ 近 quiet 年）；m6/m7 ext（背景）         │               │
+   ├──────┼────────┼────────────────────────────┼───────────────────────────────────────┼───────────────┤
+   │ P4   │ 2009   │ launch / operations transition│ 九域全 quiet（annualActivated=0，      │ NO CLEAR      │
+   │      │        │ （不是最终失败）             │ eventDriven）；m7 career=high fav（背景）│               │
+   ├──────┼────────┼────────────────────────────┼───────────────────────────────────────┼───────────────┤
+   │ P5   │ 2010   │ 继续运营、继续成本           │ relationship=moderate fav broad；       │ NO CLEAR      │
+   │      │        │                            │ health=moderate fav broad；             │               │
+   │      │        │                            │ career/wealth=quiet（IN-5 §3）          │               │
+   │      │ 2011   │ 继续运营、继续成本           │ children=high unfav；family=moderate    │ NO CLEAR      │
+   │      │        │ （+ E18 购房）              │ unfav；travel=moderate unfav；          │               │
+   │      │        │                            │ career/wealth=quiet（IN-5 §4）          │               │
+   ├──────┼────────┼────────────────────────────┼───────────────────────────────────────┼───────────────┤
+   │ P6   │ ~2012  │ 开始准备停止项目             │ career=low favorable isolated；         │ NO CLEAR      │
+   │      │        │                            │ family=low favorable isolated；         │               │
+   │      │        │                            │ wealth=quiet（IN-5 §5；career 信号      │               │
+   │      │        │                            │ 强度 low、方向 favorable，与「准备      │               │
+   │      │        │                            │ 停止」的语义映射不确定）                 │               │
+   ├──────┼────────┼────────────────────────────┼───────────────────────────────────────┼───────────────┤
+   │Outcome│ ~2012+│ 最终结束；累计投入 >$3M；    │ 无单一年份可比（生命周期累计结果，       │ INDETERMINATE │
+   │      │        │ 总体严重亏损                 │ IN-5 §6 明示未做反投射）                 │ （设计性）     │
+   └──────┴────────┴────────────────────────────┴───────────────────────────────────────┴───────────────┘
+   周期级结论：NO CLEAR — 七个年度 career 年层轨迹
+   moderate → moderate(unfav) → quiet → quiet → quiet → quiet → low(fav)，
+   与「投入→问题→压力→转型→持续成本→收缩→结束」的商业强度曲线
+   无同构关系；项目最活跃的运营期（P4/P5，2009–2011）恰为 career
+   年层最 quiet 的时段；唯一跨年稳定信号是 m6/m7/m11 月度背景模式，
+   逐年复现、不随项目相位变化（V2 §7.3 周期级 no clear correspondence，
+   本轮按修正后事实将周期延展至 2012，结论不变）。
+   [PROVENANCE NOTE] V2 §7.2 P4 行标签为修正前表述（见 §1.7）；
+   raw 输出与 P4 判定不受影响。
+
+E7 2003-06-18 结婚 → = S1（§3.1）。Owen 侧 PARTIAL。
+E8 2005-07-05 长女出生 → = S4（§3.4）。Owen 侧 PARTIAL。
+E9 2009-02-03 次子出生 → = S5（§3.5）。Owen 侧 CLEAR。
+   （E9 与 E6-P4 同年但为独立事件，分别评估，不合并。）
+
+E10 2014-04 岳母去世 → = S7（§3.7）。Owen 侧 NO CLEAR（事件时点）；
+   年层归属不唯一登记。
+
+E11 2016 搬迁/房产（year-only；复合）→ = S8 Owen 侧（§3.8）。
+   搬迁成分 PARTIAL（travel 年层 moderate + R-4 watch unfav + 月层
+   moderate）；房产成分 PARTIAL(weak)（family 年层 moderate + day
+   family=extreme[仅登记]；wealth evidence absent）。V2 分级 partial。
+
+E12 2017 房产（year-only）→ = S9 Owen 侧（§3.9）。PARTIAL。
+   day P02 family=extreme + travel=extreme（仅登记）为该年最强
+   房产相邻信号，但 YEAR_ONLY 精度下不作年层对应证据。
+
+E13 2021 卖房（year-only；数据集记 2021-02-01）
+   读数A（任务书 year-only 2019）：2019 Annual 仅 relationship=high
+   favorable isolated + health=high favorable isolated；
+   family/wealth/career=quiet（annualActivated=2）；m6 family=high/
+   travel=high、m7 career=high（月度背景）→ 房产相关域年层
+   evidence absent → NO CLEAR。
+   读数B（数据集 2021-02-01 → resolvedV3Year = 2020）：
+   resolved 2020 与 calendar 2021 annual 均 NOT PROBED →
+   INDETERMINATE（day P01-SALE 仅登记：career=low；family=low；
+   favorable corroborated）。
+   判定：读数A NO CLEAR / 读数B INDETERMINATE（两个读数并列呈现，
+   不挑选；年份级差异本身为 D4 已登记 discrepancy）。
+   V2 分级（按 2019 口径）no clear correspondence，原样保留并注明
+   该分级早于 resolved-year 规则的显式化。
+
+E14 2024 房产 → = S11 Owen 侧（§3.11）。PARTIAL。
+E15 2025 房产 → = S12 Owen 侧（§3.12）。NO CLEAR。
+E16 2003 第一套住房 → = S2（§3.2）。NO CLEAR。
+E17 2005 办公楼 → = S3（§3.3）。NO CLEAR。
+E18 2011 第二套住房 → = S6（§3.6）。PARTIAL(weak)。
+   （E18 补充：资金主要来自配偶 — Context Only；Owen 侧 wealth/career
+   年层 evidence absent 与该 Context 一致，不构成额外发现。）
+
+══════════════════════════════════════════════════════════════════════════════
+§6 STRONG CORRESPONDENCE CASES（CLEAR）
+══════════════════════════════════════════════════════════════════════════════
+
+6.1 S5 / Owen chart（E9 — 2009-02-03 次子出生）
+   为什么 CLEAR：exact-date 当日 day 层 children=extreme unfavorable
+   corroborated（六冲：流日-时柱）——这是全部既有 Owen 证据
+   （20 day/month + 17 annual）中子女域的最高强度；resolved-2008
+   年层 R-3 focus 亦为 children（low, mixed, conflicted）。
+   域（children）+ 强度（extreme）+ 时点（事件当日）三重对应。
+   direction=unfavorable 原样登记，不作吉凶解释。
+   同时该案例是 Annual blind（年层近 quiet 而 day 层强信号）的
+   正面样本，证明 day 层保留独立权威价值。
+
+6.2 S8 / 双侧 chart（搬到美国，event-month 层）
+   为什么 CLEAR：Owen 侧事件月（2016-08）travel=moderate + 年层
+   travel=moderate 且进入 R-4 watch=[travel|moderate|unfav]；
+   Jassica 侧事件月（2017-01）travel=moderate unfavorable isolated。
+   跨国搬迁的直接域（travel）在两张独立命盘的事件月均激活——
+   这是全部 14 个事件中唯一的双侧同域同层对应。
+   direction 字段双侧均为 unfavorable，原样登记。
+   限制：Jassica 侧 resolved 2016 annual NOT PROBED（月层判定不受影响，
+   年层缺口登记）。
+
+6.3 J2 / Jassica chart（2009 公司收入创新高）
+   为什么 CLEAR：事件注册域（career）在事件年（2009）为
+   career=high(A) unfavorable broad，R-3 focus 首位，且 2009 是
+   Jassica 现有年层证据中 activated=3 的 multiFocus 年（对比 2004
+   J1 年 annualActivated=0 全 quiet——同年层结构在不同年份显著不同，
+   年层区分度成立）。域 + 年份对应明显。
+   direction=unfavorable 原样登记；wealth=quiet 另记；
+   income 不映射 wealth/profit（§1.7）。
+   限制：YEAR_ONLY，无 day/month probe 可核对更细粒度。
+
+══════════════════════════════════════════════════════════════════════════════
+§7 PARTIAL CORRESPONDENCE CASES
+══════════════════════════════════════════════════════════════════════════════
+
+7.1 S1（双侧）
+   对应部分：Owen exact-day family=high favorable 与年层 family=high
+   同向呼应，时点精确；Jassica day 层 relationship 激活（域对应）。
+   不对应部分：婚姻直接域 relationship 在 Owen day+annual 两层
+   evidence absent；Jassica relationship direction=unfavorable isolated
+   且年层 evidence absent。→ 域归属错位是主要缺口。
+
+7.2 S4 / Owen（E8）
+   对应部分：年层 children=moderate（直接域 evidence present）。
+   不对应部分：day 层 children evidence absent；年层方向 unfavorable；
+   day 层信号落在 relationship/health（favorable）。
+
+7.3 S6 / E18（双侧）
+   对应部分：family 域双侧激活（Owen moderate / Jassica low），
+   时间同年；与「住宅」语义存在一定关联。
+   不对应部分：双侧 wealth evidence absent；方向 unfavorable；
+   Owen 侧当年最高激活 children=high 与事件无关联。
+
+7.4 S9 / Owen（E12）
+   对应部分：年层 family=moderate mixed（房产相邻域）；
+   day P02 family=extreme + travel=extreme（仅登记的覆盖事实）。
+   不对应部分：wealth evidence absent；年层 travel=low 弱；
+   Jassica 侧 NO CLEAR（见 §8）。
+
+7.5 S10 / Jassica
+   对应部分：family=high unfavorable broad + career=high unfavorable
+   broad，时间同年、强度高。
+   不对应部分：wealth evidence absent；方向 unfavorable；
+   域归属不确定（family/career high 可由其他语义承载）。
+
+7.6 S11 / Owen（E14）
+   对应部分：day（仅登记）career/family=high favorable + 全 17 年
+   独有 m10 career/family 月峰 + 年层 career/family=low favorable。
+   不对应部分：年层强度（low）与 day/月峰强度不匹配；
+   wealth evidence absent。
+
+7.7 E1（1987）
+   对应部分：travel+family 双 moderate 与跨国搬迁语义存在一定关联。
+   不对应部分：最高激活 children=extreme 与事件无关（背景信号）；
+   无 wealth/study 信号。
+
+7.8 E4（1997，复合）
+   对应部分：创业成分 — 月层 career=extreme favorable。
+   不对应部分：年层 career=moderate unfavorable、travel 年层
+   evidence absent；两层方向语义不一致。
+
+7.9 E6-P1 / E6-P2（weak）
+   P1 对应部分：career 年层 moderate broad（启动/投入年有 career 激活）。
+   P1 不对应部分：激活为四域泛激活，无投资语义特异性。
+   P2 对应部分：career=moderate unfavorable isolated（与「问题/延误」
+   压力方向弱同构）。
+   P2 不对应部分：当年最高激活为 relationship/health=high favorable，
+   与技术困境无映射。
+
+7.10 E2 / E3（weak）
+   study 域两层均 evidence absent；career=high（1991）/
+   career=moderate（1994）仅可与教育入轨/进入工作弱关联。
+
+══════════════════════════════════════════════════════════════════════════════
+§8 NO CLEAR CORRESPONDENCE CASES
+══════════════════════════════════════════════════════════════════════════════
+（只说明缺少什么 evidence；不写成 algorithm failure。）
+
+8.1 S2 / E16（2003 第一套房，双侧）：缺少 wealth 域任何年层信号
+   （双侧 quiet）；Owen family=high 已被 S1 占用（年层多义），
+   不构成独立购房证据。Jassica 侧激活域（children）与购房无关联。
+8.2 S3 / E17（2005 办公楼，双侧）：缺少 wealth/career 域信号
+   （双侧 quiet）；Owen 激活域（children/family/travel，unfavorable）
+   与 Jassica 激活域（relationship/health）均无可辨识语义对应。
+8.3 S4 / Jassica：缺少 children 域信号——day 层 quiet、年层 quiet。
+8.4 S7 / E10（2014-04，双侧）：缺少事件月（4 月）的 family/travel
+   激活（Owen 月矩阵 family=low/travel=quiet、day 全 quiet coverage；
+   Jassica 月 probe family quiet）；年层 family 信号（Owen high/
+   Jassica moderate mixed）因峰值月错位（Owen 6/7 月）与归属不唯一
+   而不作为对应证据。
+8.5 S9 / Jassica：缺少房产相邻域（family/travel/wealth/career）
+   年层信号（仅 relationship/health moderate unfavorable）。
+8.6 S11 / Jassica：同上（仅 children=low unfavorable）。
+8.7 S12 / E15（2025，双侧）：双侧年层九域全 quiet；Owen day 层
+   房产相关域亦 evidence absent（P04 仅 rel/health）。
+8.8 J1（2004 开公司）：缺少 career 域年层强度信号（九域全 quiet，
+   仅 N1 coverage career=favorable isolated）；无 day/month probe。
+8.9 E5（2000 创业+风投）：直接域反向（career=low）+ wealth
+   evidence absent。
+8.10 E6-P3 / P4 / P5 / P6 及周期级：项目活跃期各年 career/wealth
+   年层 evidence absent（P3 仅 children=low；P4 九域全 quiet；
+   P5 双年 career/wealth quiet；P6 仅 career=low favorable，
+   语义映射不确定）。
+8.11 E16/E17 与 S2/S3 同一事件，不重复计数（8.1/8.2 即其判定）。
+
+══════════════════════════════════════════════════════════════════════════════
+§9 INDETERMINATE CASES（明确列出数据缺口类型）
+══════════════════════════════════════════════════════════════════════════════
+
+9.1 S5 / Jassica — missing annual snapshot（resolvedV3Year=2008
+   NOT PROBED；2009 calendar annual 存在但不适用）。
+   可用层：day（children quiet，evidence absent）已登记。
+9.2 S8 / Jassica（年层）— missing annual snapshot（resolvedV3Year=2016
+   NOT PROBED）。月层已判定 CLEAR（§6.2），年层单列 INDETERMINATE。
+9.3 S10 / Owen — missing annual snapshot（resolved 2020 与 calendar
+   2021 均 NOT PROBED）；另有 resolved-year issue（实际成交
+   2021-02-01 立春前 → 2020）。
+9.4 E13 读数B — 同 9.3（+ 任务书/数据集年份级差异 D4 并存）。
+9.5 E6-Outcome — 生命周期级累计结果（>$3M、总体亏损），无单一年份
+   可比；相位日期缺失（C06 UNSUPPORTED），全部相位只能按自然年近似。
+9.6 S7 / E10 年层 — not assessable（年层 family 信号归属不唯一 +
+   峰值月与事件月错位）；事件时点已判 NO CLEAR（§8.4）。
+9.7 结构性覆盖缺口（登记，不属于单一事件）：
+   - Owen annual 缺失年度：2004 / 2013 / 2015 / 2020 / 2021 / 2022 / 2023。
+   - Jassica annual 缺失年度：2006 / 2007 / 2008 / 2010 / 2012 / 2013 /
+     2015 / 2016 / 2020 / 2022 / 2023。
+   - Jassica 全部 YEAR_ONLY 事件（S2/S3/S6/S9/S10/S11/S12）无
+     day/month probe；J1/J2 无 day/month probe。
+   - S1/S4/S5/S7/S8 双侧 month probe 未单独运行（Jassica S7/S8 为
+     month probe 本体）。
+
+══════════════════════════════════════════════════════════════════════════════
+§10 CROSS-CHART OBSERVATIONS（只描述，不推导统计结论）
+══════════════════════════════════════════════════════════════════════════════
+
+10.1 双侧同域同层对应：仅 S8（travel，event-month 双侧）一例。
+10.2 双侧日层均激活但域集不同：S1（Owen=[career,family,children] /
+   Jassica=[career,relationship,health,family,children]——交集含
+   career/family/children，但 Owen career/family favorable、
+   Jassica career/family unfavorable）；S5（Owen=[family,children,travel] /
+   Jassica=[relationship,health,family,travel]——交集 family/travel，
+   children 仅 Owen 激活、relationship/health 仅 Jassica 激活）。
+10.3 年层交集观察：S6/S7 双侧交集 = [family, travel]；
+   S9/S11 双侧交集 = []（完全不相交）；S12 双侧均全 quiet。
+10.4 同一事件、两张命盘、不同信号形态：S5 中 Owen 信号在事件直接域
+   （children=extreme day），Jassica 信号在 relationship/health
+   （extreme unfavorable day）——「共同事件」未产生「共同直接域输出」。
+10.5 Jassica 2004 与 2009 的 R-1/R-2/R-6 月度背景逐字相同（同一组
+   window/候选月/峰值月），而年层 N2 显著不同（2004 九域全 quiet vs
+   2009 career/family high + travel moderate）——月层跨年同构、
+   年层跨年区分度的又一实证（与 Owen 侧 V2 §10 结论一致）。
+10.6 日期解析差异事件（S5/S8/S10）在比较中均需 resolved-year 处理；
+   其中 S10（Owen）因 resolved annual 缺失直接落入 INDETERMINATE，
+   说明 calendar/resolved 分离对结论有实质影响。
+10.7 方向字段分布观察：CLEAR 案例中 direction 多为 unfavorable
+   （S5 children、S8 travel 双侧、J2 career）；PARTIAL 案例中
+   favorable 与 unfavorable 混杂。方向字段与事件吉凶的同构性
+   在本轮样本中不稳定——仅登记，不解释。
+
+══════════════════════════════════════════════════════════════════════════════
+§11 ALGORITHM MISMATCH INVENTORY（potential mismatch = validation
+    finding，不是修改建议）
+══════════════════════════════════════════════════════════════════════════════
+
+Event        | What happened                  | What V3 showed                          | Why this is a potential mismatch                          | Confidence
+E5 2000      | 成立新公司 + 约$1M 风投          | career=low；wealth=quiet                 | 直接域强度与方向双重倒置                                     | HIGH（年层直接域）
+E6 周期       | 2006–约2012 项目生命周期         | career 年层 moderate→mod(unfav)→quiet×4  | 商业强度曲线与年层轨迹无同构；最活跃运营期                    | MEDIUM（相位按
+（P1–P6+     | （投入→问题→压力→launch 转型→   | →low(fav)；P4/P5（2009–2011）career      | （P4/P5）年层最静；月层背景逐年复现与项目无关                 | 自然年近似）
+Outcome）    | 持续成本→收缩→结束，累计>$3M    | /wealth 全 quiet                         |                                                           |
+S1/E7        | 2003-06-18 结婚（exact date）   | Owen day/annual family=high fav；        | 婚姻直接域 relationship 双侧沉默/错位                       | HIGH（exact date）
+             |                                | relationship quiet；Jassica day rel      |                                                           |
+             |                                | unfavorable isolated                     |                                                           |
+S4/E8        | 2005-07-05 长女出生（exact）    | day children 双侧 quiet；Owen 年层       | 直接域 day 双侧沉默；Owen 年层方向 unfavorable               | HIGH（exact date）
+             |                                | children=moderate unfavorable            |                                                           |
+S7/E10       | 2014-04 母亲去世（month-only）  | 事件月两层沉默（Owen m4 family=low/      | 事件时点无可对应信号；年层 family=high 峰值月 6/7 与事件月错位 | MEDIUM-HIGH
+             |                                | travel=quiet；day 全 quiet；Jassica      | （MONTH_ONLY 精度限制）                                     |
+             |                                | 月 children=low）                        |                                                           |
+S2/S3/E16/   | 2003 第一套房 / 2005 办公楼     | 双侧 wealth 年层 quiet                   | 房产事件年 wealth 域零信号                                  | MEDIUM
+E17          |                                |                                         | （YEAR_ONLY）                                               |
+S6/E18       | 2011 第二套住宅                 | 双侧 wealth quiet；family 域双侧激活      | wealth 零信号；family 关联存在但方向 unfavorable、语义弱      | MEDIUM
+             |                                | （均 unfavorable）                       |                                                           |
+房产序列整体   | 2016/2017/2019/2021/2024/2025   | 双侧 wealth 年层恒 quiet（9 个事件年）    | wealth 域与房产事件在现有年层输出中无关联                    | HIGH（描述性、
+             | + 2003/2005/2011               |                                         |                                                           | 跨 9 事件年）
+S9/Jassica   | 2017 房产交易                   | 仅 relationship/health moderate unfav    | 房产交易年无可对应域激活                                     | MEDIUM
+S12/E15      | 2025 房产交易                   | 双侧年层九域全 quiet                     | 活跃房产年双侧全静                                           | MEDIUM
+E1 1987      | 14 岁时全家移民美国              | children=extreme unfavorable broad       | 域语义（本人子女）与事件无关——背景信号                       | HIGH（年龄事实
+             |                                | （focus#1）                             | 在无关情境强激活的样本                                       | 可机械核查）
+J1 2004      | 开始公司                        | 年层九域全 quiet；N1 career favorable    | 创业年直接域无强度信号                                       | MEDIUM（YEAR_ONLY、
+             |                                | isolated（coverage-only）                |                                                           | 无 day/month probe）
+
+   登记说明：
+   - 上表全部为「事件语义-时间窗-域信号」三个维度上值得进一步研究的
+     不吻合点；每一条都已在前文给出 raw 证据链。
+   - 不含任何修改建议；不构成 calibration/threshold/domain 映射的依据。
+
+══════════════════════════════════════════════════════════════════════════════
+§12 WHAT WE SHOULD NOT CONCLUDE YET
+══════════════════════════════════════════════════════════════════════════════
+
+  1. 不能从这批案例计算 V3 accuracy / hit-rate / precision / recall——
+     样本非随机、事件非独立、精度不一、domain registration 受暴露影响，
+     且本轮四档判定为描述性而非预注册判据下的判定。
+  2. 不能证明 V3 已经经过统计验证；也不能证明 V3 不准确。
+  3. 不能因为一个人的一个事件（如 E5 2000）就修改算法。
+  4. 不能根据这些案例重新 calibration / threshold / cutpoint /
+     magnitude / severity / domain mapping。
+  5. 不能把 property event 自动解释为 wealth success 或 wealth
+     increase（大部分房产购买主要来自 Jassica 收入）。
+  6. 不能把 J2 的 revenue record 自动解释为 profit 或个人财富增加。
+  7. 不能把 E6 的 2009 年（P4）写成「项目最终失败 / 巨亏结束」——
+     修正后事实为 launch / operations transition；最终结束在约 2012+。
+  8. 不能把 date resolution 问题当成 algorithm mismatch
+     （S5→2008、S8→2016、S10→2020 均为解析规则的正确执行）。
+  9. 不能把「年层 quiet + 事件存在」直接当作算法错误——必须先检查
+     snapshot 存在性、日期精度、domain 对应、月/日层信号、以及
+     「架构是否本来不保证每个现实事件进入 annual focus」（本轮多个
+     NO CLEAR 案例即属此类，且 S5/Owen 证明年层 quiet 时 day 层仍可
+     有强信号）。
+ 10. 不能把年层/月层的弱相关信号自动解释为「事件对应」
+     （如 Owen 2003 family=high 不得单独归因于 S2 购房——年层多义）。
+ 11. 不能因为 event-domain registration 曾受对话暴露影响而否定全部
+     比较——本轮所有对应判定均基于 raw 字段（intensity/direction/
+     时间窗），不依赖被暴露的 domain 标签本身；但也不得把本轮结果
+     描述为「完全认知盲法验证」（§1.3）。
+ 12. 不能把 Jassica 侧的对应或不对应与 Owen 侧互相换算
+     （RULE H1-04/H1-05：互不作为 ground truth）。
+
+══════════════════════════════════════════════════════════════════════════════
+§13 NEXT INVESTIGATION CANDIDATES（只列值得以后研究的案例；
+     不提出代码修改方案，不立即实施任何修复）
+══════════════════════════════════════════════════════════════════════════════
+
+  N-1  E5 2000（创业+风投年 career=low / wealth quiet）——
+       方向性倒置样本，值得单独复核该年 raw interaction 链。
+  N-2  E6 P4/P5（2009–2011 活跃运营期年层 career/wealth 全 quiet）——
+       「持续多年的事业活动」在年层的表达问题（区别于单年事件）。
+  N-3  S1/S4 exact-date 直接域沉默（relationship / children 在
+       出生/结婚当日双侧未激活，信号由 family / relationship+health
+       承接）——直接域与承接域的归属结构问题。
+  N-4  房产序列 wealth 恒 quiet（9 个事件年、双侧）——wealth 域
+       与现实房产活动的关联结构问题。
+  N-5  S7/E10 2014-04（事件月两层沉默 + 年层 family 峰值月 6/7 错位）——
+       事件月分辨率与年层峰值月的关系。
+  N-6  S12/E15 2025（双侧全静的活跃房产年）——与 N-4 同族，
+       但叠加「双侧同时全 quiet」的形态。
+  N-7  E1 1987（14 岁时 children=extreme focus#1）——域语义在
+       生命阶段不适配情境下的强激活样本。
+  N-8  J1 2004（创业年全 quiet，仅 N1 coverage favorable isolated）——
+       coverage-only 信号与 intensity 层的关系。
+  附注：N-1～N-8 全部基于既有冻结 raw；任何进一步取证仍应遵守
+  TEST-ONLY / READ-ONLY 与本轮同等的禁令；未列任何修复方案。
+
+══════════════════════════════════════════════════════════════════════════════
+§14 INTEGRITY CONFIRMATION
+══════════════════════════════════════════════════════════════════════════════
+
+本轮（Historical Event Correspondence Review）逐项确认：
+  - V3Core / N1 / N2 / detectors / DomainMapper / InteractionAnalyzer /
+    thresholds / calibration / cutpoints / semantic rules / snapshots /
+    R-1~R-6 / Annual M5 / AI prompts / UI / Pipeline / State / Adapter：
+    NO 修改。
+  - Owen/Jassica dataset、event registry、H1 protocol、
+    Phase A/B/C 规则：NO 修改。
+  - V3 执行 / 补 probe / 重跑：零次（全部 raw 为既有冻结文件只读转录）。
+  - accuracy / hit-rate / ranking / calibration 计算：零次。
+  - 本报告为唯一新增文件（TEST-ONLY / REPORT-ONLY）：
+    BacktestData/V3_Historical_Event_Correspondence_Review_TEST_ONLY_v1.txt
+  - commit / push：NO。Git HEAD 全程 2f1b2bf665b74d5c70e93056efba6c92bebaea00。
+  - 历史事实仅作 comparison target；事件语义未进入任何算法输入。
+
+================================================================================
+STOP — NO CODE CHANGES MADE. NO DATA CHANGES. NO V3 EXECUTION.
+NO CALIBRATION. NO COMMIT. NO PUSH.
+本报告为描述性对应审查，不构成任何实施授权。
+报告完成，立即停止。
+================================================================================
