@@ -1,0 +1,700 @@
+================================================================================
+V4 EVENT SEMANTICS — REGISTRY FORMAL REPAIR
+(NEW-4 MCP-N4-1/2/3 + NEW-6 MCP-N6-1/2/3 / E1-E8)
+IMPLEMENTATION REPORT v1
+================================================================================
+STATUS:      IMPLEMENTATION-ONLY / REGISTRY-ONLY —— 本轮唯一被修改的既有
+             文件 = V4_Event_Semantics_Registry_Specification_DESIGN_ONLY_
+             v1.txt（Registry 工作文件）；唯一新建文件 = 本报告。零 Swift /
+             零 EventSnapshot 实现 / 零 fixture / 零 test / 零 V3 / 零
+             N1/N2 / 零 Hardened / 零 Protocol Audit / 零 NEW-1/NEW-4/NEW-6
+             报告改动 / 零 commit / 零 push。
+DATE:        2026-09-28 (America/Los_Angeles)
+GIT HEAD:    2f1b2bf665b74d5c70e93056efba6c92bebaea00（编辑前后一致，未变）
+VERDICT      各裁决仅使用：IMPLEMENTED / NOT IMPLEMENTED / BLOCKED /
+VOCABULARY:  ALL IMPLEMENTED / PARTIAL / UNCHANGED / CHANGED / NONE /
+             PRESENT / COMPLETE / INCOMPLETE / REQUIRED / OPTIONAL /
+             DEFERRED TO FUTURE CONTRACT / PASS / YES / NO。
+             禁止词（best / better / stronger / likely / probably / high
+             confidence / low confidence）全篇未使用。无评分、无排名、
+             无新增数值语义。
+================================================================================
+
+§0 EXECUTIVE ANSWER
+================================================================================
+
+任务书（REGISTRY FORMAL REPAIR，IMPLEMENTATION-ONLY / REGISTRY-ONLY）要求
+机械执行已 CLOSED / IMPLEMENTATION-READY 的 NEW-4 + NEW-6 Registry contract
+repair。执行结果：
+
+  MCP-N4-1 = IMPLEMENTED（§18.1 T-PO 单分支 → 两分支重写，语义所有权
+             NEW-4；Branch 2 尾部含 NEW-6 E6 交叉引用）
+  MCP-N4-2 = IMPLEMENTED（MT-1 R11a MT-1-FPO expected EventSnapshot
+             assertion set 登记：N4-O1..O8 + N4-N1..N4-N4 + 三个 DEFERRED
+             标记保留并 resolve 委派）
+  MCP-N4-3 = IMPLEMENTED（§18.3 新增 MT-1 F-PO 实例行，结构平行 MT-3
+             F-PO 行；ON-run companion 引用 §18.2 S6 扩展断言集 = E7）
+  MCP-N6-1 = IMPLEMENTED（新增 §16.5 CONTRIBUTION VOCABULARY
+             REGISTRATION，措辞 = NEW-6 Contract Repair Specification
+             §3.3/§4 冻结原文）
+  MCP-N6-2 = IMPLEMENTED（新增 §16.6 SCHOOL-DEPENDENT L2 DERIVATION，
+             措辞 = NEW-6 Spec §5.3 冻结原文：派生规则 + CASE A/B +
+             四条 scope guards）
+  MCP-N6-3 = IMPLEMENTED（交叉引用网：E4 §16.1 表尾绑定 + E5 MT-1 R1
+             绑定 + E6 Branch 2 绑定 + E7 F-PO 行绑定 + E8 接管注记
+             两行 + 缺口 1 范围封界注记）
+  E1-E8    = ALL IMPLEMENTED（8 条编辑全部落地，见 §3 编辑总账）
+  HARDENED CHANGE REQUIRED = NO（实测 sha 不变）
+  EVENTSNAPSHOT SCHEMA CHANGE REQUIRED = NO（零字段、零枚举实现、零
+             数值；§16.5 为 Hardened §15.4 开放枚举「/ ...」自留授权内的
+             Registry 层语义填充）
+  STOP 条件（任务书 §17 全部九项）= 零触发
+  每条编辑的五要素登记（exact section / exact conceptual change /
+  before-after semantic role / dependency / whether existing meaning
+  changed）见 §4-§10。
+
+本报告全部行号引用为「编辑后 Registry 工作文件」的当前行号。
+
+================================================================================
+§1 FIXED INPUTS / SHA VERIFICATION
+================================================================================
+
+9 件 FIXED INPUT 只读 authority。pre-execution（编辑前）与 post-execution
+（编辑后）各实测 sha256 一次，逐一比对：
+
+  1. V3_Bazi_Event_Observability_Architecture_Audit_TEST_ONLY_v1.txt
+     pre : f797e48377e57407695a291da241e12f140121d149d63a3d4a0f520a48d5ccf4
+     post: f797e48377e57407695a291da241e12f140121d149d63a3d4a0f520a48d5ccf4  UNCHANGED
+  2. V4_Event_Semantics_Architecture_HARDENED_DESIGN_v1.txt
+     pre : 8a559f8e88b151ce6684f5f89464c34b51d67b52149d258721b0ff89f70bacab
+     post: 8a559f8e88b151ce6684f5f89464c34b51d67b52149d258721b0ff89f70bacab  UNCHANGED
+  3. V4_Event_Semantics_Registry_Specification_DESIGN_ONLY_v1.txt（本轮
+     唯一授权修改文件）
+     pre : c80d7d760de22b373d1e432dee021925a160cea52bf19ef2e33020a984734772
+     post: 17e77c9c1c0d55a19bbc4869d3ddb35e0032ea480c71c0f19a391d1bc460112b  CHANGED（唯一变更）
+  4. V4_Event_Semantics_Protocol_Contract_Audit_DESIGN_ONLY_v1.txt
+     pre : 0ac0c0b761e168fcd4c36f9cd33a2bb5dfa7260681ca7bca1ffd201c3dc9acbe
+     post: 0ac0c0b761e168fcd4c36f9cd33a2bb5dfa7260681ca7bca1ffd201c3dc9acbe  UNCHANGED
+  5. V4_Event_Semantics_NEW1_MT1_Contradiction_Resolution_DESIGN_ONLY_v1.txt
+     pre : 7aff5e84e174e6ac4880ea1b339ddfe11781e22b7845884864f0540be7933eb9
+     post: 7aff5e84e174e6ac4880ea1b339ddfe11781e22b7845884864f0540be7933eb9  UNCHANGED
+  6. V4_Event_Semantics_NEW1_MT1_Resolution_Closure_DESIGN_ONLY_v1.txt
+     pre : f4fb9d1b8c1f0ab32ad10cc216c2f14cc84c00ab2a640702fa85a19d5032bc12
+     post: f4fb9d1b8c1f0ab32ad10cc216c2f14cc84c00ab2a640702fa85a19d5032bc12  UNCHANGED
+  7. V4_Event_Semantics_NEW4_MT1_FPO_Contract_Resolution_DESIGN_ONLY_v1.txt
+     pre : 47effe48cfa2c53affa011924d1fb7ff5cc9fd2b076f89637e136728c066760d
+     post: 47effe48cfa2c53affa011924d1fb7ff5cc9fd2b076f89637e136728c066760d  UNCHANGED
+  8. V4_Event_Semantics_NEW6_EventSnapshot_Contribution_
+     SchoolDependency_Contract_Resolution_DESIGN_ONLY_v1.txt
+     pre : 430cb76fb3875525484f74468f3b006187e54c3ed11e299790943766c4457881
+     post: 430cb76fb3875525484f74468f3b006187e54c3ed11e299790943766c4457881  UNCHANGED
+  9. V4_Event_Semantics_NEW6_Contract_Repair_Specification_DESIGN_ONLY_v1.txt
+     pre : 535768a1788b2859949591d152d2d34278d8fcbda4c51297dc71634bcd5031ae
+     post: 535768a1788b2859949591d152d2d34278d8fcbda4c51297dc71634bcd5031ae  UNCHANGED
+
+9/9 pre-execution MATCH（任务书 §1 冻结值；#2/#3 为 repository-registered
+值）。post-execution：#3 之外全部逐字节不变。Authority order 9 级全程遵守；
+未重解释任何 CLOSED 裁决。
+
+================================================================================
+§2 PRE-EXECUTION BASELINE
+================================================================================
+
+  git HEAD            = 2f1b2bf665b74d5c70e93056efba6c92bebaea00
+  git status porcelain 计数 = 102（含 BacktestData/ 单 untracked 目录条目；
+                        其余为工作区既有 modified 条目，均先于本轮存在）
+  Registry 工作文件 sha     = c80d7d76…4772（pre）
+
+编辑执行顺序（按 Registry 文件位置从上到下）：
+  E5 → MCP-N4-2 → E4 → E1 → E2 → E6(MCP-N4-1) → E3 → E7(MCP-N4-3)
+  （E8 随 E1 与 E3 一并落地）
+
+================================================================================
+§3 EDIT LEDGER — E1-E8 编辑总账（编辑后行号）
+================================================================================
+
+  编号  落点（编辑后 Registry 行号）                          服务对象
+  ----  ----------------------------------------------------  ----------------
+  E5    MT-1 R1 行，L809-811（派生规则绑定注记）              MCP-N6-3 / NEW-6
+  MCP-N4-2  MT-1 R11 行后新增 R11a，L835-871                  NEW-4
+  E4    §16.1 表尾注记，L1361-1365                            MCP-N6-3 / NEW-6
+  E1    新增 §16.5，L1400-1488（含 E8 接管注记 L1484-1486     MCP-N6-1 / NEW-6
+        与缺口 1 封界 L1487-1488）
+  E2    新增 §16.6，L1490-1522                                MCP-N6-2 / NEW-6
+  E6    §18.1 T-PO 两分支重写，L1585-1609（含 E6 绑定         MCP-N4-1 / NEW-4
+        L1608-1609）
+  E3    §18.2 S6 扩展，L1621-1662（含 E8 接管注记             MCP-N6-3 / NEW-6
+        L1660-1662）
+  E7    §18.3 MT-1 F-PO 实例行，L1683-1692                    MCP-N4-3 / NEW-4
+        （含 E7 绑定 L1691-1692）
+
+  E1-E8 与 MCP 映射：E1=MCP-N6-1 载体；E2=MCP-N6-2 载体；E3=S6 扩展
+  （MCP-N6-2/3 载体）；E4/E5=MCP-N6-3 交叉引用；E6=MCP-N4-1 落地 + E6
+  绑定；E7=MCP-N4-3 落地 + E7 绑定；E8=NEW-4 deferred 接管注记（E1 内 +
+  E3 内各一行）+ 缺口 1 范围封界。全部 8 条在任务书授权编辑集（E1-E8 +
+  MCP-N4-1/2/3）内；零范围外编辑。
+
+================================================================================
+§4 MCP-N4-1（E6 落地）— §18.1 T-PO TWO-BRANCH REWRITE
+================================================================================
+
+  exact section:          §18.1 六类模板，T-PO 条目（编辑后 L1585-1609）
+  exact conceptual change:
+    before: 单分支模板——「T-PO Plugin-Off（仅 R4≠空的 class）：plugin-off
+      → coreEvidenceState = insufficient-by-construction 且
+      derivedPluginIndependence = NO；plugin-on → 候选存在且恒带
+      plugin-supported / school-dependent 标注。」（对 MT-1 机械不可适用，
+      若逐字套用将在 fixture 层重现 NEW-1 矛盾——NEW-4 §2.3 已裁决）
+    after: 两分支模板（语义 = NEW-4 §9 MCP-N4-1 冻结原文）：
+      BRANCH 1（CORE-INSUFFICIENT——R5 含 School conjunct 的 class，即
+        W-3 / MT-3）：plugin-off → coreEvidenceState =
+        insufficient-by-construction、derivedPluginIndependence = NO、
+        该 class core 条件集不产生 L1 候选；plugin ADD 可作 evidence-state
+        lift（§16.5 lifted-insufficient-to-supported；§16.3/§16.4 机制），
+        coreEvidenceState 原样保留、DPI 保持 NO，plugin-supported
+        candidate 语义恒守 Hardened §15.3，绝不呈现为 core-independent
+        detection（X-2/X-5 边界）。
+      BRANCH 2（CORE-SUPPORTED——R5 全 core 的 class，即 MT-1）：
+        plugin-off → coreEvidenceState = supported、DPI = YES；L1
+        broad-family 候选 EXISTS（family 级记录，eventClass=nil）；L2
+        identity NOT reachable（specificity 停 L1——stop-level dormant，
+        Hardened §13.2；specificityCeiling 不变，仍为 L2）。plugin-on →
+        与原 plugin-on 语义一致不变：候选 L2 仅经显式 SCHOOL-DEPENDENT
+        school gate 可达；S-YM1 ADD-only、plugin 不创造候选（HD-5/X-2）；
+        L1 lineage 保持（§17.3 两记录并存）；coreEvidenceState / DPI /
+        specificity ceiling 三者原样不变；零数值 severity；零 V3/N1/N2
+        变更；school dependence 与 plugin contribution 显式登记——完整
+        表示语义 = §16.5 contribution vocabulary + §16.6
+        school-dependent L2 derivation（NEW-6 E6 绑定）。
+  before/after semantic role:
+    before = 「insufficient-by-construction ∧ DPI=NO」对全部 R4≠空 class
+      一刀切的 universal 模板；after = 按 R5 是否含 School conjunct 分派
+      的两分支模板。原单分支语义逐字成为 Branch 1（W-3/MT-3 域），原
+      plugin-on 子句语义逐字保留于 Branch 2 的 plugin-on 侧。
+  dependency:             NEW-4 §9 MCP-N4-1（冻结语义）；E1/E2（Branch 2
+                          尾部 §16.5/§16.6 交叉引用锚，E6 绑定）。
+  whether existing meaning changed:
+    模板结构变更 = YES（这正是 MCP-N4-1 定义自身的变更，任务书 §3 明确
+    授权并要求）；W-3/MT-3 域语义 = NO（原文本语义在 Branch 1 内逐字
+    保留）；plugin-on 语义 = NO（逐字保留于 Branch 2）；对非 R4≠空
+    class = NO（T-PO 适用范围「仅 R4≠空的 class」原样保留）。
+
+================================================================================
+§5 MCP-N4-2 — MT-1-FPO EXPECTED EVENTSNAPSHOT ASSERTION SET
+================================================================================
+
+  exact section:          MT-1 R11 行（L834，原样未动）之后新增 R11a 条目
+                          （L835-871）
+  exact conceptual change:
+    before: MT-1-FPO 仅作为 R11「Fixtures: MT-1-FPO 为主 + FN」中的
+      标识符存在，无 expected EventSnapshot 断言集。
+    after: 新增 R11a 登记块，内容全部取自 NEW-4 §8.1/§8.2 冻结原文：
+      (1) PLUGIN-OFF run（primary referent；零 NEW-6 依赖）：N4-O1
+          （candidates 恰含一条 family=Movement/level=L1/eventClass=nil
+          记录）、N4-O2（不存在 L2 或 eventClass=MT-1 记录）、N4-O3
+          （coreEvidenceState=supported）、N4-O4（DPI=YES）、N4-O5
+          （specificityCeiling=L2 记于 L1 记录）、N4-O6（missingPremises
+          空；S-YM1 非 R5 premise 不得出现）、N4-O7（pluginManifest
+          absent/empty；schoolModulesUsed 空）、N4-O8（timingResolution=
+          MONTH_ONLY；ambiguityClass=B）。
+      (2) PLUGIN-ON run（companion；状态字段部分）：N4-N1（L1 记录保持
+          OFF run L1 记录全部不变字段值）、N4-N2（另存一条 L2 记录：
+          family=Movement/level=L2/eventClass=MT-1/specificityCeiling=
+          L2/coreEvidenceState=supported/DPI=YES）、N4-N3（两记录作为
+          两数组元素并存，Hardened §17.3；不断言单候选 level 转移）、
+          N4-N4（S-YM1 在场，R7 Supporting；ADD-only 在场，非候选
+          创造——HD-5 保持）。
+      (3) NEW-4 原登记的三个 DEFERRED TO NEW-6 标记：语义原文保留、
+          不删除、不改写；每项附 resolve 委派注记（N6-1 → §16.6 +
+          §18.2 S6 第 8 槽位断言化；N6-2 → §16.5；N6-3 → §18.2 S6 扩展
+          断言集），并注明 E8 接管注记另落于 §16.5/§18.2 各一行。
+  before/after semantic role:
+    before = MT-1-FPO 无 referent（NEW-1 Closure 记录的 contract
+      blocker）；after = MT-1-FPO 的 expected EventSnapshot 契约在
+      Registry 内显式登记，NEW-4 最小责任断言（N4-O/N4-N）可机械执行，
+      NEW-6 责任以 DEFERRED 标记 + resolve 委派保持可追溯。
+  dependency:             NEW-4 §8.1/§8.2（断言原文）；NEW-6 Spec E8
+                          （接管措辞）；R11 行（锚，零改动）。
+  whether existing meaning changed: NO（纯新增登记块；R11 行与全部既有
+    class 行零改动；断言语义逐字取自 NEW-4 已 CLOSED 的定义，零重定义、
+    零占位、零发明字段）。
+
+  措辞决策登记（非架构决策；依据 = FIXED INPUT #9 冻结措辞）：
+  任务书 §4 给出逐项映射（N6-1 → §16.5 / N6-2 → §16.6 / N6-3 → S6），
+  而 NEW-4 §8.2 的三项语义为：N6-1 = L2 记录上的 school-dependency 专用
+  载体；N6-2 = specificity-lift 的 contribution 词汇值/语义；N6-3 =
+  plugin-ON 完整 contribution 表示语义。若照任务书逐项映射书写，将产生
+  语义错位的引用（N6-1 的载体语义 resolve 到 §16.5——该节无载体定义）。
+  FIXED INPUT #9（NEW-6 Spec，authority order 中最接近本实施轮的冻结
+  规范）E8 对此的冻结措辞为统一接管句：「NEW-4 MCP-N4-2 的 N6-1/N6-2/
+  N6-3 DEFERRED 项由本规范 §16.5/§16.6/S6 扩展定义接管」——集合式措辞，
+  不逐项映射，语义无矛盾。本实施采用该统一措辞（E8 注记两行 + R11a
+  委派注记），并在 R11a 委派注记内按 NEW-4 §8.2 语义标注实际 resolve
+  点（N6-1 → §16.6 + S6 第 8 槽位；N6-2 → §16.5；N6-3 → S6 扩展）——
+  全部为既有冻结定义的引用，零新语义。此处理已在报告如实登记；不构成
+  任务书 §17 任何 STOP 条件（无 CLOSED 重开、无 NEW-4/NEW-6 语义冲突、
+  无范围外编辑——措辞选择空间由 FIXED INPUT #9 直接覆盖）。
+
+================================================================================
+§6 MCP-N4-3（E7 落地）— §18.3 MT-1 F-PO INSTANCE ROW
+================================================================================
+
+  exact section:          §18.3 展开实例，新增 MT-1 F-PO 行（L1683-1692），
+                          插于既有 MT-3 F-PO 行（L1693-1695，原样未动）
+                          之前
+  exact conceptual change:
+    before: §18.3 实例目录无 MT-1 F-PO 行（NEW-4 §9 已登记该缺口）。
+    after: 新增 MT-1 F-PO 行，结构平行 MT-3 F-PO 行，显式表示：
+      plugin-off → primary run（coreEvidenceState=supported、DPI=YES、
+      L1 lineage 存在 family=Movement/eventClass=nil、L2 absent——
+      specificity 停 L1，ceiling 不变）；plugin-on → companion run（L1
+      lineage 保持不变字段值 + L2 记录经显式授权 school gate 可达、两
+      记录并存 §17.3）；断言集 = R11a N4-O1..O8（OFF）+ N4-N1..N4-N4
+      （ON）；ON-run companion 断言依 §18.2 S6 扩展断言集
+      （school-dependency status / per-module contribution——NEW-6 E7
+      绑定）。
+  before/after semantic role:
+    before = R11 primary fixture 在实例目录无 worked example；after =
+      与 MT-3 F-PO 行平行的显式实例行，OFF primary / ON companion 结构
+      由 NEW-4 FPO 语义承载，NEW-6 侧仅以 E7 绑定引用 S6 扩展，不重定义
+      F-PO 结构。
+  dependency:             MCP-N4-2（R11a 断言集引用锚）；E3（S6 扩展
+                          断言集引用锚）；MT-3 F-PO 行（结构参照，
+                          零改动）。
+  whether existing meaning changed: NO（纯新增行；MT-3 F-PO / MT-3 F-A /
+    HS-2 / HS-3 / W-6∩MT-1 等全部既有行零改动）。
+
+================================================================================
+§7 MCP-N6-1（E1 落地）— §16.5 CONTRIBUTION VOCABULARY REGISTRATION
+================================================================================
+
+  exact section:          新增小节 §16.5（L1400-1488），位于既有 §16.4
+                          （L1389-1398，原样未动）与 §17 分隔线之间
+  exact conceptual change:
+    before: Registry 无 §16.5；contribution 词汇在 Registry 层零定义
+      （任务五 Spec §3.1 trace 结论）。
+    after: 新增「16.5 CONTRIBUTION VOCABULARY REGISTRATION（NEW-6
+      MCP-N6-1；Hardened §15.4 开放枚举『/ ...』自留授权内的 Registry
+      层语义填充——非 code enum，非 Hardened 编辑，零 schema 变更）」，
+      内容 = NEW-6 Spec §3.3/§4 冻结原文：
+      (1) 载体字段登记（pluginEvidenceState.modules[].contribution，
+          §17.2 设计字段表）+ 值集登记四行：none（§15.4 原样）/
+          corroboration-added（语义钉定于 PLUGIN_SUPPORT）/
+          lifted-insufficient-to-supported（照 Hardened §15.3 原文引用
+          登记，零改写、不重解释）/ specificity-lift（新语义槽位，
+          PLUGIN_SPECIFICITY_LIFT）。
+      (2) 两类别两值语义逐字登记：PLUGIN_SUPPORT = corroboration-added
+          （ADD-only 佐证/支撑；不产生候选 X-2；不改 coreEvidenceState；
+          不对 L2 可达性作任何断言——L2 may remain unreachable；适用
+          示例 MT-1 plugin-ON gate 未满足态、W-1 类佐证 ADD）；
+          PLUGIN_SPECIFICITY_LIFT = specificity-lift（四要件全部同真：
+          (a) ADD-only X-2/HD-5；(b) core-backed——coreEvidenceState=
+          supported ∧ DPI=YES；(c) class-specific school gate 满足 →
+          L2 identity REACHABLE，specificityCeiling 不变仍为 L2；(d)
+          非效果——coreEvidenceState 三字段原样保留、不产生 V3 事实、
+          零数值权重、绝不呈现为 core-independent 输出；登记位置 = L2
+          记录贡献模块条目 pluginEvidenceState.modules[].contribution
+          （S-YM1））。
+      (3) 值间互斥（一模块条目恰持一值；不同模块条目可持不同值；不改
+          §15.4「两态永不合并」纪律）。
+      (4) 统一禁令九项（no candidate creation / no V3 structural fact
+          creation / no N1/N2 mutation / no direction mutation / no
+          magnitude mutation / no timing mutation / no
+          threshold/calibration mutation / no numeric score / no numeric
+          confidence）。
+      (5) 十问登记纪律表（NEW-6 Spec §4 十问 × 两值逐字登记；none 与
+          lifted-insufficient-to-supported 沿既有语义各自回答，本表不
+          重复）。
+      (6) Contract boundary（MAY affect evidence support + specificity
+          reachability where explicitly authorized；MUST NOT affect V3
+          structural state / N1 / N2 / core independence / numeric
+          severity / thresholds / calibration）+ CRITICAL INVARIANT
+          （contribution MUST NOT 改变 coreEvidenceState /
+          derivedPluginIndependence / specificityCeiling——输入或不变量，
+          不是输出）。
+      (7) E8 接管注记一行（NEW-4 MCP-N4-2 的 N6-1/N6-2/N6-3 DEFERRED
+          项由本规范 §16.5/§16.6/S6 扩展定义接管；原 DEFERRED 标记保留
+          于 R11a，可追溯——L1484-1486）。
+      (8) 缺口 1（并发 unresolved flag）范围封界注记（remains
+          registered，NEW-6 §13(c)；out of scope——不吸收、不定义、
+          不预判——L1487-1488）。
+  before/after semantic role:
+    before = Protocol Audit 缺口 2 点名的词汇缺失（W-1 式纯佐证 ADD 与
+      MT-1 式 gate-enabling ADD 在快照层不可区分，OFF/ON differential
+      无法机械归因）；after = 两类别两值语义在 Registry 层显式登记，
+      Hardened §15.3 显式登记纪律沿 specificity 维度可执行。
+  dependency:             NEW-6 Spec §3.3/§4（措辞唯一来源）；E8（接管
+                          注记随 E1 落地）。
+  whether existing meaning changed: NO（纯新增小节；none 与
+    lifted-insufficient-to-supported 既有语义照原文引用、零重解释；
+    Hardened 文本零改动——开放枚举填充发生在 Registry 侧）。
+
+================================================================================
+§8 MCP-N6-2（E2 落地）— §16.6 SCHOOL-DEPENDENT L2 DERIVATION
+================================================================================
+
+  exact section:          新增小节 §16.6（L1490-1522），位于 §16.5 与
+                          §17 分隔线之间
+  exact conceptual change:
+    before: Registry 无 §16.6；school-dependency 派生语义无落点。
+    after: 新增「16.6 SCHOOL-DEPENDENT L2 DERIVATION（NEW-6 MCP-N6-2；
+      Hardened §15.5『派生事实不需独立存储』先例的学校侧平行结构——与
+      §16.3 DPI 派生对称：§16.3 core 侧、本节 school 侧；零字段、零
+      枚举、零数值）」，内容 = NEW-6 Spec §5.3 冻结原文：
+      (1) 派生规则：设 class C 满足 Registry R1 = SCHOOL-DEPENDENT（当前
+          仅 MT-1；等价判据 = master-matrix 行声明「core 判据不足以独立
+          达 L2」，Hardened §18 FX-B/FX-E）；对 C 的任何携带 L2 identity
+          （eventClass=C）的候选记录：school-dependency status for the
+          L2 identity = TRUE，机械派生自（C 的 R1 class declaration +
+          master matrix），NOT from schoolModulesUsed。
+      (2) schoolModulesUsed = disclosure only（披露 gate 经由哪些具体
+          模块满足 + plugin-ON 时的 pluginEvidenceState.modules[]
+          .moduleID）；It is NOT proof of L2 dependency——披露 ≠ 派生
+          来源。
+      (3) CASE A（plugin 仅支撑 L1）：plugin ADD 为 corroboration-only
+          （或 gate 未满足）→ L2 记录不存在；L1 记录永不携带
+          school-dependency 标注（NEW-4 X-7 边界：L1 family 存在性是
+          core-backed 的）；此情形 schoolModulesUsed 可非空——恰为反例，
+          规则下不产生任何 L2 依赖断言。
+      (4) CASE B（plugin ADD 满足 class-specific gate）：L2 记录存在 →
+          其 school-dependency status 派生 = TRUE；贡献模块条目持
+          specificity-lift（§16.5）；L1 lineage 记录并存（Registry
+          §17.3）且无标注。只有 CASE B 确立 L2 specificity dependency
+          on the plugin/school module——且该确立是「class 层声明 + 候选
+          状态」的派生结果，不是 usage 列表的内容。
+      (5) Scope guards 四条：(g1) 仅适用于 SCHOOL-DEPENDENT class 的 L2
+          记录；(g2) 永不标注 L1 记录；(g3) 零字段、零枚举、零数值——
+          纯派生规则文本（§15.5 先例）；(g4) 非 SCHOOL-DEPENDENT class
+          的 L2 记录（若未来出现）不在本规则范围内，其依赖语义需未来
+          授权（不预判）。
+  before/after semantic role:
+    before = schoolModulesUsed（usage 披露字段）与 L2 依赖之间无契约
+      区分（§5.1 反例：corroboration-only ADD → schoolModulesUsed 非空、
+      零 L2 依赖，现有契约内成立）；after = school-dependency status
+      成为机械派生事实（class declaration + master matrix 来源），
+      disclosure 字段与依赖证明显式分离。
+  dependency:             NEW-6 Spec §5.3（措辞唯一来源）；E1（CASE B
+                          引用 §16.5 specificity-lift）；E5（MT-1 R1 行
+                          反向引用本节）。
+  whether existing meaning changed: NO（纯新增小节；零字段、零枚举、零
+    数值；SCHEMA CHANGE = NO——派生载体成立，不使用 §17.3 新增字段
+    授权）。
+
+================================================================================
+§9 MCP-N6-3 — 交叉引用网（E4 / E5 / E6 绑定 / E7 绑定 / E8）
+================================================================================
+
+MCP-N6-3 = 最小交叉引用网 + NEW-4 deferred 接管注记，全部为引用注记级，
+零语义重定义。五处落地：
+
+  (1) E4 — §16.1 表尾（L1361-1365）
+      exact section: §16.1 plugin 依赖表，表尾注记（L1360 既有统计行
+        「其余 37 行 R4 = 无 → 零 plugin 依赖」之后；表格 cell 零改动）
+      conceptual change: 增补「S-YM1 × MT-1 contribution 绑定（NEW-6
+        E4）：S-YM1 对 MT-1 的 ADD 在授权 school gate 满足时 contribution
+        = specificity-lift（§16.5 PLUGIN_SPECIFICITY_LIFT）；gate 未满足
+        时 contribution = corroboration-added（§16.5 PLUGIN_SUPPORT）。
+        两类值互斥；本注记仅绑定词汇，不改变上表任何 cell。」
+      semantic role: before = §16.1 表只登记 R7 supporting ADD 关系；
+        after = ADD 关系与 §16.5 两值语义按 gate 状态显式绑定。
+      dependency: E1。existing meaning changed: NO（表格 cell 与既有
+        统计行逐字未动；决策依据——不改动固定列宽表格 cell，以表尾
+        注记承载绑定，防破坏表格结构）。
+
+  (2) E5 — MT-1 R1 行（L809-811）
+      exact section: MT-1 R1 Status 行（既有 SCHOOL-DEPENDENT 声明，零
+        语义改动）尾部追加一句
+      conceptual change: 追加「；本 class L2 记录的 school-dependency
+        status 机械派生规则见 §16.6（NEW-6 E5 绑定）」
+      semantic role: before = R1 仅声明 SCHOOL-DEPENDENT 状态；after =
+        R1 声明与 §16.6 派生规则显式互链（class 声明侧 ↔ 派生规则侧）。
+      dependency: E2。existing meaning changed: NO（R1 状态声明原样
+        保留）。
+
+  (3) E6 绑定 — §18.1 T-PO Branch 2 尾部（L1608-1609）
+      见 §4；Branch 2 尾句「完整表示语义 = §16.5 contribution vocabulary
+      + §16.6 school-dependent L2 derivation（NEW-6 E6 绑定）」。
+      dependency: E1/E2。existing meaning changed: NO（绑定句为引用
+        注记；Branch 2 本体语义 = NEW-4 冻结原文）。
+
+  (4) E7 绑定 — §18.3 MT-1 F-PO 行尾部（L1691-1692）
+      见 §6；「ON-run companion 断言依 §18.2 S6 扩展断言集
+      （school-dependency status / per-module contribution——NEW-6 E7
+      绑定）」。dependency: E3。existing meaning changed: NO。
+
+  (5) E8 — NEW-4 deferred 接管注记两行 + 缺口 1 封界
+      exact section: §16.5 内 L1484-1486（接管注记）+ L1487-1488（缺口 1
+        范围封界）；§18.2 S6 内 L1660-1662（接管注记）
+      conceptual change: 两处各一行统一冻结措辞「NEW-4 MCP-N4-2 的
+        N6-1/N6-2/N6-3 DEFERRED 项由本规范 §16.5/§16.6/S6 扩展定义接管
+        （原 DEFERRED 标记保留于 R11a，可追溯）」；缺口 1 注记「remains
+        registered（NEW-6 §13(c)），out of scope——本节不吸收、不定义、
+        不预判」；S6 内注记另注明「S6 扩展即 N6-3 的 resolve 点」。
+      semantic role: 依赖闭环（防孤儿定义）+ 范围封界（防吸积）。
+      dependency: E1/E3。existing meaning changed: NO（注记级；原
+        DEFERRED 标记不删除、不改写——接管是注记，不是重写）。
+
+================================================================================
+§10 E3 落地 — §18.2 S6 ASSERTION EXPANSION
+================================================================================
+
+  exact section:          §18.2 S6 条目（L1621-1662）；S1-S5 与既有
+                          六类模板其余条目零改动
+  exact conceptual change:
+    before: S6 字段级断言清单七槽位（status / identity / ambiguity /
+      timing resolution / evidenceState / coreEvidenceState /
+      derivedPluginIndependence——全部枚举，零数值 INV-5）。
+    after: 原七槽位逐字保留 + 增补两 plugin 侧槽位（第 8 槽位
+      school-dependency status——派生值，§16.6 规则的断言化；第 9 槽位
+      per-module contribution——§16.5 两类别语义 corroboration-added /
+      specificity-lift 的断言对象）+ 范围限定行（第 8/9 槽位仅适用于
+      R4≠空 class 的 plugin-ON 态 fixture；原七槽位语义零变化）+ S6
+      断言语义逐项分级表（NEW-6 Spec §6 十项逐字登记：#1-#4 REQUIRED
+      承 MCP-N4-2 已定义断言——S6 扩展引用不重定义；#5-#7/#9-#10
+      REQUIRED FOR NEW-6；#8 REQUIRED（HD-5 机械可查形：DPI=YES ∧ L1
+      record exists ∧ family 相同））+ 补充分级（aggregateNote = OPTIONAL
+      未来增强；并发 unresolved flag 断言 = DEFERRED TO FUTURE CONTRACT
+      缺口 1 轨道保持登记不吸收；L3 永禁断言 = NOT REQUIRED FOR THIS
+      REPAIR——既有 §14.2/Hardened 纪律已全局覆盖）+ E8 接管注记。
+  before/after semantic role:
+    before = S6 为 core/state 侧七槽位断言清单；after = 扩展为九槽位
+      （新增两槽位为 plugin 侧断言对象）并挂接十项语义分级，使 NEW-6
+      责任（5-10）与 NEW-4 已定义断言（1-4，引用不重定义）在同一清单
+      内可机械执行。
+  dependency:             E1（第 9 槽位断言对象 = §16.5 词汇）；E2（第 8
+                          槽位 = §16.6 规则断言化）；E8（接管注记随 E3
+                          落地）。
+  whether existing meaning changed: NO（原七槽位逐字保留；扩展 = 增补；
+    零数值——第 8/9 槽位同为枚举级断言，INV-5 保持）。
+
+================================================================================
+§11 NEW-1 REGRESSION VERIFICATION
+================================================================================
+
+OFF 态（MT-1，plugin-off）五项闭合事实在编辑后 Registry 内一致在场：
+
+  - supported:        R11a N4-O3（L842）= T-PO Branch 2 plugin-off
+                      （L1596-1597）= §18.3 MT-1 F-PO 行（L1685）——三处一致
+  - DPI=YES:          R11a N4-O4（L843）= Branch 2（L1597-1598）=
+                      F-PO 行（L1685-1686）——三处一致
+  - L1 exists:        R11a N4-O1（L839-840，family=Movement/level=L1/
+                      eventClass=nil）= Branch 2「L1 broad-family 候选
+                      EXISTS（family 级记录，eventClass=nil）」（L1598-
+                      1599）= F-PO 行（L1686-1687）——三处一致
+  - L2 unreachable:   R11a N4-O2（L841）+ N4-O5 specificity 停 L1 =
+                      Branch 2「L2 identity NOT reachable（specificity
+                      停 L1——stop-level dormant，Hardened §13.2）」
+                      （L1599-1601）= F-PO 行 L2 absent（L1687）——一致
+  - ceiling=L2:       R11a N4-O5（L844）= Branch 2「specificityCeiling
+                      不变，仍为 L2」（L1601）= F-PO 行「ceiling 不变」
+                      （L1687）——一致
+
+§16.1 S-YM1 行（L1354）「MT-1：L2 停 L1（判据特异性不足）/ R7 supporting
+ADD / ADD」原样未动——NEW-1 CORE LOGIC（plugin-off → L1 fallback 在、
+L2 不可达）零扰动。HD-5（plugin 不独立创造候选）在 Branch 2 / §16.5 (a)
+/ §16.6 CASE B / S6 #8 四处一致保持。NEW-1 REGRESSION = PASS。
+
+================================================================================
+§12 NEW-4 REGRESSION VERIFICATION
+================================================================================
+
+  OFF run: N4-O1..O8 全部在场（R11a L839-850，语义 = NEW-4 §8.1 逐字；
+           §18.3 F-PO 行 primary run 与之引用一致）。
+  ON run:  N4-N1..N4-N4 全部在场（R11a L852-859，语义 = NEW-4 §8.1
+           逐字；N4-N3 并存语义引用 Hardened §17.3）。
+  三个 DEFERRED 标记：语义原文保留（R11a L861-871），不删除、不改写；
+           resolve 委派注记显式（N6-1 → §16.6 + S6 第 8 槽位；N6-2 →
+           §16.5；N6-3 → S6 扩展）；E8 统一接管注记两行在场（L1484-1486 /
+           L1660-1662）。
+  NEW-4 语义所有权：Branch 1/Branch 2 结构、N4-O/N4-N 断言集、F-PO 行
+           结构全部 = NEW-4 冻结原文；NEW-6 侧仅以引用注记（E6/E7/E8）
+           挂接，未吸收 NEW-4 任何语义（NEW-4 §8.3 非合并声明保持）。
+  NEW-4 REGRESSION = PASS。
+
+================================================================================
+§13 NEW-6 VERIFICATION（任务书 §14 十四项逐项）
+================================================================================
+
+  1. contribution vocabulary registered
+     PASS —— §16.5（L1400-1488）标题 + 值集四行 + 两类别语义
+  2. corroboration-added = support
+     PASS —— §16.5 PLUGIN_SUPPORT 类别承载 corroboration-added，ADD-only
+     佐证/支撑语义钉定（L1414-1420）
+  3. specificity-lift = specificity lift
+     PASS —— §16.5 PLUGIN_SPECIFICITY_LIFT 类别承载 specificity-lift，
+     四要件 (a)-(d)（L1421-1437）
+  4. school dependency derived from class declaration/master matrix
+     PASS —— §16.6 派生规则（L1493-1500）：R1 = SCHOOL-DEPENDENT 声明 +
+     master matrix，NOT from schoolModulesUsed
+  5. schoolModulesUsed not treated as dependency proof
+     PASS —— §16.6「schoolModulesUsed = disclosure only……It is NOT
+     proof of L2 dependency——披露 ≠ 派生来源」（L1501-1503）+ CASE A
+     反例保留（L1507-1509）
+  6. L1 lineage preserved
+     PASS —— T-PO Branch 2（L1604-1605）+ §16.6 CASE B（L1512-1513）+
+     §18.3 F-PO 行（L1688）+ S6 #4（L1636-1637）
+  7. plugin does not independently create candidate
+     PASS —— §16.5 (a) X-2/HD-5 + S6 #8（L1645-1648）+ Branch 2（L1603-
+     1604）+ R11a N4-N4
+  8. no numeric semantics
+     PASS —— §16.5 统一禁令九项（L1441-1448，含 no numeric score / no
+     numeric confidence）+ S6 INV-5（L1627）+ §16.6 (g3) 零数值
+  9. no V3/N1/N2 mutation
+     PASS —— §16.5 统一禁令 + Contract boundary（L1478-1479）+ Branch 2
+     「零 V3/N1/N2 变更」（L1607）
+  10. S6 expanded
+     PASS —— §18.2 S6 九槽位 + 范围限定 + 十项分级（L1621-1662）
+  11. T-PO Branch 2 cross-reference exists
+     PASS —— Branch 2 尾部 §16.5 + §16.6 引用（NEW-6 E6 绑定，L1608-1609）
+  12. MT-1 F-PO row exists
+     PASS —— §18.3 L1683-1692（结构平行 MT-3 F-PO 行）
+  13. NEW-4 deferred markers resolved by explicit references
+     PASS —— R11a 委派注记（L861-871）+ E8 统一接管注记两行（L1484-1486 /
+     L1660-1662）；原 DEFERRED 标记保留可追溯
+  14. Gap 1 remains deferred
+     PASS —— §16.5 缺口 1 范围封界注记（L1487-1488）+ S6 补充分级
+     「DEFERRED TO FUTURE CONTRACT（缺口 1 轨道，保持登记、不吸收）」
+     （L1655-1657）
+
+NEW-6 VERIFICATION = 14/14 PASS。
+
+================================================================================
+§14 V3 / N1 / N2 INTEGRITY
+================================================================================
+
+  V3 audit FIXED INPUT sha post-execution = pre = 任务书冻结值（§1 #1）
+  → V3 零改动。N1/N2 为 V3 structural 输出，无任何文件或语义载体被
+  触碰；§16.5 统一禁令显式禁止 N1/N2 mutation（no N1/N2 mutation）；
+  Branch 2 显式禁止 V3/N1/N2 变更。本轮编辑全部为 Registry 契约文本
+  层引用与登记，零算法、零 threshold、零 calibration、零 state model。
+  V3 / N1 / N2 INTEGRITY = INTACT。
+
+================================================================================
+§15 HISTORICAL FIREWALL
+================================================================================
+
+  语义 grep「Owen|Jassica」：6 处命中全部为既有防火墙纪律条款本身
+  （L22 EPISTEMIC 头 / L102 词汇定义 / L195 INV-7 / L1706 §18.4 纪律 /
+  L1818 §20.1 / L1824 §20.3 声明行）——均为禁止性文本，非历史数据引用；
+  无一处位于本轮新增文本内。全部 fixture 纪律（合成四柱 S1 / INV-7）
+  保持原样。HISTORICAL RULE INPUT = NONE。
+
+================================================================================
+§16 SEMANTIC FORBIDDEN-INTERPRETATION AUDIT
+================================================================================
+
+对编辑后 Registry 全文执行语义 grep / exact-text 审计：
+
+  (a) 全角括号乱码（连续重复的全角左/右括号 pattern）：0 命中（编辑块
+      文本干净）。
+  (b) 禁止解释修饰词（best / better / stronger / likely / probably /
+      high confidence / low confidence）：0 命中。
+  (c) 数值语义词（Double / probability / ranking / score / 数值评分 /
+      置信度分数 / 评分器 / ranking 值）：9 处命中全部为既有或本轮
+      新增的禁令/审计条款本身（L77 / L188 INV-5 / L1336 / L1447 本轮
+      §16.5 统一禁令行——禁令性引用 / L1565 / L1877-1878 IP-7 /
+      L1902-1903 Q7）——零数值语义引入。
+  (d) 新增词汇互斥性：specificity-lift 与 corroboration-added 值间互斥
+      显式登记（§16.5）；lifted-insufficient-to-supported 照 §15.3 原文
+      引用、零重解释；none 照 §15.4 原样——Hardened 既有三值语义零
+      变化，新值在开放枚举授权内。
+  (e) NEW-4/NEW-6 非合并：S6 分级表 #1-#4 对 MCP-N4-2 断言「引用，
+      不重定义」；R11a 三 DEFERRED 标记保留；E8 接管为注记非重写。
+  (f) 零新语义类别：全部新增文本可归约为 NEW-6 Spec §3.3/§4/§5.3/§6/
+      §7/§9 与 NEW-4 §8/§9 的既有冻结定义引用。
+
+  结论：no forbidden interpretation introduced。语义审计 = PASS。
+
+================================================================================
+§17 GIT / WORKSPACE INTEGRITY
+================================================================================
+
+  git HEAD        = 2f1b2bf665b74d5c70e93056efba6c92bebaea00
+                    （pre 与 post 完全一致；零 commit、零 branch 操作）
+  git push        = 无（零远端操作）
+  porcelain 计数  = 102（pre 与 post 一致——Registry 属 BacktestData/
+                    untracked 目录内文件，修改不产生新条目；无任何新
+                    modified/untracked 文件，除本报告外）
+  文件变更集合    = { Registry（modified）} + { 本报告（新建）}；
+                    Hardened / Protocol Audit / V3 audit / NEW-1/NEW-4/
+                    NEW-6 报告 8 件 sha 逐字节不变（§1）；tests / fixtures
+                    / Swift / xcodeproj / project_memory 零触碰（工作区
+                    既有 modified 条目均先于本轮存在，未读取、未修改）。
+
+================================================================================
+§18 FINAL STATUS
+================================================================================
+
+FINAL STATUS
+
+NEW-4 MCP-N4-1:
+IMPLEMENTED
+
+NEW-4 MCP-N4-2:
+IMPLEMENTED
+
+NEW-4 MCP-N4-3:
+IMPLEMENTED
+
+NEW-6 MCP-N6-1:
+IMPLEMENTED
+
+NEW-6 MCP-N6-2:
+IMPLEMENTED
+
+NEW-6 MCP-N6-3:
+IMPLEMENTED
+
+E1-E8:
+ALL IMPLEMENTED
+
+HARDENED:
+UNCHANGED
+
+EVENTSNAPSHOT:
+UNCHANGED
+
+V3:
+UNCHANGED
+
+N1/N2:
+UNCHANGED
+
+FIXTURE:
+UNCHANGED
+
+TEST:
+UNCHANGED
+
+HISTORICAL RULE INPUT:
+NONE
+
+COMMIT:
+NONE
+
+PUSH:
+NONE
+
+REGISTRY FORMAL REPAIR:
+COMPLETE
+
+NEXT ARCHITECTURAL DECISION:
+NONE
+
+IMPLEMENTATION AUTHORIZATION:
+GRANTED FOR THIS REGISTRY-ONLY BATCH; NO AUTHORIZATION FOR ANY
+SUBSEQUENT SWIFT / EVENTSNAPSHOT / FIXTURE / TEST / V3 WORK.
+
+STOP
+
+================================================================================
+§19 POST-REPORT STATE
+================================================================================
+
+  Registry 工作文件 sha（post）:
+    17e77c9c1c0d55a19bbc4869d3ddb35e0032ea480c71c0f19a391d1bc460112b
+  本报告新建；此后不再执行任何操作。任务书 §17 全部九项 STOP 条件
+  零触发；无 blocker 需报告。任务书 §16 精确格式已在 §18 逐行复现。
+
+  —— REGISTRY FORMAL REPAIR IMPLEMENTATION ROUND ENDED. STOP. ——
+================================================================================
