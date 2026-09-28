@@ -1,0 +1,1720 @@
+================================================================================
+V4 EVENT SEMANTICS — REGISTRY SPECIFICATION
+(Event Ontology Registry Records / Master Matrix Second Pass)
+================================================================================
+STATUS:      DESIGN-ONLY / REVIEW-ONLY / NO IMPLEMENTATION
+BASELINE:    V3-FROZEN-BASELINE-2026-09-22（本轮零触碰）
+UPSTREAM A:  V3_Bazi_Event_Observability_Architecture_Audit_TEST_ONLY_v1.txt
+             sha256 f797e48377e57407695a291da241e12f140121d149d63a3d4a0f520a48d5ccf4
+             （FIXED INPUT，本轮零重审）
+UPSTREAM B:  V4_Event_Semantics_Architecture_Design_DESIGN_ONLY_v1.txt
+             sha256 30b87ea8f9a408011ada5c1da086cb8b847a135d5392a4217198466b3421b941
+             （基线设计；与 Hardened 版冲突处以 Hardened 版为准）
+UPSTREAM C:  V4_Event_Semantics_Architecture_HARDENED_DESIGN_v1.txt
+             sha256 8a559f8e88b151ce6684f5f89464c34b51d67b52149d258721b0ff89f70bacab
+             （PRIMARY FIXED ARCHITECTURAL CONTRACT —— 本轮不可变输入）
+DATE:        2026-09-28 (America/Los_Angeles)
+GIT HEAD:    2f1b2bf665b74d5c70e93056efba6c92bebaea00（本轮前后不得改变）
+SAFETY:      NO CODE CHANGE / NO TEST CHANGE / NO DATA CHANGE / NO THRESHOLD /
+             NO CALIBRATION / NO V3 MODIFICATION OF ANY KIND / NO PROBE RERUN /
+             NO HISTORICAL CASE USE / NO SWIFT / NO EventSnapshot IMPLEMENTATION /
+             NO DETECTOR IMPLEMENTATION / NO COMMIT / NO PUSH
+EPISTEMIC:   Owen/Jassica 历史事件不得参与本 registry 的任何字段
+             （taxonomy / ontology / condition / threshold / confidence /
+             justification / discriminator discovery）。仅可在未来 registry
+             freeze 后进入 validation / holdout / OOS 轨道（§20）。
+CORE MOTTO:  False specificity is worse than incomplete coverage.
+             不为 coverage 强行升级；证据不足一律 UNVERIFIED — DO NOT INFER。
+================================================================================
+
+§0 EXECUTIVE SUMMARY
+================================================================================
+
+本轮将 Hardened Architecture（UPSTREAM C）的 §18 Master Matrix 从「架构骨架」
+推进为「逐 class 可审计的 Registry Specification」。每个 implementation-target
+Event Class 获得一份完整 V4 Event Ontology Registry Record：Identity 7 字段、
+Structural Premises（逐条标注 V3 来源）、V4-Supplementary（derivation ID /
+version / input / output type / literature provenance / Second-Engine T1-T4
+verdict）、RequiredConditionSet（显式合取）、ExclusionSignals、SupportingSignals、
+Provenance 块（literature basis / rationale / applicability / known ambiguity /
+counter-semantic interpretation）、Temporal 契约、Evidence State 触发条件、
+Plugin 审计与 Fixture 规格。
+
+0.1 Event Class Status 分布（40 个 implementation-target classes）：
+
+  IMPLEMENTABLE-CORE                      19  (47.5%)
+    W-5 W-6 C-3 FA-4 FA-5 FA-7 CW-1 CW-2 CW-3 CW-4 CW-5
+    ED-1 ED-2 ED-4 FM-2 HS-1 HS-4 LS-1 AG-1
+  IMPLEMENTABLE-WITH-V4-SUPPLEMENTARY      7  (17.5%)
+    W-1 W-2 C-1 C-2 FA-1 FA-2 LS-2
+  SCHOOL-DEPENDENT                         2  ( 5.0%)   W-3 MT-1
+  DEFERRED                                 6  (15.0%)   W-4 FA-3 MT-2 ED-3 CW-7 LS-3
+  AMBIGUOUS-C                              5  (12.5%)   FA-6 MT-3 FM-1 HS-2 CW-6
+  NOT-EXPRESSIBLE                          1  ( 2.5%)   HS-3
+  INSUFFICIENT                             0  ( 0.0%)   （词表保留，本轮无使用）
+
+  另有 Reserved stubs 3 项（不建 class，仅登记）：R-1 Debt（CONVENTION-
+  DEPENDENT）、R-2 Short-term-travel（SCHOOL-DEPENDENT 不建）、R-3 Parent-death
+  / Surgery（NOT EXPRESSIBLE）。
+
+0.2 Second Pass 降级（7 行，全部为保守方向，零升级）：
+    W-4（PASS→DEFERRED）、FA-3（PASS→DEFERRED）、CW-6（PASS→AMBIGUOUS-C）、
+    CW-7（PASS→DEFERRED）、ED-3（PASS→DEFERRED）、LS-3（PASS→DEFERRED）、
+    MT-2（C→DEFERRED）。理由统一为：inter-class discriminator 经第二轮
+    核验为 UNVERIFIED — DO NOT INFER（详见 §19）。
+
+0.3 V4-Supplementary Audit 结论（§3）：
+    SUP-G1（性别配偶星/子女星映射）= VERDICT A；SUP-DOC1（印星文书语义
+    condition set）= VERDICT A；SUP-LS1（life-stage applicability 标注）=
+    VERDICT A（仅 applicability，硬禁入 RequiredConditionSet）；
+    SUP-CG-1（natal 静态藏干透出查表）= VERDICT A（严格 spec，本轮无任何
+    class 将其作为必要前提）；藏干透出 dynamic 判据（运/年支透出）= VERDICT B
+    → SECOND-ENGINE RISK — DO NOT IMPLEMENT（FUTURE V3/V5 轨道）。
+
+0.4 全局不变量（§2.3，全部 40 class 机械可查）：
+    Day 层 = corroboration only（全局）；ExactDateDiscriminator 全 NONE ⇒
+    EXACT_DATE 不可达（reserved state）；C+L3=INVALID；零 single-signal→
+    specific event；零 Double/score/weight/probability/ranking；plugin 只 ADD
+    不得创造 candidate（违者 CONTRACT VIOLATION）；历史防火墙全字段生效。
+
+0.5 本轮结论：Registry Specification v1 完成。IMPLEMENTATION AUTHORIZATION
+    = NOT GRANTED；REGISTRY FREEZE = NOT GRANTED（须 Protocol Owner 批准，
+    见 §22 / §23 Q11=NO + blockers）。
+
+================================================================================
+§1 FIXED CONTRACTS
+================================================================================
+
+1.1 不可变输入（本轮只读）：
+    - UPSTREAM C（Hardened Design）为本轮 PRIMARY FIXED ARCHITECTURAL
+      CONTRACT。其全部决议（HD-1~HD-10、Layer A/B/C、Second-Engine T1-T4、
+      Year=broad / Month=timing-window / Day=corroboration、三正交 evidence
+      字段、plugin 双 state 分离、C+L3=INVALID、False specificity is worse
+      than incomplete coverage）对本 registry 具有约束力，不得重解释。
+    - 冲突规则：v1 设计（UPSTREAM B）与 Hardened 版冲突处一律以 Hardened
+      版为准（已发生者：v1 §9.4 旧 EXACT_DATE 定义废除 → Hardened §10.2；
+      单一 ConfidenceOrdinal 废除 → 三正交字段）。
+
+1.2 冻结边界（本轮零触碰集合）：
+    V3Core / N1 / N2 / InteractionAnalyzer / InteractionKind / DomainMapper /
+    threshold / calibration / cutpoints / Year-Month-Day anchor semantics /
+    YearV3Snapshot / Snapshot-Adapter-UI contracts / existing tests / legacy
+    V1-V2 engines / historical event registry / Owen-Jassica historical data /
+    AI prompt 层。以及：不跑 backtest / probe / rerun；不写 Swift /
+    EventSnapshot / detector implementation；不 commit / 不 push。
+
+1.3 本轮唯一许可产出：本 DESIGN-ONLY 文档
+    （V4_Event_Semantics_Registry_Specification_DESIGN_ONLY_v1.txt）。
+
+1.4 本文档不是 implementation authorization。
+    DESIGN DECISION ≠ IMPLEMENTATION APPROVAL。
+    REGISTRY FREEZE = NOT GRANTED（§22 前置条件满足且 Protocol Owner 明确
+    批准后方可申请 freeze）。
+
+================================================================================
+§2 REGISTRY SCHEMA
+================================================================================
+
+2.1 Record 格式（每个 implementation-target class 必须包含全部 11 块；
+    缺任何一块 = schema violation）：
+
+    R1  Identity        {EventClassID / EventFamily / SpecificityCeiling /
+                         AmbiguityClass / Views / Status}
+    R2  StructuralPremises[]   每条带来源 tag（2.2）
+    R3  V4Supplementary[]      每条含 derivationID / version / input /
+                         outputType / literatureProvenance / T1-T4 verdict
+    R4  SchoolPluginDeps[]     （可空）
+    R5  RequiredConditionSet   显式合取，逐 conjunct 编号
+    R6  ExclusionSignals[]     确定性排除（触发 → conflicted）
+    R7  SupportingSignals[]    非必要证据（影响 breadth/corroboration，
+                         不影响身份）
+    R8  Provenance             {literatureBasis / rationale / applicability /
+                         knownAmbiguity / counterInterpretation}
+                         —— 任一子项无法给出时写 UNVERIFIED — DO NOT INFER，
+                         禁止为完成表格补规则
+    R9  Temporal               {YearReachability / MonthReachability /
+                         DayRole / ExactDateDiscriminator}
+    R10 EvidenceStateTriggers  {insufficient / supported / conflicted /
+                         unresolved} 的机械触发条件
+    R11 Fixtures                {F-P / F-N / F-C / F-A / F-PO / F-D} 规格 ID
+                         （仅 DESIGN SPEC，本轮不执行，§18）
+
+2.2 Premise 来源 tag 词表（每个 premise 至少一个 tag；无 tag = schema
+    violation）。全部 V3 标识符为 audit-verified 词表（UPSTREAM A）：
+
+    [K:kind]     InteractionKind 15 词表（PipelineV2Types.swift L336-374）：
+                 sanXingWuEn(寅巳申三刑,P1) / sanXingShiShi(丑戌未三刑,P1) /
+                 pairwiseXing / ziMaoXing / ziXing / liuChong(P2) / liuHe(P4) /
+                 liuHai(P3) / xiangPo(P3) / stemWuHe(P4) / stemChong /
+                 tianKeDiChong(P1) / fanYin(P2) / fuYin(P3) /
+                 shangGuanJianGuan(P1)。isResolving = liuHe ∨ stemWuHe。
+                 P6 神煞级（红鸾/天喜/桃花/驿马/空亡/纳音）mapEvent 返回空，
+                 永不出现在 [K:] tag 中。
+    [T:tenGod组] TenGod→domains 五组（DomainMapper L130-150）：
+                 正财/偏财→[wealth,relationship]；正官/七杀→[career,children,
+                 legalSocial]；正印/偏印→[study,family,health]；食神/伤官→
+                 [children,study,wealth]；比肩/劫财→[family,legalSocial]。
+    [S:slot]     Slot→domains 四组（L157-166）：natalDay→[relationship,
+                 health]（夫妻宫）；natalMonth→[family,career]（父母宫）；
+                 natalHour→[children]（子女宫）；natalYear→[family,travel]
+                 （根基迁移）。扩展：[S:annual-anchor] = Year anchor 大运柱
+                 更替结构事实（本 registry 显式声明的一处 S 族扩展，仅 AG-1
+                 使用）。
+    [D:domain]   九域 N1 domain state（FortuneDomain：wealth / relationship /
+                 career / children / study / family / health / legalSocial /
+                 travel；九域恒产出，AGG-3 域独立零桥接）。
+    [N1:…]       N1 activation / direction（favorable / unfavorable）/
+                 confidenceShape。
+    [N2:…]       N2 五档：quiet / low / moderate / high / extreme；
+                 excludedOnly 合绊证据语义沿用。
+    [V4S:SUP-xx] V4-owned supplementary evidence（§3 登记，T1-T4 已过）。
+    [School:…]   School plugin evidence（§16 登记，只 ADD）。
+
+    Source families 集合 = {K, T, S, D, N1, N2, V4S, School}。
+
+2.3 全局不变量（对全部 40 class 成立；§19 Second Pass 逐行核验）：
+
+    INV-1  DayRole = corroboration-only（全局）。日层同族结构证据永远只能
+           corroborate，不得单独升级任何 timing resolution（FX-G 全局化）。
+    INV-2  ExactDateDiscriminator = NONE（全部 class）⇒ EXACT_DATE 全局
+           不可达（reserved state；Hardened §10.3）。任何 class 的 Timing
+           语义不得写 EXACT_DATE reachable。
+    INV-3  AmbiguityClass C ⇒ SpecificityCeiling ≤ L2；C + L3 = INVALID
+           （Hardened §14）。
+    INV-4  每个 RequiredConditionSet 满足：conjuncts ≥ 2，且
+           （≥2 个不同 source families ∨ conjuncts 来自 ≥2 个 AGG-3 独立
+           域）。单 premise 不得满足任何 RequiredConditionSet（one signal
+           → one event 禁令的 registry 化）。
+    INV-5  零 Double / score / weight / probability / ranking / 序数 ladder。
+           唯一许可的数值使用 = 基数→枚举映射（如「≥2 个独立交互并见」
+           → breadth 枚举；Hardened §11.4）。
+    INV-6  Plugin 证据只能 ADD。plugin → candidate creation、plugin 修改
+           identity / ambiguity / timing / Event Class、plugin 删除 core
+           evidence = CONTRACT VIOLATION（Hardened §15.2 X-1~X-8）。
+           plugin-off 存在性由 coreEvidenceState 机械回答（Hardened §15.4）。
+    INV-7  历史防火墙（§20）：Owen/Jassica 数据不出现在任何 R1-R11 字段。
+    INV-8  本轮 Status 允许降级、禁止升级；升级唯一路径 = 未来经授权的
+           discriminator 程序（Hardened §14.3：禁止历史倒推）。
+
+2.4 词汇纪律：
+    - AMBIGUOUS-C class 仍可产出 L2 candidate，但恒带 C 标注，永不进入 L3。
+    - NOT-EXPRESSIBLE class 不建 generator；仅登记负例 fixture（§18）。
+    - DEFERRED class 不建终版 RequiredConditionSet；草案与 blocker 登记。
+    - Health/Safety 家族全部输出词汇 = 「health 域结构信号」级，禁止任何
+      医学具体化（延续 V3 医学边界与医学词汇禁令）；FM-1 不做死亡声称、
+      不做疾病声称；HS-3 手术 NOT EXPRESSIBLE。
+
+================================================================================
+§3 SUPPLEMENTARY EVIDENCE AUDIT（V4-S 逐项判定 A / B）
+================================================================================
+
+判定标准（Hardened §3 / §8）：A = semantic refinement（输出为枚举/标注，
+不产生 V3 InteractionKind / N1 / N2 / Domain，不修改 V3 输出，不构成隐藏
+第二结构引擎）；B = structural detector 性质 → SECOND-ENGINE RISK —
+DO NOT IMPLEMENT。每项须通过 Second-Engine Test T1-T4：
+  T1 输出类型 ∈ Event Evidence 词表 且 ∉ V3 词表对象；
+  T2 是语义细化 / 静态标注，非新柱位关系分类器；
+  T3 对任意相同输入，V3 全部输出 diff = empty；
+  T4 provenance origin = v4-supplementary（文献出处，非历史案例）。
+
+3.1 SUP-G1 — 配偶星 / 子女星性别映射
+    derivationID:  V4SUP-GENDER-1   version: 1.0
+    input:         日主阴阳 + natal TenGod 集合（V3 输入词汇，非 V3 输出对象）
+    outputType:    enum {spouseStar(male)=财组 / spouseStar(female)=官杀组 /
+                   childStar(male)=官杀组 / childStar(female)=食伤组}
+    literature:    子平六亲通例（《三命通会·论六亲》《渊海子平》级；配偶星
+                   男命论财、女命论官；子星男命论官、女命论食伤）
+    V3 依据:       UPSTREAM A 性别特化 GAP 原文——V3 L126-129：「官杀为男命
+                   子星、食伤为女命子星的性别特化留给后续层；M2 采用通用
+                   映射」。本 SUP 即该「后续层」的 V4-owned 承接，不回写 V3。
+    verdict:       A（semantic refinement）。T1 PASS / T2 PASS（静态标注，
+                   非新柱位分类器）/ T3 PASS / T4 PASS。
+    known variance: 存在以日支为主断配偶的流派差异；SUP-G1 不裁定，登记为
+                   school variance note（不影响 T1-T4，仅限 applicability）。
+    consumers:     W-1、W-2（继承）、W-4（deferred）、C-1、C-2。
+
+3.2 SUP-DOC1 — 印星文书 / 契约语义 condition set
+    derivationID:  V4SUP-DOC-1     version: 1.0
+    input:         印类 premises [T:正印|偏印] + N1/N2 + slot tags（全部 V3
+                   输出词汇）
+    outputType:    enum documentSemanticTag {document / contract / credential
+                   / certificate}
+    condition set: 印类 N1 activation ∧ N2 ≥ low ∧ 印类交互未被 isResolving
+                   excludedOnly 全覆盖
+    literature:    印主权柄文书（《子平真诠·印绶》通例）
+    verdict:       A。T1 PASS / T2 PASS（V3 前提上的语义 condition set，无新
+                   结构检测）/ T3 PASS / T4 PASS。
+    restriction:   SUP-DOC1 只是语义 tag，不得独立生成 candidate（与 X 禁令
+                   对等的 SUP 纯度规则）。
+    consumers:     W-2、FA-1、FA-2、FA-3(deferred)、FA-6、LS-2、MT-2(deferred)、
+                   MT-3。
+
+3.3 SUP-LS1 — life-stage applicability 标注
+    derivationID:  V4SUP-LIFESTAGE-1   version: 1.0
+    outputType:    enum lifeStage {early / mid / late}（运限阶段）
+    verdict:       A（restricted）。硬规则：仅作 applicability scope 元数据，
+                   永不进入任何 RequiredConditionSet、永不影响 identity /
+                   status / timing。
+    consumers:     全部 class（applicability 标注层）。
+
+3.4 SUP-CG-1 — 藏干透出（natal 静态查表）＝ VERDICT A（严格 spec）
+    derivationID:  V4SUP-CANGGAN-1   version: 1.0
+    input:         natal 四柱地支藏干表（静态知识）× 天干对照
+    outputType:    set of (pillar, hiddenStem, transparentTo) 枚举 tuple
+    verdict:       A（纯静态确定性查表）。T1 PASS / T2 PASS / T3 PASS / T4 PASS。
+    consumption:   本 registry v1 无任何 class 将其作为必要前提
+                   （available-but-unconsumed）——避免在未深度审计的模块上
+                   承载判据。
+    ★ 藏干透出 dynamic 判据（大运/流年支藏干是否透出）＝ VERDICT B →
+      SECOND-ENGINE RISK — DO NOT IMPLEMENT。理由：需要时间性藏干激活推导，
+      属新结构分类层（UPSTREAM A L-3：上游预计算不透传）。修复路径 =
+      FUTURE V3/V5（Hardened §8 F-2），非 V4-owned。任何依赖该判据的
+      discriminator 一律 UNVERIFIED — DO NOT INFER。
+
+================================================================================
+§4 REGISTRY — L1-1 RELATIONSHIP（W-1 ~ W-6）
+================================================================================
+
+--- CLASS W-1 Marriage-formation ----------------------------------------------
+R1  Status: IMPLEMENTABLE-WITH-V4-SUPPLEMENTARY | Family: F1 Relationship |
+    L2 | Ambig B | Views: registration vs ceremony UNRESOLVED（v1 遗留，
+    本 registry 不裁定，登记于 knownAmbiguity）
+R2  Premises:
+    WP-1.1 [S:natalDay] 日支槽位 structural fact：冲/刑/合/伏吟类 Interaction
+           Kind 出现于日支参与列 [K:liuChong|pairwiseXing|sanXingWuEn|
+           sanXingShiShi|ziMaoXing|ziXing|liuHe|xiangPo|fuYin|fanYin]
+           （任一满足本前提；多者进 breadth 评估）
+    WP-1.2 [K:liuHe|stemWuHe] 合类族 N1 存在（isResolving 词表成员）
+    WP-1.3 [V4S:SUP-G1] 配偶星参与：配偶星所在 TenGod 组存在 N1 activation
+           或该星为 interaction 参与方
+R3  SUP-G1（§3.1）
+R4  无
+R5  RequiredConditionSet: WP-1.1 ∧ WP-1.2 ∧ WP-1.3
+R6  ExclusionSignals: 前提交互被 isResolving excludedOnly 全覆盖（合绊抵消）
+    → conflicted
+R7  Supporting: 前提 N2 ≥ moderate；Corroboration multi-temporal（Y+M 同族）；
+    [D:relationship] N1 activation（经 [S:natalDay]→[relationship] 派生）
+R8  Provenance:
+    literatureBasis: 子平婚姻通例——配偶星（男财/女官）+ 日支夫妻宫动 +
+    合主结合（《三命通会·六亲论》《渊海子平·论婚姻》级）
+    rationale: 三前提分别提供「结合象 / 宫位动 / 人元动」，无单一可判据
+    applicability: 成年运限（SUP-LS1 标注）
+    knownAmbiguity: registration vs ceremony 不可分；合类族同现于合作语义
+    counterInterpretation: 日支动 + 合 ≠ 必婚——合作、合伙、居所变动
+    （日支亦为居所）同样可见；输出恒为「婚姻形成候选」级语词
+R9  Temporal: YearReachability=Y | MonthReachability=Y | DayRole=
+    corroboration-only | ExactDateDiscriminator=NONE
+R10 EvidenceState: insufficient = R5 未满足；supported = R5 满足（合取天然
+    multi-source）；conflicted = R6 触发；unresolved = 日支冲与合同现且无
+    裁决规则，或与 W-6 并发（§17 双登记并行保留）
+R11 Fixtures: W-1-FP / W-1-FN / W-1-FC / W-1-FA / W-1-FPO / W-1-FD（§18.3）
+
+--- CLASS W-2 Marriage-registration --------------------------------------------
+R1  Status: IMPLEMENTABLE-WITH-V4-SUPPLEMENTARY | F1 | L2 refinement | B
+R2  Premises: W-1.R5 全部 ∧ WP-2.1 [V4S:SUP-DOC1] 文书语义 tag 命中 ∧
+    WP-2.2 [T:正印|偏印] N1 activation 存在
+R3  SUP-G1（继承）+ SUP-DOC1
+R4  无
+R5  RequiredConditionSet: W-1.R5 ∧ WP-2.1 ∧ WP-2.2
+R6  ExclusionSignals: 无确定性排除规则可表述——与其他文书事件（LS-2 / FA-1 /
+    ED 家族）的理论判别 UNVERIFIED — DO NOT INFER；并发时按 §17 处理为
+    identity unresolved（非排除、非删除）
+R7  Supporting: 印类 N2 ≥ moderate；multi-temporal
+R8  Provenance:
+    literatureBasis: 印主权柄文书 / 官方凭证（《子平真诠·印绶》通例）
+    rationale: W-1 身份 ∧ 文书语义合取产生 registration 细化
+    applicability: 成年运限
+    knownAmbiguity: registration vs 其他文书事件残余歧义（Hardened §18.2
+    明示登记于 NegativeExclusionSignals——本 registry 落地为 R6 的
+    unresolved 处理 + §17 跨家族并发表）
+    counterInterpretation: 印文书语义同样命中证书 / 合同 / 房产 / 入学
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 同 W-1 机制 + §17 文书家族并发 → unresolved
+R11 Fixtures: W-2-FP/FN/FC/FA/FPO/FD（§18.3）
+
+--- CLASS W-3 Wedding-ceremony -------------------------------------------------
+R1  Status: SCHOOL-DEPENDENT | F1 | L3 = SCHOOL-ONLY，core 单独不可达
+    （Hardened §18 FX-1）
+R2  Premises: W-1.R5 全部 ∧ WP-3.1 [School:S-SEL1] 择日证据（plugin ADD）
+R3  SUP-G1（继承）
+R4  S-SEL1 择日 plugin（§16）
+R5  RequiredConditionSet（草案，core 不可达由 R4 结构性保证）: W-1.R5 ∧
+    WP-3.1。core-only（无 plugin）时 WP-3.1 恒缺 → coreEvidenceState =
+    insufficient-by-construction
+R6  ExclusionSignals: 无
+R7  Supporting: 无
+R8  Provenance:
+    literatureBasis: 择日体系属民俗 / 择吉传统，非子平结构语义
+    rationale: 无任何结构前提可区分「办仪式」与「婚姻形成」→ L3 仅可由
+    school 体系表达，core 永不声称
+    applicability: —
+    knownAmbiguity: 仪式日期的结构判别不存在（择日为人为选择，非命理输出）
+    counterInterpretation: 任何「婚期已定」结构声称均为过度解释
+R9  Temporal: Y | Y | corroboration-only | NONE（择日 = 非结构判别，仍
+    MONTH_ONLY，Hardened §18 W-3 行）
+R10 plugin-off: coreEvidenceState = insufficient-by-construction（机械回答）；
+    plugin 抬升必须登记为 plugin-supported，不得伪装 core detection
+R11 Fixtures: W-3-FPO 为主要 fixture（plugin-off 必测）
+
+--- CLASS W-4 Engagement -------------------------------------------------------
+R1  Status: DEFERRED（Second Pass 降级，§19）
+    Blocker: engagement vs W-1 marriage-formation 判别器 UNVERIFIED —
+    DO NOT INFER（传统理论无可靠订婚/成婚结构判别）
+R2  Premises（草案，非终版）: [V4S:SUP-G1] 配偶星动 ∧ [K:liuHe|stemWuHe]
+    合类族
+R3  SUP-G1
+R4  School:high（部分流派以红鸾/天喜类神煞论婚期——P6 神煞不在 V3，仅
+    plugin 轨道；plugin 不得单独创造 candidate）
+R5  不建终版（deferred）
+R6-R7  不建终版
+R8  Provenance: 订婚（纳采/文定）传统存在（T-4），但其与成婚的结构判别
+    UNVERIFIED — DO NOT INFER；不为 coverage 补规则
+R9  Temporal（草案）: Y | Y | corroboration-only | NONE
+R10 无 generator（deferred）
+R11 Fixtures: 仅 F-N（负例：任何输入不得产生 W-4 候选）
+
+--- CLASS W-5 Romantic-relationship --------------------------------------------
+R1  Status: IMPLEMENTABLE-CORE | F1 | L1-L2 | Ambig B
+R2  Premises:
+    WP-5.1 [D:relationship] N1 activation 存在（九域恒产出，AGG-3 独立）
+    WP-5.2 [N1:direction] direction ≠ unfavorable
+R3  无（SUP-G1 仅作 supporting）
+R4  无
+R5  RequiredConditionSet: WP-5.1 ∧ WP-5.2
+    （INV-4：D + N1 两个 source families；本 class 本质为 L1 family 直生
+    —— Hardened §13：L1 family candidate ← V3 域激活直生 —— ceiling L2）
+R6  ExclusionSignals: 无
+R7  Supporting: [V4S:SUP-G1] 配偶星参与（romantic 语义强化）；N2 ≥ moderate
+R8  Provenance:
+    literatureBasis: 姻缘 / 人际于情感域的子平通例（域激活即 family 级表达）
+    rationale: 域激活 + 方向是 V3 可观察事实，非新 detector
+    applicability: 全运限
+    knownAmbiguity: relationship 域动同现于社交 / 合作 / 客户关系
+    counterInterpretation: 输出恒为「关系 / 交往类候选」，romantic 具体化
+    仅由 supporting 承担，不作确定性声称
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 标准机制（§15）
+R11 Fixtures: W-5-FP/FN/FD
+
+--- CLASS W-6 Separation / Divorce ---------------------------------------------
+R1  Status: IMPLEMENTABLE-CORE | F1 | L2 | Ambig B
+R2  Premises:
+    WP-6.1 [S:natalDay] 冲/刑/害类 [K:liuChong|pairwiseXing|sanXingWuEn|
+           sanXingShiShi|ziMaoXing|ziXing|liuHai|xiangPo]
+    WP-6.2 [D:relationship] N1 direction = unfavorable
+    WP-6.3 [T:正财|偏财|正官|七杀] N1 direction = unfavorable（配偶星泛组
+           受制——不经性别特化，保持 V3:yes）
+R3  无
+R4  无
+R5  RequiredConditionSet: WP-6.1 ∧ WP-6.2 ∧ WP-6.3
+R6  ExclusionSignals: 前提交互被合绊全覆盖 → conflicted
+R7  Supporting: N2 ≥ high；multi-temporal
+R8  Provenance:
+    literatureBasis: 夫妻宫逢冲刑 + 配偶星受制的子平通例
+    rationale: 宫位动 + 域负向 + 星受制三重合取
+    applicability: 已婚 / 有伴侣运限（applicability 标注，非判据）
+    knownAmbiguity: 分居 vs 离婚结构不可分——由本 class 自身吸收（合并
+    class，不拆分）；与 W-1 对立分支并存
+    counterInterpretation: 日支冲亦主搬迁 / 环境变动（与 MT-1 跨家族，
+    §17 并发 → unresolved）
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 与 W-1 并发时双登记并行保留（Hardened §12 对立分支），双双 unresolved
+    flag；禁止互删、禁止择一
+R11 Fixtures: W-6-FP/FN/FC/FA/FD
+
+================================================================================
+§5 REGISTRY — L1-2 CHILDREN（C-1 ~ C-3）
+================================================================================
+
+--- CLASS C-1 Conception-fertility ---------------------------------------------
+R1  Status: IMPLEMENTABLE-WITH-V4-SUPPLEMENTARY | F2 Children | L2 | B
+R2  Premises:
+    CP-1.1 [D:children] N1 activation 存在
+    CP-1.2 [V4S:SUP-G1] 子女星（性别映射）得用方向 favorable
+R3  SUP-G1
+R4  无
+R5  RequiredConditionSet: CP-1.1 ∧ CP-1.2
+R6  ExclusionSignals: 子女星受冲克 + children 域 unfavorable → 本 class 不
+    成立（方向相悖）
+R7  Supporting: [S:natalHour] 时柱（子女宫）structural 动；N2 ≥ moderate
+R8  Provenance:
+    literatureBasis: 子女宫（时柱）+ 子女星（男官杀 / 女食伤）子平通例
+    rationale: 域激活 + 子女星得用二重合取
+    applicability: 育龄运限（SUP-LS1 标注，非判据）
+    knownAmbiguity: 与 C-2（怀 vs 生）判别 UNVERIFIED — DO NOT INFER；与
+    C-3 并发 → §17 双登记
+    counterInterpretation: children 域动亦主子女事项 / 亲子关系（与 C-3
+    重叠）；词汇纪律——输出为「子女 / 生育类人生事项候选」，禁止任何
+    医学 / 生育能力评估表述
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 标准机制
+R11 Fixtures: C-1-FP/FN/FC/FA/FPO/FD
+
+--- CLASS C-2 Childbirth -------------------------------------------------------
+R1  Status: IMPLEMENTABLE-WITH-V4-SUPPLEMENTARY | F2 | L2 | B
+    （Hardened §18 FX-G：timing M(+D c)，v1「M/D」降为 corroboration）
+R2  Premises:
+    CP-2.1 [S:natalHour] 时柱 structural fact（冲/合/动类）
+    CP-2.2 [D:children] N1 activation 存在
+    CP-2.3 [V4S:SUP-G1] 子女星得用方向 favorable
+R3  SUP-G1
+R4  无
+R5  RequiredConditionSet: CP-2.1 ∧ CP-2.2 ∧ CP-2.3
+R6  ExclusionSignals: 同 C-1 R6
+R7  Supporting: N2 ≥ moderate
+R8  Provenance:
+    literatureBasis: 子女宫逢动 + 子星得用的子平通例
+    rationale: 宫位动 + 域激活 + 星得用
+    applicability: 育龄运限
+    knownAmbiguity: 与 C-1 判别 UNVERIFIED — DO NOT INFER；并发时双登记 +
+    unresolved flag，输出恒为「子女事项候选（timing 窗口）」，不裁定
+    C-1 / C-2
+    counterInterpretation: 时柱动亦主下属 / 晚辈 / 晚年事项
+R9  Temporal: YearReachability=N（v1-matrix as-is）| MonthReachability=Y |
+    DayRole=corroboration-only | NONE
+R10 标准机制
+R11 Fixtures: C-2-FP/FN/FC/FA/FPO/FD
+
+--- CLASS C-3 Child-major-event ------------------------------------------------
+R1  Status: IMPLEMENTABLE-CORE | F2 | L1-L2 | B
+R2  Premises:
+    CP-3.1 [D:children] N1 direction = unfavorable（冲克方向）
+    CP-3.2 [S:natalHour] 冲克 ∨ [T:食神|伤官] unfavorable（两候选路径）
+R3  无
+R4  无
+R5  RequiredConditionSet: CP-3.1 ∧ CP-3.2
+R6  ExclusionSignals: 无
+R7  Supporting: N2 ≥ moderate；multi-temporal
+R8  Provenance:
+    literatureBasis: 子女宫 / 子星受制的子平通例
+    rationale: 域负向 + 宫/星受制
+    applicability: 有子女运限
+    knownAmbiguity: 子女领域负向同现于亲子关系紧张 / 子女远行；与 C-1/C-2
+    方向性可分但身份残余歧义登记 §17
+    counterInterpretation: 输出恒为「子女相关重大事项候选（负向）」，不
+    具体化事件内容
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 标准机制
+R11 Fixtures: C-3-FP/FN/FD
+
+================================================================================
+§6 REGISTRY — L1-3 FINANCE / ASSET（FA-1 ~ FA-7）
+================================================================================
+家族级纪律（Hardened §5.4 P-1~P-4 全文适用）：property 三分语义——
+wealth high ⇏ property acquisition；印+财合取是「登记的 semantic
+conjunction」，不是 property detector；无合取只输出 L1 Finance/Asset family。
+
+--- CLASS FA-1 Property-acquisition --------------------------------------------
+R1  Status: IMPLEMENTABLE-WITH-V4-SUPPLEMENTARY | F3/F4 → Finance/Asset |
+    L2 | Ambig B
+R2  Premises:
+    FP-1.1 [T:正印|偏印] N1 activation（印得用）
+    FP-1.2 [V4S:SUP-DOC1] 文书语义 tag 命中
+    FP-1.3 [D:wealth] N1 direction = unfavorable（支出向）
+R3  SUP-DOC1
+R4  无
+R5  RequiredConditionSet: FP-1.1 ∧ FP-1.2 ∧ FP-1.3
+R6  ExclusionSignals: 印类交互被合绊全覆盖 → conflicted
+R7  Supporting: N2 ≥ moderate；multi-temporal；[S:natalDay] 印坐支参与
+R8  Provenance:
+    literatureBasis: 印为文书契约 + 财为资财进出（子平通例）
+    rationale: Hardened §18 FX-B/FX-I——显式登记：本合取是 semantic
+    conjunction（§5.4 P-2/P-3），非 property detector
+    applicability: 全运限
+    knownAmbiguity: 印 + 财支出同现于学费 / 医疗缴费 / 大额消费 / 设备购置
+    counterInterpretation: 本 class 只允许输出「资产 / 文书类获取候选」，
+    不声称不动产；property 三分语义禁令持续生效
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 标准机制 + §17 文书家族并发
+R11 Fixtures: FA-1-FP/FN/FC/FA/FPO/FD
+
+--- CLASS FA-2 Property-sale ---------------------------------------------------
+R1  Status: IMPLEMENTABLE-WITH-V4-SUPPLEMENTARY | Finance/Asset | L2 | B
+R2  Premises:
+    FP-2.1 [T:正印|偏印] N1 direction = unfavorable 或印类受冲克（印失）
+    FP-2.2 [D:wealth] N1 direction = favorable（财得）
+    FP-2.3 [V4S:SUP-DOC1] 文书语义 tag 命中
+R3  SUP-DOC1
+R4  无
+R5  RequiredConditionSet: FP-2.1 ∧ FP-2.2 ∧ FP-2.3
+R6  ExclusionSignals: 同 FA-1
+R7  Supporting: N2 ≥ moderate；multi-temporal
+R8  Provenance:
+    literatureBasis: 印失 + 财得的资产出手象（子平通例延伸，方向语义）
+    rationale: 与 FA-1 对称的反向合取
+    applicability: 全运限
+    knownAmbiguity: 印失 + 财得同现于离职 / 文书终止 / 消耗后收入
+    counterInterpretation: 同 FA-1——非 property detector
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 标准机制 + §17
+R11 Fixtures: FA-2-FP/FN/FC/FA/FPO/FD
+
+--- CLASS FA-3 Major-property-change -------------------------------------------
+R1  Status: DEFERRED（Second Pass 降级，§19）
+    Blocker: major vs ordinary property change 判别器 UNVERIFIED —
+    DO NOT INFER；强度条件（N2 high/extreme）不是判别器
+R2  Premises（草案，非终版）: FA-1.R5 ∨ FA-2.R5，附 N2 ≥ high
+R3  SUP-DOC1（草案）
+R4  无
+R5  不建终版（deferred）；实际覆盖由 FA-1 / FA-2 的强度 supporting 承担
+R6-R7  不建终版
+R8  Provenance: 传统无「重大 vs 普通」资产变动的可靠结构判别 →
+    UNVERIFIED — DO NOT INFER
+R9  Temporal（草案）: Y | Y | corroboration-only | NONE
+R10 无 generator（deferred）
+R11 Fixtures: 仅 F-N
+
+--- CLASS FA-4 Major-financial-gain --------------------------------------------
+R1  Status: IMPLEMENTABLE-CORE | Finance/Asset | L2 | B
+R2  Premises:
+    FP-4.1 [D:wealth] N1 direction = favorable
+    FP-4.2 [N2:] wealth 域 N2 ≥ moderate（强度可观察）
+R3  无
+R4  无
+R5  RequiredConditionSet: FP-4.1 ∧ FP-4.2
+R6  ExclusionSignals: 无
+R7  Supporting: N2 = high/extreme（breadth 抬升）；multi-temporal
+R8  Provenance:
+    literatureBasis: 财星得用主得财（子平通例）
+    rationale: Hardened §18——方向 + 量级是 V3 可观察事实，非新 detector
+    applicability: 全运限
+    knownAmbiguity: 财得同现于收入 / 回收 / 财务改善
+    counterInterpretation: 输出恒为「财务流入候选」，不声称来源；P-4 禁
+    wealth high → property
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 标准机制
+R11 Fixtures: FA-4-FP/FN/FD
+
+--- CLASS FA-5 Major-financial-loss --------------------------------------------
+R1  Status: IMPLEMENTABLE-CORE | Finance/Asset | L2 | B
+R2  Premises:
+    FP-5.1 [D:wealth] N1 direction = unfavorable
+    FP-5.2 [N2:] wealth 域 N2 ≥ moderate
+R3-R4  无
+R5  RequiredConditionSet: FP-5.1 ∧ FP-5.2
+R6  ExclusionSignals: 无
+R7  Supporting: N2 = high/extreme；multi-temporal
+R8  Provenance:
+    literatureBasis: 财星受制主破耗（子平通例）
+    rationale: 同 FA-4 对称
+    applicability: 全运限
+    knownAmbiguity: 财破同现于大额支出 / 财务压力
+    counterInterpretation: 输出恒为「财务流出 / 压力候选」
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 标准机制
+R11 Fixtures: FA-5-FP/FN/FD
+
+--- CLASS FA-6 Financing --------------------------------------------------------
+R1  Status: AMBIGUOUS-C | Finance/Asset | L2 ceiling（L3 永禁）| Views:
+    business / personal 两 view 仅语境标注（机械记录字段，非判别器）
+R2  Premises（草案级——C class 允许 L2 输出）:
+    FP-6.1 [T:正财|偏财] N1 activation（财动）
+    FP-6.2 [V4S:SUP-DOC1] 文书语义 tag 命中
+R3  SUP-DOC1
+R4  无
+R5  RequiredConditionSet（草案）: FP-6.1 ∧ FP-6.2
+R6  ExclusionSignals: 无
+R7  Supporting: N2 ≥ high
+R8  Provenance:
+    literatureBasis: 借贷 / 融资 = 财动 + 文书（通例级，无精细判据）
+    rationale: Hardened §18 FX-H 确认——与一般财动 / 一般文书事件理论无
+    统一判别 → C ceiling，永不出 L3
+    applicability: 全运限
+    knownAmbiguity: financing vs generic financial movement 不可判别（这是
+    C 的成因，非待修缺陷）
+    counterInterpretation: 同一合取亦命中购置 / 缴费 / 签约付款
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 C 标注全程保留；标准机制
+R11 Fixtures: FA-6-FA / FA-6-FD（重点 §18.3）
+
+--- CLASS FA-7 Major-investment ------------------------------------------------
+R1  Status: IMPLEMENTABLE-CORE | Finance/Asset | L2 | Ambig B+H（弱判别如实
+    标注，Hardened §18）
+R2  Premises:
+    FP-7.1 [D:wealth] N2 ≥ high（财动显著）
+    FP-7.2 [T:比肩|劫财] N1 activation（合伙 / 分利象）
+R3  无
+R4  无
+R5  RequiredConditionSet: FP-7.1 ∧ FP-7.2
+R6  ExclusionSignals: 无
+R7  Supporting: multi-temporal
+R8  Provenance:
+    literatureBasis: 比劫为同辈合伙 / 分利（子平通例）
+    rationale: 财动 + 比劫的合伙投入象
+    applicability: 全运限
+    knownAmbiguity: invest vs 一般财务变动判别弱（B+H 如实）；比劫亦主
+    竞争 / 破财
+    counterInterpretation: 输出恒为「合伙 / 投入类财务候选」
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 标准机制
+R11 Fixtures: FA-7-FP/FN/FD
+
+================================================================================
+§7 REGISTRY — L1-4 CAREER / WORK（CW-1 ~ CW-7）
+================================================================================
+家族级纪律：career high ⇏ business founding（P-3）；lifecycle 子类相互判别
+弱处如实登记（B+H），不为 coverage 制造判别。
+
+--- CLASS CW-1 Employment-change -----------------------------------------------
+R1  Status: IMPLEMENTABLE-CORE | F5 Career/Work | L2 | B
+R2  Premises:
+    CW-1.1 [D:career] N1 activation 存在
+    CW-1.2 [T:正官|七杀] ∨ [T:正印|偏印] structural 动（官印动，两候选路径）
+R3  无
+R4  无
+R5  RequiredConditionSet: CW-1.1 ∧ CW-1.2
+R6  ExclusionSignals: 无
+R7  Supporting: N2 ≥ moderate；multi-temporal
+R8  Provenance:
+    literatureBasis: 官印主职任 / 文书调转（子平通例）
+    rationale: 域激活 + 官印动
+    applicability: 在职 / 求职运限
+    knownAmbiguity: 官印动同现于升迁（CW-2）/ 机构身份变化（LS-3）
+    counterInterpretation: 输出恒为「职务 / 工作变动候选」
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 §17 career 家族并发 → unresolved 并行
+R11 Fixtures: CW-1-FP/FN/FD
+
+--- CLASS CW-2 Promotion-milestone ---------------------------------------------
+R1  Status: IMPLEMENTABLE-CORE | Career/Work | L2 | B
+R2  Premises:
+    CW-2.1 [T:正官|七杀] N1 direction = favorable（官星得用）
+    CW-2.2 [D:career] N1 direction = favorable
+R3  无
+R4  无
+R5  RequiredConditionSet: CW-2.1 ∧ CW-2.2
+R6  ExclusionSignals: 官杀受制 + 克身 → 不成立
+R7  Supporting: N2 ≥ moderate；印类同动
+R8  Provenance:
+    literatureBasis: 官星得用主升迁掌权（子平通例）
+    rationale: 星得用 + 域正向
+    applicability: 在职运限
+    knownAmbiguity: 官得用同现于权责加重 / 考公成功（与 ED-4 并发）
+    counterInterpretation: 输出恒为「职级 / 权责提升候选」
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 标准机制
+R11 Fixtures: CW-2-FP/FN/FD
+
+--- CLASS CW-3 Business-founding -----------------------------------------------
+R1  Status: IMPLEMENTABLE-CORE | Career/Work | L2 | B（FX-B 显式登记）
+R2  Premises:
+    CW-3.1 [T:食神|伤官] N1 activation
+    CW-3.2 [T:正财|偏财] N1 activation
+    CW-3.3 [T:比肩|劫财] N1 activation
+    CW-3.4 [N2:] 上三项中 ≥2 项 N2 ≥ moderate（Second Pass 保守收紧）
+R3  无
+R4  无
+R5  RequiredConditionSet: CW-3.1 ∧ CW-3.2 ∧ CW-3.3 ∧ CW-3.4
+R6  ExclusionSignals: 财星受制 + 比劫 unfavorable（夺财向）→ 不成立
+R7  Supporting: multi-temporal；官印同动（立业文书象）
+R8  Provenance:
+    literatureBasis: 食伤生财 + 比劫同辈合作的立业象（子平通例）
+    rationale: Hardened §18 FX-B——显式登记：career high ⇏ business founding
+    （§5.4 P-3）；判据是组合合取，非单域直判
+    applicability: 创业适龄运限
+    knownAmbiguity: 同组合亦见于投资合作 / 自由职业强化 / 接手家族生意
+    counterInterpretation: 输出恒为「自立门户类事业候选」
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 标准机制
+R11 Fixtures: CW-3-FP/FN/FC/FA/FPO/FD
+
+--- CLASS CW-4 Business-expansion ----------------------------------------------
+R1  Status: IMPLEMENTABLE-CORE | Career/Work | L1-L2 | B+H（lifecycle 相互
+    判别弱，H 如实）
+R2  Premises:
+    CW-4.1 [D:wealth] N1 direction = favorable
+    CW-4.2 [D:career] N1 direction = favorable
+    （INV-4 经 AGG-3 两独立域路径满足）
+R3  无
+R4  无
+R5  RequiredConditionSet: CW-4.1 ∧ CW-4.2
+R6  ExclusionSignals: 任一域转 unfavorable → 不成立
+R7  Supporting: N2 ≥ high；multi-temporal
+R8  Provenance:
+    literatureBasis: 财官同动主事业扩展（通例级）
+    rationale: 两独立域同向并动
+    applicability: 经营者运限（applicability 标注）
+    knownAmbiguity: expansion vs founding vs steady-gain 相互判别弱——
+    lifecycle 家族 §17 并发处理
+    counterInterpretation: 输出恒为「事业扩展候选」
+R9  Temporal: Y（大运）/ M | corroboration-only | NONE
+R10 标准机制 + §17 lifecycle 并发
+R11 Fixtures: CW-4-FP/FN/FA/FD
+
+--- CLASS CW-5 Business-disruption ---------------------------------------------
+R1  Status: IMPLEMENTABLE-CORE | Career/Work | L1-L2 | B+H
+R2  Premises:
+    CW-5.1 官杀混杂象：[T:正官|七杀] 双组并现 unfavorable ∨
+           [K:shangGuanJianGuan]（两候选路径）
+    CW-5.2 [D:career] N1 direction = unfavorable
+R3  无
+R4  无
+R5  RequiredConditionSet: CW-5.1 ∧ CW-5.2
+R6  ExclusionSignals: 无
+R7  Supporting: N2 ≥ high
+R8  Provenance:
+    literatureBasis: 官杀攻扰 / 伤官见官主事业受挫（通例级）
+    rationale: 泛化判据如实登记（Hardened §18）
+    applicability: 经营者 / 在职运限
+    knownAmbiguity: disruption vs failure-exit 判别 UNVERIFIED — DO NOT
+    INFER（Second Pass：CW-6 据此降 C）；与 CW-6 并发 → §17
+    counterInterpretation: 输出恒为「事业受阻候选」
+R9  Temporal: YearReachability=Y | MonthReachability=N（v1-matrix as-is）|
+    corroboration-only | NONE
+R10 标准机制 + §17 lifecycle 并发
+R11 Fixtures: CW-5-FP/FN/FA/FD
+
+--- CLASS CW-6 Business-failure-exit -------------------------------------------
+R1  Status: AMBIGUOUS-C（Second Pass 降级，§19；原 matrix B+H）
+    理由: failure-exit vs disruption 判别 UNVERIFIED — DO NOT INFER；
+    L2 ceiling（C + L3 = INVALID）
+R2  Premises（草案级）:
+    CW-6.1 [T:正官|七杀] unfavorable（官杀攻身向）
+    CW-6.2 [T:比肩|劫财] unfavorable（夺财向）
+    CW-6.3 [D:wealth] N1 direction = unfavorable
+R3  无
+R4  无
+R5  RequiredConditionSet（草案）: CW-6.1 ∧ CW-6.2 ∧ CW-6.3
+R6  ExclusionSignals: 无
+R7  Supporting: N2 = extreme
+R8  Provenance:
+    literatureBasis: 官杀攻身 + 比劫夺财主败业（通例级）
+    rationale: 与 CW-5 的判别理论不可靠 → C（保守降级，非缺陷）
+    applicability: 经营者运限
+    knownAmbiguity: failure-exit vs disruption / vs 一般财务困难不可分
+    counterInterpretation: 输出恒为「事业 / 财务重度受挫候选」，不声称
+    倒闭 / 退出
+R9  Temporal: Y | N（v1-matrix as-is）| corroboration-only | NONE
+R10 C 标注全程保留；与 CW-5 并发双登记
+R11 Fixtures: CW-6-FA/FD
+
+--- CLASS CW-7 Major-project-milestone -----------------------------------------
+R1  Status: DEFERRED（Second Pass 降级，§19）
+    Blocker: project-milestone vs promotion（CW-2）/ expansion（CW-4）/
+    contract（LS-2）判别 UNVERIFIED — DO NOT INFER；「官/印动+方向」过泛
+R2  Premises（草案，非终版）: [T:正官|七杀] ∨ [T:正印|偏印] 动 + 方向
+R3-R7  不建终版
+R8  Provenance: UNVERIFIED — DO NOT INFER；不为 coverage 补规则
+R9  Temporal（草案）: Y | Y | corroboration-only | NONE
+R10 无 generator（deferred）
+R11 Fixtures: 仅 F-N
+
+================================================================================
+§8 REGISTRY — L1-5 MOVEMENT / TRAVEL（MT-1 ~ MT-3）
+================================================================================
+家族级纪律：travel 无十神通道（仅 natalYear 槽位，UPSTREAM A L-4）；驿马为
+纯神煞（P6 神煞不在 V3）→ School-only ADD（FX-E）。
+
+--- CLASS MT-1 Move-relocation -------------------------------------------------
+R1  Status: SCHOOL-DEPENDENT（core 判据不足以独立达 L2 时停 L1 Movement
+    family——Hardened §18 FX-B/FX-E）
+R2  Premises（core）:
+    MT-1.1 [S:natalDay] 日支 structural 动（日支亦为居所）
+    MT-1.2 [S:natalYear] 年柱 structural 动（根基 / 迁移）
+    MT-1.3 [D:travel] N1 activation 存在
+    （plugin）[School:S-YM1] 驿马 ADD corroboration
+R3  无
+R4  S-YM1 驿马 plugin（§16）
+R5  RequiredConditionSet: MT-1.1 ∧ MT-1.2 ∧ MT-1.3
+R6  ExclusionSignals: 无
+R7  Supporting: [School:S-YM1]；N2 ≥ moderate
+R8  Provenance:
+    literatureBasis: 日支为居所、年柱为根基迁移、驿马主动迁（通例 + 神煞
+    体系《三命通会·驿马》）
+    rationale: core 三前提给出「居所 + 根基 + 迁移域」，但相对 FM-2 / W-6 /
+    AG-1 的判别特异性不足 → Second Pass 判定 core 独立停 L1；驿马只能
+    ADD，不得单独创造 L2 candidate
+    applicability: 全运限
+    knownAmbiguity: 与 W-6（搬迁 vs 关系破裂）/ FM-2（家宅变动）跨家族并发
+    counterInterpretation: 输出恒为「迁移 / 居所变动候选」
+R9  Temporal: M / Y（大运）| corroboration-only | NONE
+R10 plugin-off: coreEvidenceState 机械回答——L2 身份不可达（判据特异性
+    不足），plugin 抬升必须登记 plugin-supported
+R11 Fixtures: MT-1-FPO 为主 + FN
+
+--- CLASS MT-2 Long-distance-overseas-move -------------------------------------
+R1  Status: DEFERRED（Second Pass 降级，§19；原 matrix C+H）
+    Blockers: (a) MT-1 core 判据特异性不足（同上）；(b) overseas vs domestic
+    判别 UNVERIFIED — DO NOT INFER；(c) AmbiguityClass C（matrix as-is）
+R2  Premises（草案，非终版）: MT-1.R5 ∧ [V4S:SUP-DOC1] 证件 tag
+R3  SUP-DOC1（草案）
+R4  S-YM1（草案）
+R5  不建终版（deferred）
+R6-R7  不建终版
+R8  Provenance: UNVERIFIED — DO NOT INFER
+R9  Temporal（草案）: Y（大运）| N | corroboration-only | NONE
+R10 无 generator（deferred）
+R11 Fixtures: 仅 F-N
+
+--- CLASS MT-3 Immigration -----------------------------------------------------
+R1  Status: AMBIGUOUS-C | L2 ceiling（L3 永久禁止——Hardened §18 FX-H：
+    immigration vs broader relocation 理论不可判别）
+R2  Premises（草案级）:
+    MT-3.1 [S:natalYear] 年柱 structural 动
+    MT-3.2 [V4S:SUP-DOC1] 证件 tag 命中
+    MT-3.3 [School:S-YM1] 驿马（School premise——结构性关键前提）
+R3  SUP-DOC1
+R4  S-YM1 驿马 plugin
+R5  RequiredConditionSet（草案）: MT-3.1 ∧ MT-3.2 ∧ MT-3.3
+    core-only（无 plugin）时 MT-3.3 恒缺 → coreEvidenceState =
+    insufficient-by-construction
+R6  ExclusionSignals: 无
+R7  Supporting: N2 ≥ high
+R8  Provenance:
+    literatureBasis: 驿马 + 印证件 + 年柱根基的组合象（神煞 + 通例混合，
+    school-dependent）
+    rationale: C 的成因 = 与 broader relocation 判别理论不可达（这是 C，
+    非待修缺陷）；L3 永禁
+    applicability: 全运限
+    knownAmbiguity: immigration vs relocation / overseas-move 不可分
+    counterInterpretation: 输出恒为「远迁 / 跨境类变动候选」
+R9  Temporal: YearReachability=Y（大运）| MonthReachability=N | corroboration-
+    only | NONE
+R10 plugin-supported 抬升必须登记（Hardened §15.3）；C 标注全程保留
+R11 Fixtures: MT-3-FPO / FA（重点 §18.3）
+
+================================================================================
+§9 REGISTRY — L1-6 EDUCATION（ED-1 ~ ED-4）
+================================================================================
+
+--- CLASS ED-1 Enrollment ------------------------------------------------------
+R1  Status: IMPLEMENTABLE-CORE | F6 Education | L2 | B
+R2  Premises:
+    ED-1.1 [T:正印|偏印] N1 direction = favorable（印星得用）
+    ED-1.2 [D:study] N1 direction = favorable
+R3  无
+R4  无
+R5  RequiredConditionSet: ED-1.1 ∧ ED-1.2
+R6  ExclusionSignals: 印受冲克 → 不成立
+R7  Supporting: [S:natalMonth]（学堂宫位延伸，applicability）；N2 ≥ moderate
+R8  Provenance:
+    literatureBasis: 印星得用主学业 / 入学（子平通例）
+    rationale: 星得用 + 域正向
+    applicability: 学龄 / 进修运限
+    knownAmbiguity: enrollment vs graduation 判别 UNVERIFIED — DO NOT
+    INFER（§17 + Q11 blocker）；印得用同现于文书 / 房产 / 名誉
+    counterInterpretation: 输出恒为「学业 / 进修类候选」
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 标准机制
+R11 Fixtures: ED-1-FP/FN/FD
+
+--- CLASS ED-2 Graduation ------------------------------------------------------
+R1  Status: IMPLEMENTABLE-CORE | Education | L2 | B
+R2  Premises:
+    ED-2.1 [T:食神|伤官] N1 direction = favorable（成果外显）
+    ED-2.2 [D:study] N1 direction = favorable
+R3  无
+R4  无
+R5  RequiredConditionSet: ED-2.1 ∧ ED-2.2
+R6  ExclusionSignals: 无
+R7  Supporting: 印类同动；N2 ≥ moderate
+R8  Provenance:
+    literatureBasis: 食伤主成果表达 / 才艺外显（子平通例）
+    rationale: 与 ED-1 镜像的出学象
+    applicability: 学龄 / 进修运限
+    knownAmbiguity: graduation vs enrollment 判别 UNVERIFIED — DO NOT
+    INFER（并发时双登记 + unresolved，§17）；食伤亦主发表 / 创作
+    counterInterpretation: 输出恒为「学业成果类候选」
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 标准机制
+R11 Fixtures: ED-2-FP/FN/FD
+
+--- CLASS ED-3 Degree-milestone ------------------------------------------------
+R1  Status: DEFERRED（Second Pass 降级，§19）
+    Blocker: degree-milestone vs graduation vs enrollment 判别 UNVERIFIED —
+    DO NOT INFER；强度条件非判别器
+R2  Premises（草案，非终版）: ED-2.R5 + N2 ≥ high
+R3-R7  不建终版
+R8  Provenance: UNVERIFIED — DO NOT INFER
+R9  Temporal（草案）: Y | Y | corroboration-only | NONE
+R10 无 generator（deferred）
+R11 Fixtures: 仅 F-N
+
+--- CLASS ED-4 Major-examination ------------------------------------------------
+R1  Status: IMPLEMENTABLE-CORE | Education | L2 | B
+    （Hardened §18 FX-G：timing M(+D c)，v1「Y/M/D」降为 corroboration）
+R2  Premises:
+    ED-4.1 [T:食神|伤官] N1 activation（表达 / 应试）
+    ED-4.2 [T:正印|偏印] N1 activation（录取 / 名次文书）
+    ED-4.3 [N2:] 上两项中 ≥1 项 N2 ≥ moderate（Second Pass 保守收紧）
+R3  无
+R4  无
+R5  RequiredConditionSet: ED-4.1 ∧ ED-4.2 ∧ ED-4.3
+    （INV-4：T + N2 families；T+T 同族由 N2 conjunct 补足独立性）
+R6  ExclusionSignals: 印受冲克 → conflicted
+R7  Supporting: multi-temporal
+R8  Provenance:
+    literatureBasis: 食伤制杀 / 印主文名的应试象（通例级）
+    rationale: 表达 + 录取文书双动
+    applicability: 应试运限
+    knownAmbiguity: 食伤 + 印亦主创作发表 / 签约表达（与 LS-2 跨家族并发）
+    counterInterpretation: 输出恒为「考试 / 考核类候选」，不声称结果
+R9  Temporal: YearReachability=N（v1-matrix as-is）| MonthReachability=Y |
+    corroboration-only | NONE
+R10 标准机制
+R11 Fixtures: ED-4-FP/FN/FC/FD
+
+================================================================================
+§10 REGISTRY — L1-7 FAMILY（FM-1 ~ FM-2）
+================================================================================
+家族级纪律：病 / 故不可分（T-7）；FM-1 不做死亡声称、不做疾病声称；
+parent-death NOT EXPRESSIBLE（R-3）。
+
+--- CLASS FM-1 Parent-event -----------------------------------------------------
+R1  Status: AMBIGUOUS-C | L2 ceiling（病 / 故结构不可分 → C，永不出 L3；
+    Hardened §18 FX-I：parent-death 撤销并入本 class）
+R2  Premises:
+    FM-1.1 [T:正印|偏印] ∨ [T:偏财] 受冲克（印为母系庇护、偏财为父系，
+    两候选路径；unfavorable 方向）
+    FM-1.2 [S:natalMonth] ∨ [S:natalYear] 冲刑类 [K:liuChong|pairwiseXing|
+    sanXingWuEn|sanXingShiShi|liuHai]（年月柱方向）
+R3  无
+R4  无
+R5  RequiredConditionSet: FM-1.1 ∧ FM-1.2
+R6  ExclusionSignals: 无
+R7  Supporting: N2 ≥ high；multi-temporal
+R8  Provenance:
+    literatureBasis: 印为母 / 偏财为父，年月为父母宫位（子平六亲通例）
+    rationale: 六亲星受制 + 父母宫位动的双合取
+    applicability: 父母在世运限（applicability 标注，非判据）
+    knownAmbiguity: 长辈健康 vs 长辈变故 vs 与长辈关系紧张 不可分——这是
+    C 的成因；parent-death 结构判别不存在（T-7）
+    counterInterpretation: 输出恒为「长辈 / 父母相关重大事项候选（负向）」，
+    禁止死亡 / 疾病声称（医学词汇禁令延续）
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 C 标注全程保留；标准机制
+R11 Fixtures: FM-1-FA/FN/FC/FD
+
+--- CLASS FM-2 Major-family-change ----------------------------------------------
+R1  Status: IMPLEMENTABLE-CORE | Family | L1-L2 | B+H
+R2  Premises:
+    FM-2.1 [S:natalMonth] ∨ [S:natalYear] 大动（冲/刑/合/伏吟类高强度，
+    两候选路径）
+    FM-2.2 [N2:] ≥ high
+R3  无
+R4  无
+R5  RequiredConditionSet: FM-2.1 ∧ FM-2.2
+R6  ExclusionSignals: 合绊全覆盖 → conflicted
+R7  Supporting: multi-temporal
+R8  Provenance:
+    literatureBasis: 月柱家风 / 年柱根基，大动主家宅变动（通例级）
+    rationale: 宫位大动 + 强度
+    applicability: 全运限
+    knownAmbiguity: 家庭变动 vs 居所变动（MT-1）vs 内部关系（W-6）跨家族
+    并发
+    counterInterpretation: 输出恒为「家庭 / 家宅类重大变动候选」
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 标准机制
+R11 Fixtures: FM-2-FP/FN/FC/FD
+
+================================================================================
+§11 REGISTRY — L1-8 HEALTH / SAFETY（HS-1 ~ HS-4）
+================================================================================
+家族级纪律（硬约束）：全部输出词汇 = 「health 域结构信号」级；禁止任何
+医学具体化（疾病名 / 诊断 / 预后 / 医疗行为声称）；surgery NOT EXPRESSIBLE；
+hospitalization C ceiling。V3 医学边界与医学词汇禁令全文延续。
+
+--- CLASS HS-1 Major-health-event(negative) ------------------------------------
+R1  Status: IMPLEMENTABLE-CORE | F8 Health/Safety | L1-L2 | B
+R2  Premises:
+    HS-1.1 [D:health] N1 direction = unfavorable
+    HS-1.2 [T:正印|偏印] unfavorable ∨ [S:natalDay] 冲刑类（印 / 日支通道，
+    两候选路径）
+R3  无
+R4  无
+R5  RequiredConditionSet: HS-1.1 ∧ HS-1.2
+R6  ExclusionSignals: 前提交互被合绊全覆盖 → conflicted
+R7  Supporting: N2 ≥ moderate；multi-temporal
+R8  Provenance:
+    literatureBasis: 印为庇护 / 日支为身，health 域负向（子平通例 + V3 域
+    映射 [T:印]→[study,family,health]、[S:natalDay]→[relationship,health]）
+    rationale: 域负向 + 庇护 / 身位通道
+    applicability: 全运限
+    knownAmbiguity: health 负向同现于情绪 / 劳碌 / 环境压力——结构负向
+    ≠ 疾病
+    counterInterpretation: 输出恒为「健康相关结构压力候选」，禁止疾病具体化
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 标准机制
+R11 Fixtures: HS-1-FP/FN/FC/FD
+
+--- CLASS HS-2 Hospitalization --------------------------------------------------
+R1  Status: AMBIGUOUS-C（Hardened §18 FX-H：原 B+H 修正）| L2 ceiling
+R2  Premises（草案级）:
+    HS-2.1 HS-1.R5 全部
+    HS-2.2 [N2:] = extreme（强度细化）
+R3  无
+R4  无
+R5  RequiredConditionSet（草案）: HS-2.1 ∧ HS-2.2
+R6  ExclusionSignals: 无
+R7  Supporting: 无
+R8  Provenance:
+    literatureBasis: 无传统结构判据可区分「住院级别」与「一般重度负向」
+    → UNVERIFIED — DO NOT INFER
+    rationale: 强度非判别器（如实）；C 为保守结果
+    applicability: —
+    knownAmbiguity: hospitalization vs generic heavy negative 不可分
+    counterInterpretation: 输出恒为「health 域重度负向候选」，禁止医疗
+    行为声称
+R9  Temporal: YearReachability=N（v1-matrix as-is）| MonthReachability=Y |
+    corroboration-only | NONE
+R10 C 标注全程保留
+R11 Fixtures: HS-2-FA/FD
+
+--- CLASS HS-3 Surgery ----------------------------------------------------------
+R1  Status: NOT EXPRESSIBLE（Hardened §18 FX-B：整体从可实现集合移除）
+R2-R7  无——无任何结构判据（matrix as-is：Premises「—」）
+R8  Provenance: 传统命理结构无手术判据；任何「手术信号」均为过度解释 →
+    不建 generator
+R9  Temporal: 不适用
+R10 无 generator；registry 层面该 class 恒不存在
+R11 Fixtures: 仅通用 F-N（任何输入不得产生 HS-3 候选；§18.2）
+
+--- CLASS HS-4 Accident-injury --------------------------------------------------
+R1  Status: IMPLEMENTABLE-CORE | Health/Safety | L2 | B
+    （Hardened §18 FX-G：timing M(+D c)）
+R2  Premises:
+    HS-4.1 [K:tianKeDiChong] ∨ [K:sanXingWuEn] ∨ [K:sanXingShiShi]（P1 级
+    冲刑，两候选路径）
+    HS-4.2 ≥2 个独立 P1/P2 级冲刑类 interaction 并见（基数→枚举，INV-5
+    许可的唯一数值使用）
+    HS-4.3 [N2:] ≥ high
+R3  无
+R4  无
+R5  RequiredConditionSet: HS-4.1 ∧ HS-4.2 ∧ HS-4.3
+R6  ExclusionSignals: 合绊全覆盖 → conflicted
+R7  Supporting: multi-temporal
+R8  Provenance:
+    literatureBasis: 天克地冲 / 三刑并发的剧烈扰动象（P1 级结构语义）
+    rationale: 高强度 + 多并见的结构事实（V3:yes，非新 detector）
+    applicability: 全运限
+    knownAmbiguity: 多冲刑同现于剧烈变动（MT / CW / FM 跨家族）
+    counterInterpretation: 输出恒为「高频冲刑结构事件候选（safety-sensitive
+    措辞）」，不声称伤害
+R9  Temporal: YearReachability=N（v1-matrix as-is）| MonthReachability=Y |
+    corroboration-only | NONE
+R10 标准机制
+R11 Fixtures: HS-4-FP/FN/FC/FD
+
+================================================================================
+§12 REGISTRY — L1-9 LEGAL / SOCIAL（LS-1 ~ LS-3）
+================================================================================
+
+--- CLASS LS-1 Litigation / Legal-dispute --------------------------------------
+R1  Status: IMPLEMENTABLE-CORE | F9 Legal/Social | L2（L3 具体司法阶段
+    不可达——Hardened §18 FX-I）| B
+R2  Premises:
+    LS-1.1 [K:shangGuanJianGuan]（伤官见官 kind，P1 级）
+    LS-1.2 [T:正官|七杀] N1 direction = unfavorable（官杀克身方向）
+R3  无
+R4  无
+R5  RequiredConditionSet: LS-1.1 ∧ LS-1.2
+R6  ExclusionSignals: 合绊全覆盖 → conflicted
+R7  Supporting: N2 ≥ high；multi-temporal
+R8  Provenance:
+    literatureBasis: 伤官见官主官非口舌（《滴天髓》《子平真诠》伤官见官
+    语义）
+    rationale: Hardened §18 FX-I——单 kind ⇏ 诉讼事件（one signal → one
+    event 禁令）；须合取 + L3 封顶
+    applicability: 全运限
+    knownAmbiguity: litigation vs 非司法冲突（职场冲突 / 合规压力 / 投诉）
+    理论判别有限——残余歧义登记（matrix as-is）
+    counterInterpretation: 输出恒为「官非 / 争讼类候选」
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 标准机制
+R11 Fixtures: LS-1-FP/FN/FC/FD
+
+--- CLASS LS-2 Contract-document-event -----------------------------------------
+R1  Status: IMPLEMENTABLE-WITH-V4-SUPPLEMENTARY | Legal/Social | L2 | B+E
+R2  Premises:
+    LS-2.1 [V4S:SUP-DOC1] 文书语义 tag 命中
+    LS-2.2 [T:正印|偏印] N1 activation 存在
+R3  SUP-DOC1
+R4  无
+R5  RequiredConditionSet: LS-2.1 ∧ LS-2.2
+R6  ExclusionSignals: 无
+R7  Supporting: N2 ≥ moderate；multi-temporal
+R8  Provenance:
+    literatureBasis: 印主权柄文书（通例）
+    rationale: 文书语义 + 印动
+    applicability: 全运限
+    knownAmbiguity: 与 W-2 / FA-1 / FA-6 / ED 家族跨家族并发（§17 文书家族）
+    counterInterpretation: 印文书语义广泛——输出恒为「文书 / 契约类事件候选」
+R9  Temporal: Y | Y | corroboration-only | NONE
+R10 标准机制 + §17
+R11 Fixtures: LS-2-FP/FN/FD
+
+--- CLASS LS-3 Institutional-identity-change -----------------------------------
+R1  Status: DEFERRED（Second Pass 降级，§19）
+    Blocker: institutional-identity vs employment-change（CW-1）/ promotion
+    （CW-2）/ education 家族判别 UNVERIFIED — DO NOT INFER；「官印相生
+    泛化」过泛
+R2  Premises（草案，非终版）: [T:正官|七杀] ∧ [T:正印|偏印] 相生动 + 方向
+R3-R7  不建终版
+R8  Provenance: UNVERIFIED — DO NOT INFER
+R9  Temporal（草案）: Y（大运）| N | corroboration-only | NONE
+R10 无 generator（deferred）
+R11 Fixtures: 仅 F-N
+
+================================================================================
+§13 REGISTRY — L1-X AGGREGATE + RESERVED STUBS
+================================================================================
+
+--- CLASS AG-1 Major-life-transition -------------------------------------------
+R1  Status: IMPLEMENTABLE-CORE | Cross-Family | L1（aggregate-only，
+    Hardened §4.4——永不升 L2）| B
+R2  Premises:
+    AG-1.1 [S:annual-anchor] 大运交替窗口（Year anchor 大运柱更替结构
+    事实——§2.2 显式 S 族扩展）
+    AG-1.2 ≥2 个不同 domain 各自 N1 activation（九域各自独立评估；
+    AGG-3 域独立零桥接——聚合仅发生在 V4 Layer C，不产生 V3 联合语义）
+R3  无
+R4  无
+R5  RequiredConditionSet: AG-1.1 ∧ AG-1.2
+R6  ExclusionSignals: 无
+R7  Supporting: 激活域数 ≥3（基数→枚举 breadth）
+R8  Provenance:
+    literatureBasis: 运限交替主人生阶段转换（《滴天髓》运限说 / 三命通会
+    级；Hardened T-5）
+    rationale: 跨家族聚合事件——V4 Layer C 对独立域输出做机械聚合
+    applicability: 换运窗口
+    knownAmbiguity: 聚合候选不指向任何具体事件家族；identity = family
+    集合的机械记录
+    counterInterpretation: 输出恒为「人生阶段转换候选（聚合）」
+R9  Temporal: YearReachability=Y（大运）| MonthReachability=N | corroboration-
+    only | NONE
+R10 标准机制
+R11 Fixtures: AG-1-FP/FN/FD
+
+--- RESERVED STUBS（不建 class，仅登记）----------------------------------------
+R-1 Debt（Finance/Asset）: CONVENTION-DEPENDENT——债务 vs 借贷 vs 一般财务
+    流出的判别流派分歧大，v1 不建 class。任何未来建类须经授权程序。
+R-2 Short-term-travel（Movement/Travel）: SCHOOL-DEPENDENT——判据纯神煞
+    （驿马），P6 神煞不在 V3；不建 class。
+R-3 Parent-death / Surgery: NOT EXPRESSIBLE（T-7 / HS-3 / FM-1 语义吸收）。
+
+================================================================================
+§14 TEMPORAL AUDIT（40 行全表）
+================================================================================
+
+14.1 全局裁决（对本表所有行生效）：
+    - INV-1：DayRole = corroboration-only（全局；FX-G 全局化）。日层同族
+      结构证据永远只能 corroborate，不得升级任何 timing resolution。
+    - INV-2：ExactDateDiscriminator 全 NONE ⇒ EXACT_DATE 全局不可达
+      （reserved state；Hardened §10.3）。恢复唯一路径 = 未来经授权的
+      discriminator 程序（禁历史倒推）。
+    - 推论：本 registry 全局 timing hard ceiling = MONTH_ONLY。
+    - as-matrix 注记：表中标注 (as-matrix) 的 YearReachability=N /
+      MonthReachability=N 均为 v1-matrix 值原样登记，本 registry 不重新
+      推导；重推导属未来轨道（G-NEW-2，§21）。
+
+14.2 逐 class Temporal 表（Y=可达 / N=不可达；c-only = corroboration-only）：
+
+  Class | Status           | YearReach   | MonthReach  | DayRole | EDD  | Finest-achievable
+  ------+------------------+-------------+-------------+---------+------+---------------------------
+  W-1   | WITH-V4-SUPP     | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  W-2   | WITH-V4-SUPP     | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  W-3   | SCHOOL-DEPENDENT | Y           | Y           | c-only  | NONE | MONTH_ONLY（择日非结构判别）
+  W-4   | DEFERRED（草案） | Y           | Y           | c-only  | NONE | 无 generator（草案 MONTH_ONLY）
+  W-5   | CORE             | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  W-6   | CORE             | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  C-1   | WITH-V4-SUPP     | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  C-2   | WITH-V4-SUPP     | N(as-matrix)| Y           | c-only  | NONE | MONTH_ONLY
+  C-3   | CORE             | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  FA-1  | WITH-V4-SUPP     | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  FA-2  | WITH-V4-SUPP     | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  FA-3  | DEFERRED（草案） | Y           | Y           | c-only  | NONE | 无 generator（草案 MONTH_ONLY）
+  FA-4  | CORE             | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  FA-5  | CORE             | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  FA-6  | AMBIGUOUS-C      | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  FA-7  | CORE             | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  CW-1  | CORE             | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  CW-2  | CORE             | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  CW-3  | CORE             | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  CW-4  | CORE             | Y（大运）   | Y           | c-only  | NONE | MONTH_ONLY
+  CW-5  | CORE             | Y           | N(as-matrix)| c-only  | NONE | YEAR_ONLY
+  CW-6  | AMBIGUOUS-C      | Y           | N(as-matrix)| c-only  | NONE | YEAR_ONLY
+  CW-7  | DEFERRED（草案） | Y           | Y           | c-only  | NONE | 无 generator（草案 MONTH_ONLY）
+  MT-1  | SCHOOL-DEPENDENT | Y（大运）   | Y           | c-only  | NONE | MONTH_ONLY
+  MT-2  | DEFERRED（草案） | Y（大运）   | N(as-matrix)| c-only  | NONE | 无 generator（草案 YEAR_ONLY）
+  MT-3  | AMBIGUOUS-C      | Y（大运）   | N(as-matrix)| c-only  | NONE | YEAR_ONLY
+  ED-1  | CORE             | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  ED-2  | CORE             | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  ED-3  | DEFERRED（草案） | Y           | Y           | c-only  | NONE | 无 generator（草案 MONTH_ONLY）
+  ED-4  | CORE             | N(as-matrix)| Y           | c-only  | NONE | MONTH_ONLY
+  FM-1  | AMBIGUOUS-C      | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  FM-2  | CORE             | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  HS-1  | CORE             | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  HS-2  | AMBIGUOUS-C      | N(as-matrix)| Y           | c-only  | NONE | MONTH_ONLY
+  HS-3  | NOT EXPRESSIBLE  | —           | —           | —       | —    | 不适用（无 generator）
+  HS-4  | CORE             | N(as-matrix)| Y           | c-only  | NONE | MONTH_ONLY
+  LS-1  | CORE             | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  LS-2  | WITH-V4-SUPP     | Y           | Y           | c-only  | NONE | MONTH_ONLY
+  LS-3  | DEFERRED（草案） | Y（大运）   | N(as-matrix)| c-only  | NONE | 无 generator（草案 YEAR_ONLY）
+  AG-1  | CORE             | Y（大运）   | N(as-matrix)| c-only  | NONE | YEAR_ONLY
+
+14.3 分组结论：
+    - Y-only 组（MonthReachability=N → finest = YEAR_ONLY）：有 generator
+      者 CW-5 / CW-6 / MT-3 / AG-1；草案级 MT-2 / LS-3。共 6 行，与
+      v1-matrix 一致（as-matrix）。
+    - YearReachability=N 组（年视图不可达，月 timing-window 承载）：
+      C-2 / ED-4 / HS-2 / HS-4（v1-matrix FX-G 修正结果，as-is）。
+    - 其余 28 行：Y | Y | c-only | NONE → MONTH_ONLY。
+    - 全表零 EXACT_DATE reachable；全表零 DayRole 升级通道（INV-1/INV-2
+      机械可查：R9 字段 40 行逐一比对）。
+
+================================================================================
+§15 EVIDENCE STATE AUDIT（全局机械触发定义）
+================================================================================
+
+15.1 四态触发条件（对全部 class 统一；class 特有附加触发以 R10 登记）：
+    - insufficient：R5 任一 conjunct 缺失。含 core-only 场景下 [School:]
+      conjunct 恒缺 → insufficient-by-construction（§16.4）。
+    - supported：R5 全部 conjunct 满足。由 INV-4（≥2 source families ∨
+      ≥2 AGG-3 独立域），supported 状态下 Corroboration ≥ multi-source
+      自动成立，无须另行声明。
+    - conflicted：R6 任一 ExclusionSignals 确定性触发（合绊 excludedOnly
+      全覆盖 / 方向相悖 / 官杀克身等）。conflicted 覆盖 supported——
+      同一评估周期内 R6 触发时输出 conflicted，不输出 supported。
+    - unresolved：跨 class 并发身份歧义（§17 并发组内 ≥2 class 同时满足
+      各自 R5）或 class 内 identity UNRESOLVED（如 W-1 views）。候选存在
+      但身份歧义——不排除、不删除、不择一。
+
+15.2 优先级（同一候选、同一评估周期）：
+    conflicted > unresolved > supported。
+    - conflicted 与 supported 同现 → 输出 conflicted。
+    - unresolved 与 supported 同现 → 输出 supported + unresolved flag
+      （§17 并发组双登记均保留）。
+    - conflicted 与 unresolved 同现 → 该 class 侧输出 conflicted；并发组
+      另一侧不受影响。
+
+15.3 Breadth / Corroboration 映射（三正交字段之二；Hardened §11）：
+    - EvidenceBreadth：narrow / moderate / broad——由 premise 家族覆盖与
+      N2 档位机械决定（基数→枚举映射，INV-5 唯一许可数值使用）。基准：
+      R5 最小集满足 = narrow；R7 supporting 命中 ≥2 项或 N2 ≥ high →
+      moderate；multi-temporal 与上述任一并见 → broad。
+    - Corroboration：single-source / multi-source / multi-temporal——
+      multi-temporal 仅当 Y 与 M 同族证据并存（Day 永不计入升级，INV-1）。
+    - 禁止跨维 ordinal ladder（「corroborated > broad」类排序不存在）；
+      禁止 confidence score / weight / probability / Double / ranking
+      （INV-5）。
+
+15.4 状态可逆性与无状态性：
+    - 全部四态由当前证据集合机械重算；不累积、不衰减、无历史状态机。
+    - 状态不写入任何 V3 输出（Layer A/B/C 分离）；EventSnapshot 记录
+      状态与触发 conjunct 清单（可追溯枚举，零数值）。
+
+================================================================================
+§16 PLUGIN AUDIT（SCHOOL PLUGIN AUTHORITY）
+================================================================================
+
+16.1 本 registry 登记 plugin 表：
+
+  Plugin | 语义            | Consumers                          | 权限  | core-off 存在性
+  -------+-----------------+------------------------------------+-------+---------------------------
+  S-SEL1 | 择日体系        | W-3（R4 / R5 草案 premise）        | ADD   | W-3 coreEvidenceState =
+         |                 |                                    | only  | insufficient-by-construction
+  S-YM1  | 驿马神煞（P6）  | MT-1（R7 supporting ADD）/         | ADD   | MT-1：L2 停 L1（判据特异性
+         |                 | MT-3（R5 草案 School premise）/    | only  | 不足）；MT-3：insufficient-
+         |                 | MT-2（草案）                       |       | by-construction
+  S-HX   | 红鸾 / 天喜神煞 | W-4（future-only，deferred，本轮   | 不建  | 不适用（deferred 无 generator）
+         |                 | 不启用）                           | —     |
+
+    其余 37 行 R4 = 无 → 零 plugin 依赖（机械可查：R4 字段逐一比对）。
+
+16.2 X-1 ~ X-8 CONTRACT VIOLATION catalog（Hardened §15.2 的 registry
+    落地；任一命中 = 该 plugin 输出立即失效并登记违例）：
+    X-1  plugin 产生 V3 structural fact（InteractionKind / N1 / N2 / Domain）。
+    X-2  plugin 产生独立 Event Candidate（无 core 合取支撑）。
+    X-3  plugin 修改 V3（任何形式）。
+    X-4  plugin 删除 / 覆盖 / 抑制 core evidence。
+    X-5  plugin 静默改变 core candidate identity。
+    X-6  plugin 静默改变 AmbiguityClass。
+    X-7  plugin 静默改变 timing resolution。
+    X-8  plugin 静默改变 Event Class / Specificity（含升 L3）。
+
+16.3 plugin-off 存在性的机械回答（Hardened §15.4）：
+    每个 class 的 Snapshot 必答字段：
+    - coreEvidenceState：忽略全部 plugin 证据后按 R5/R6 评估的四态结果。
+    - derivedPluginIndependence：
+        coreEvidenceState = supported（或与 plugin 无关的 conflicted /
+        unresolved）→ 「plugin-off 仍存在」= YES；
+        coreEvidenceState = insufficient-by-construction → = NO；
+        coreEvidenceState = insufficient（暂时性）→ = NO（当前）。
+    - plugin 抬升（insufficient → supported）必须登记为
+      plugin-supported，不得伪装 core detection（Hardened §15.3）。
+
+16.4 insufficient-by-construction 机制（W-3 / MT-3）：
+    - W-3：R5 草案含 WP-3.1 [School:S-SEL1]；core-only 评估时该 conjunct
+      恒缺 → coreEvidenceState = insufficient-by-construction（结构性、
+      永久性）。core 永不声称婚期（L3 SCHOOL-ONLY，FX-1）。
+    - MT-3：R5 草案含 MT-3.3 [School:S-YM1]（结构性关键前提）；同机制。
+      候选若存在则恒带 school-dependent + plugin-supported 标注 +
+      AMBIGUOUS-C ceiling——identity 字段全程显式持久，不存在「伪装
+      core」路径，不构成 X-2 / X-5。
+    - 两者的候选存在性完全由 §16.3 机械回答字段暴露：「关闭全部 school
+      plugins 后候选是否仍存在」= NO。
+
+================================================================================
+§17 AMBIGUITY AUDIT（并发身份歧义登记）
+================================================================================
+
+17.1 六重点项（AmbiguityClass 成因登记——全部为「理论不可达」，非待修缺陷）：
+    A-1  MT-3 Immigration：immigration vs broader relocation 判别理论
+         不可达（FX-H）→ C ceiling，L3 永禁；输出「远迁 / 跨境类变动候选」。
+    A-2  FA-6 Financing：financing vs generic financial movement 不可判别
+         → C ceiling；business / personal views 仅机械记录字段（非判别器）。
+    A-3  HS-2 Hospitalization：hospitalization vs generic heavy negative
+         不可分（N2=extreme 强度非判别器）→ C ceiling；医疗行为声称禁止。
+    A-4  FM-1 Parent-event：长辈健康 / 变故 / 关系紧张不可分；病 / 故
+         不可分（T-7）→ C ceiling；死亡 / 疾病声称禁止（FX-I：parent-death
+         撤销并入本 class）。
+    A-5  CW-4/5/6 Business lifecycle：expansion vs founding vs disruption
+         vs failure-exit 相互判别弱（B+H 如实）；CW-5 vs CW-6 判别
+         UNVERIFIED → CW-6 保守降 C（§19）。
+    A-6  W-3 Wedding date：仪式日期为人为选择（择日），非命理输出 →
+         结构判别不存在 → L3 SCHOOL-ONLY，core 永不声称。
+
+17.2 跨家族 / 跨 class 并发组（同一 V3 证据组合可同时满足多 class R5）：
+    G-1  文书家族（印动 + SUP-DOC1 tag）：W-2 / FA-1 / FA-2 / FA-6 /
+         LS-2 / MT-2(草案) / MT-3 / ED-1——印星文书语义双关（证书 / 契约 /
+         房契 / 学籍 / 证件），理论无统一判别 → 全组并发候选并存。
+    G-2  W-1 / W-6 对立分支：日支合 / 冲同现或先后并见 → 双登记并行
+         保留（Hardened §12），双双 unresolved flag。
+    G-3  W-6 / MT-1：日支冲 = 关系破裂 vs 搬迁（日支亦为居所）→ 双登记。
+    G-4  C-1 / C-2 / C-3：children 域并发；C-1 vs C-2 判别 UNVERIFIED →
+         双登记 + unresolved。
+    G-5  ED-1 / ED-2 / ED-3：enrollment vs graduation 判别 UNVERIFIED →
+         双登记 + unresolved（ED-3 本身 deferred）。
+    G-6  CW-1 / CW-2 / CW-4 / CW-5 / CW-6 / CW-7 / LS-3：career 家族
+         官印动并发 → 按 R5 实际满足集并发登记。
+    G-7  HS-1 / HS-2：health 负向强度并发 → HS-1（CORE）与 HS-2（草案 C）
+         并存 + unresolved。
+    G-8  FA-1 / ED-1：印得用双关（资产文书 vs 学业）→ 双登记。
+    G-9  W-1 / MT-1 / FM-2：日支动（居所）跨家族 → 双登记。
+
+17.3 裁决规则（机械，对全部并发组生效）：
+    - 并发 → 所有满足各自 R5 的 class 候选并存，各自独立记录。
+    - 禁止互删：一个 class 成立不得删除另一 class 候选。
+    - 禁止择一：系统不得挑选「更可能」候选（无 ranking，INV-5）。
+    - 禁止合并：不得输出抹掉家族身份的单一合并候选（L1 broad family
+      视图与 L2 并存不属合并——L1 是独立 broad 输出层）。
+    - 并发不改变任何 class 的 AmbiguityClass / timing / status（X-5~X-8
+      对等禁令同样约束 aggregator）。
+    - 并发候选一律带 unresolved flag，直到（且仅直到）未来经授权的
+      discriminator 进入 registry（禁历史倒推）。
+
+================================================================================
+§18 FIXTURE SPECIFICATIONS（DESIGN SPEC ONLY——本轮不执行）
+================================================================================
+
+18.1 六类模板（T-P / T-N / T-C / T-A / T-PO / T-D）：
+    T-P  Positive：构造满足目标 class R5 全部 conjuncts 的 V3 输出组合 →
+         期望 supported（落入 §17 并发组则多 class 并存 + unresolved）。
+    T-N  Negative：构造 R5 任一 conjunct 缺失的组合 → 期望 insufficient；
+         对 DEFERRED / NOT EXPRESSIBLE class：任何输入 → 恒无候选。
+    T-C  Conflict：R5 满足且 R6 触发 → 期望 conflicted。
+    T-A  Ambiguity：R5 满足且落入 §17 并发组 → 期望全组候选并存、
+         unresolved flag、无互删 / 无择一 / 无合并。
+    T-PO Plugin-Off（仅 R4≠空的 class）：plugin-off → coreEvidenceState =
+         insufficient-by-construction 且 derivedPluginIndependence = NO；
+         plugin-on → 候选存在且恒带 plugin-supported / school-dependent
+         标注。
+    T-D  Direction / Counter-semantic：R5 形式满足但方向相反（unfavorable
+         ↔ favorable 镜像）或 R8 counterInterpretation 所列场景 → 期望
+         不产生该 class 候选或 conflicted，且输出词汇符合 §2.4 纪律。
+
+18.2 机制化实例化程序（6 步；每 class 覆盖矩阵见 §4-§13 各 R11）：
+    S1  从 R5 逐 conjunct 构造满足型合成四柱 + 大运/流年组合（纯合成，
+        禁历史命盘——INV-7）。
+    S2  对每个 conjunct 构造缺失变体（T-N 集）。
+    S3  在 S1 基础上叠加 R6 触发（excludedOnly 全覆盖 / 方向相悖）。
+    S4  查 §17 并发组，叠加同组其他 class 的 R5 满足条件（T-A）。
+    S5  对 R4≠空的 class 构造 plugin on / off 两态（T-PO）。
+    S6  构造 counter-semantic 场景并断言输出词汇（T-D）；每个 fixture
+        记录期望 EventSnapshot 字段级断言：status / identity / ambiguity /
+        timing resolution / evidenceState / coreEvidenceState /
+        derivedPluginIndependence——全部枚举，零数值（INV-5）。
+
+18.3 展开实例（示意级 spec；引擎与执行属 IP-4 / §22）：
+    - W-1 全六类：
+        F-P：日支合（[K:liuHe]）+ 合类族 N1 + 配偶星 activation（合成
+             男命财组例）→ supported。
+        F-N：日支合 + 配偶星静（WP-1.3 缺）→ insufficient。
+        F-C：R5 满足但前提交互被 isResolving excludedOnly 全覆盖 →
+             conflicted。
+        F-A：叠加 W-6 前提同月并见 → W-1 / W-6 双登记 + unresolved（G-2）。
+        F-PO：不适用（R4=无，以 T-P 复用）。
+        F-D：日支冲 + 配偶星静 + travel 域动（counter-semantic = 搬迁）
+             → 无 W-1 候选；如 MT-1 前提满足则 MT-1 侧并发（G-9）。
+    - FA-4 P / N / D：
+        F-P：wealth favorable + N2 ≥ moderate → supported。
+        F-N：N2 = quiet → insufficient。
+        F-D：wealth favorable + 印文书 + 官杀 favorable（counter-semantic
+             = 升迁进账语境）→ FA-4 可成立但输出恒为「财务流入候选」
+             （词汇纪律断言）；如同时满足 FA-1 前提则并发（G-8 邻近）。
+    - FA-6 F-A：财动 + 文书 tag 同时满足 FA-6 与 LS-2（及 FA-4 / FA-5
+      方向分支）→ 全组并存 + unresolved（G-1）；L3 永禁断言。
+    - MT-3 F-PO：plugin-off → coreEvidenceState = insufficient-by-
+      construction、derivedPluginIndependence = NO、候选不存在；plugin-on
+      → 候选存在 + school-dependent + AMBIGUOUS-C + plugin-supported。
+    - MT-3 F-A：与 MT-1 / FM-2 / W-6 日支动并发（G-9）→ 并存 + unresolved。
+    - HS-2 F-A：HS-1 满足 + N2=extreme → HS-1（CORE）与 HS-2（草案 C）
+      并存 + unresolved（G-7）；HS-2 输出词汇 = health 域重度负向候选
+      （医疗声称禁令断言）。
+    - HS-3 通用 F-N：任何输入组合 → HS-3 候选恒不存在（NOT EXPRESSIBLE
+      负例断言；registry 层面该 class 恒不存在）。
+    - W-6 ∩ MT-1 跨家族 F-A：日支冲 + relationship unfavorable + 配偶星
+      受制 + travel 域动 → W-6 与 MT-1 并存 + unresolved（G-3 / G-9）；
+      禁止互删 / 择一 / 合并断言。
+
+18.4 纪律：全部 fixture 为合成四柱（S1）；零 Owen / Jassica 历史数据
+    （INV-7）；本轮仅 spec，不构造、不执行、不验证任何 fixture（IP-4）。
+
+================================================================================
+§19 MASTER MATRIX SECOND PASS（40 行重答 9 问）
+================================================================================
+
+19.1 逐行表（Matrix = Hardened §18 v1 audit 状态；Δ 仅在状态变化时登记；
+    9Q = A-I 逐问 verdict）：
+
+  Row  | Matrix(v1)        | Registry Status        | Δ                                  | 9Q
+  -----+-------------------+------------------------+------------------------------------+------
+  W-1  | PASS              | WITH-V4-SUPP           | 无                                 | PASS
+  W-2  | PASS              | WITH-V4-SUPP           | 无                                 | PASS
+  W-3  | SCHOOL-ONLY(FX-1) | SCHOOL-DEPENDENT       | 无（FX-1 Hardening 轮已落）        | PASS
+  W-4  | PASS              | DEFERRED               | 降级：engagement vs formation      | PASS
+       |                   |                        | 判别 UNVERIFIED                    | (无 gen)
+  W-5  | PASS              | CORE                   | 无                                 | PASS
+  W-6  | PASS              | CORE                   | 无                                 | PASS
+  C-1  | PASS              | WITH-V4-SUPP           | 无                                 | PASS
+  C-2  | PASS              | WITH-V4-SUPP           | 无（FX-G Hardening 轮已落）        | PASS
+  C-3  | PASS              | CORE                   | 无                                 | PASS
+  FA-1 | PASS              | WITH-V4-SUPP           | 无                                 | PASS
+  FA-2 | PASS              | WITH-V4-SUPP           | 无                                 | PASS
+  FA-3 | PASS              | DEFERRED               | 降级：major vs ordinary 判别       | PASS
+       |                   |                        | UNVERIFIED（强度非判别器）         | (无 gen)
+  FA-4 | PASS              | CORE                   | 无                                 | PASS
+  FA-5 | PASS              | CORE                   | 无                                 | PASS
+  FA-6 | C                 | AMBIGUOUS-C            | 无                                 | PASS
+  FA-7 | B+H               | CORE（B+H 如实标注）   | 无                                 | PASS
+  CW-1 | PASS              | CORE                   | 无                                 | PASS
+  CW-2 | PASS              | CORE                   | 无                                 | PASS
+  CW-3 | PASS              | CORE                   | 无（FX-B 登记 Hardening 轮已落）   | PASS
+  CW-4 | PASS              | CORE（B+H）            | 无                                 | PASS
+  CW-5 | PASS              | CORE（B+H）            | 无                                 | PASS
+  CW-6 | PASS(B+H)         | AMBIGUOUS-C            | 降级：disruption vs failure-exit   | PASS
+       |                   |                        | 判别 UNVERIFIED                    | (草案级)
+  CW-7 | PASS              | DEFERRED               | 降级：milestone vs promotion /     | PASS
+       |                   |                        | expansion / contract 判别          | (无 gen)
+       |                   |                        | UNVERIFIED                         |
+  MT-1 | PASS(FX-B/FX-E)   | SCHOOL-DEPENDENT       | 无                                 | PASS
+  MT-2 | C+H               | DEFERRED               | 降级：MT-1 特异性不足 + overseas   | PASS
+       |                   |                        | 判别 UNVERIFIED                    | (无 gen)
+  MT-3 | C                 | AMBIGUOUS-C            | 无                                 | PASS
+  ED-1 | PASS              | CORE                   | 无（inter-class 判别 UNVERIFIED   | PASS
+       |                   |                        | 登记 §17 G-5 / knownAmbiguity）    |
+  ED-2 | PASS              | CORE                   | 无（同上）                         | PASS
+  ED-3 | PASS              | DEFERRED               | 降级：degree vs graduation /       | PASS
+       |                   |                        | level 判别 UNVERIFIED              | (无 gen)
+  ED-4 | PASS              | CORE                   | 无（FX-G Hardening 轮已落）        | PASS
+  FM-1 | C                 | AMBIGUOUS-C            | 无（FX-I 并入 Hardening 轮已落）   | PASS
+  FM-2 | PASS              | CORE                   | 无                                 | PASS
+  HS-1 | PASS              | CORE                   | 无                                 | PASS
+  HS-2 | B+H               | AMBIGUOUS-C            | 无（FX-H 修正 Hardening 轮已落）   | PASS
+  HS-3 | NOT EXPRESSIBLE   | NOT EXPRESSIBLE        | 无（FX-B Hardening 轮已落）        | PASS
+  HS-4 | PASS              | CORE                   | 无（FX-G Hardening 轮已落）        | PASS
+  LS-1 | PASS              | CORE                   | 无（FX-I L3 封顶 Hardening 轮已落）| PASS
+  LS-2 | PASS              | WITH-V4-SUPP           | 无                                 | PASS
+  LS-3 | PASS              | DEFERRED               | 降级：identity vs CW-1 / CW-2 /    | PASS
+       |                   |                        | ED 家族判别 UNVERIFIED             | (无 gen)
+  AG-1 | PASS              | CORE                   | 无                                 | PASS
+
+19.2 UNVERIFIED 单元格清单（全部 UNVERIFIED — DO NOT INFER；修复唯一
+    路径 = 经授权 discriminator 程序，禁历史倒推）：
+    UV-1  W-4 engagement vs W-1 marriage-formation 判别器。
+    UV-2  ED-1 vs ED-2 enrollment / graduation 判别器。
+    UV-3  CW-5 vs CW-6 disruption / failure-exit 判别器。
+    UV-4  C-1 vs C-2 conception / childbirth 判别器。
+    UV-5  MT-2 overseas vs domestic 判别器。
+    UV-6  FA-3 major vs ordinary property change 判别器。
+    UV-7  ED-3 degree vs graduation / level 判别器。
+    UV-8  LS-3 institutional-identity vs CW-1 / CW-2 / ED 家族判别器。
+    UV-9  W-1 views（registration vs ceremony）identity UNRESOLVED
+          （v1 遗留，本 registry 不裁定）。
+    UV-10 W-2 vs 其他文书事件残余判别。
+    处理方式：UV-1~UV-6 / UV-8 → 降级（§0.2）或草案级；UV-2~UV-4 /
+    UV-10 → §17 并发组 unresolved 双登记；UV-9 → knownAmbiguity 登记。
+    零自行补规则、零推断。
+
+19.3 A-I 逐问核验（全 40 行汇总结论）：
+    A（L1 过具体？）PASS——L1 词表 = 9 宽语义家族 + AG-1 聚合视图；全部
+       R1 EventFamily 为家族级；命名泄漏修正（FX 家族）均在 Hardening 轮
+       完成，本轮零新增泄漏。
+    B（domain 当 event detector？）PASS——全部 implementation-target R5
+       ≥2 conjuncts（INV-4）；单域直判 = 0。
+    C（premises 全部可溯源？）PASS——全部 premise 带 tag ∈ {K,T,S,D,N1,
+       N2,V4S,School}；[S:annual-anchor] 显式声明仅 AG-1；P6 神煞零出现
+       于 [K:] tag。
+    D（V4-owned 标记？）PASS——4 项 V4-SUP 全部 §3 判定并带 derivationID；
+       dynamic 藏干透出 = VERDICT B → DO NOT IMPLEMENT（零消费）。
+    E（School-dependent 标记？）PASS——W-3 / MT-1 SCHOOL-DEPENDENT；
+       MT-3 / W-4 school premises 显式标注；S-SEL1 / S-YM1 / S-HX §16
+       登记。
+    F（hidden detector？）PASS——零 hidden detector：无 class 消费 dynamic
+       藏干透出；SUP 纯度规则（SUP-DOC1 / SUP-G1 不独立生成 candidate）
+       生效。
+    G（timing 过度声明？）PASS——EDD 全 NONE；DayRole 全 corroboration-
+       only；全局 hard ceiling MONTH_ONLY（§14）；v1「M/D」类声明已全局
+       降级（FX-G）。
+    H（C+L3？）PASS——全部 AMBIGUOUS-C class SpecificityCeiling = L2；
+       C + L3 = 0 处。
+    I（single signal→event？）PASS——INV-4 全局；one signal → one event
+       路径 = 0（含 LS-1：单 kind [K:shangGuanJianGuan] 必须合取 R5.2）。
+
+19.4 结论：40/40 行 9 问 PASS（7 项降级行以「无 generator / 草案级 +
+    blocker 登记」的保守形态满足）；降级全部为保守方向，零升级（INV-8）；
+    全部状态变化可追溯至 UNVERIFIED 判别器（§19.2），零凭空判定。
+
+================================================================================
+§20 HISTORICAL FIREWALL
+================================================================================
+
+20.1 全字段排除：Owen / Jassica 历史事件与命盘不得出现在本 registry 的
+    任何字段：R1-R11 全部 11 块、taxonomy、SUP 判定、plugin 登记、
+    fixtures、A-I 审计、Temporal 表、Ambiguity 并发组。
+20.2 未来轨道：仅在 REGISTRY FREEZE（Protocol Owner 批准，IP-1）之后，
+    历史事件方可进入 validation / holdout / out-of-sample 轨道；且验证
+    结果不回写 registry（不据此改 rule / condition / threshold）。
+20.3 全文核验声明：§0-§25 零历史案例引用；Owen / Jassica 字样仅出现于
+    §Header EPISTEMIC、§1.2 冻结边界、§18.4、本节的禁令声明本身。全部
+    fixture 为合成四柱；全部判据 provenance = 传统文献（R8）+ V3 审计
+    词表（UPSTREAM A）。
+20.4 机械可查性：本文件内无任何历史日期 / 历史命盘被用作判据、条件、
+    threshold、confidence 或 fixture 输入（INV-7 全局生效）。
+
+================================================================================
+§21 REMAINING GAPS
+================================================================================
+
+21.1 Gap 词表（v1 §22.16）：A=V3 已足；B=V3 结构证据在、缺 V4 语义层；
+    C=V3 输入缺；D=V3 detector 缺；E=V3 mapping 不足；F=时间架构不足；
+    G=聚合/呈现限制；H=根本歧义/流派依赖。
+21.2 继承 gap（上游已登记，本轮零重复展开、零修复）：三合/半合无
+    InteractionKind（D）、神煞族 P6（E）、藏干透出 dynamic（D，本轮 §3.4
+    判 B 强化）、travel 十神通道（E）、AGG-3 跨域禁令下的联合语义（架构
+    定位而非缺陷）——以 UPSTREAM A / B / C 登记为准。
+21.3 本轮新登记 gap：
+    G-NEW-1  跨 class discriminator 缺失（H / B）：UV-1~UV-10（§19.2）
+             ——文书家族 8-class 并发、ED-1/ED-2、CW-5/CW-6、C-1/C-2、
+             W-4、MT-2、FA-3、ED-3、LS-3、W-1 views。影响：7 项降级 +
+             §17 并发 unresolved 持续。修复路径 = IP-2 授权程序。
+    G-NEW-2  timing as-matrix 值未重推导（F）：§14.2 全部 (as-matrix)
+             行（YearReach=N：C-2 / ED-4 / HS-2 / HS-4；MonthReach=N：
+             CW-5 / CW-6 / MT-2 / MT-3 / LS-3 / AG-1）。影响：timing
+             契约继承 v1 matrix 判断，未经本轮独立验证。修复路径 = 未来
+             temporal re-derivation 轨道（对 V3 三层评估的专项只读审计）。
+    G-NEW-3  AG-1 聚合 L1 输出形态（G）：aggregate-only 候选的
+             EventSnapshot identity = family 集合机械记录，呈现形态未
+             细化。修复路径 = IP-5 EventSnapshot 契约 review。
+21.4 不修复声明：本轮对上述全部 gap 零修复、零规则新增、零 threshold /
+    calibration 触碰（任务书禁令）。
+
+================================================================================
+§22 IMPLEMENTATION PRECONDITIONS（编号清单——全部未满足）
+================================================================================
+
+    IP-1  REGISTRY FREEZE：本文件获批后须由 Protocol Owner 明确发出
+          FREEZE 方为冻结；本文件自身 ≠ freeze。
+    IP-2  Discriminator 授权程序：任何未来 inter-class discriminator
+          （UV-1~UV-10）须经独立授权程序建立，禁止历史案例倒推
+          （Hardened §14.3）；授权前相关 class 维持降级 / unresolved。
+    IP-3  SUP spec sheets：V4SUP-GENDER-1 / V4SUP-DOC-1 /
+          V4SUP-LIFESTAGE-1 / V4SUP-CANGGAN-1 的实现级规格（枚举词表、
+          输入契约、T1-T4 回归断言）未编写。
+    IP-4  Fixture 引擎：§18 六步程序需要确定性 fixture 生成器设计
+          （合成四柱 → V3 输入 → V3 输出组合构造）；未设计、未执行。
+    IP-5  EventSnapshot 契约 review：须承载并发多候选、unresolved flags、
+          coreEvidenceState / derivedPluginIndependence 双 state、C 标注、
+          timing resolution；须对照 §15 / §16 / §17 逐项 review。
+    IP-6  测试协议：T-P / T-N / T-C / T-A / T-PO / T-D 全覆盖 +
+          INV-1~INV-8 逐项断言 + X-1~X-8 运行时守卫测试。
+    IP-7  no-Double 验证：全链类型审计（零 Double / score / weight /
+          probability / ranking；基数→枚举为唯一许可数值使用）。
+    IP-8  Plugin manifest：S-SEL1 / S-YM1 / S-HX 的 manifest 格式、开关
+          语义、§16.3 审计字段。
+    IP-9  IMPLEMENTATION AUTHORIZATION：必须由 Protocol Owner 显式发出；
+          本文件仅为 SPEC，授权前零实施。
+
+================================================================================
+§23 FINAL REVIEW（Q1-Q11）
+================================================================================
+
+    Q1  Schema 全遵守（R1-R11）？PASS——40/40 implementation-target 均含
+        完整 R1-R11 结构；DEFERRED / NOT EXPRESSIBLE 的空块为显式登记
+        （「不建终版」「无 generator」），非缺失（§2.4 对 §2.1 的显式
+        例外声明）。
+    Q2  Premise 全部可溯源？PASS——全部 premise 带 tag（§2.2 词表）；
+        零无 tag premise；[S:annual-anchor] 扩展已显式声明并限定 AG-1。
+    Q3  无 single-signal → specific event？PASS——INV-4：全部 R5 ≥2
+        conjuncts 且（≥2 source families ∨ ≥2 AGG-3 独立域）。
+    Q4  无 EXACT_DATE reachable？PASS——EDD 全 NONE（reserved state）；
+        全局 hard ceiling MONTH_ONLY（§14.1）。
+    Q5  无 C+L3？PASS——全部 AMBIGUOUS-C class ceiling = L2；C+L3 = 0。
+    Q6  无 plugin→candidate？PASS——X-1~X-8 为 CONTRACT VIOLATION
+        catalog（§16.2）；W-3 / MT-3 以 insufficient-by-construction +
+        强制 school-dependent 持久标注处理，不存在伪装 core 路径。
+    Q7  无 Double / ranking？PASS——零 Double / score / weight /
+        probability / 序数 ladder；基数→枚举为唯一许可数值使用
+        （CW-3.4 / ED-4.3 / HS-4.2 / AG-1.2 / AG-1 R7 / §15.3）。
+    Q8  V4-S 全部 A/B 判定？PASS——5 项判定完成：SUP-G1 / SUP-DOC1 /
+        SUP-LS1 / SUP-CG-1 = A（附 restriction / spec）；dynamic 藏干
+        透出 = B → SECOND-ENGINE RISK — DO NOT IMPLEMENT。
+    Q9  Provenance 完整或 UNVERIFIED？PASS——全部 R8 五子项给出或如实
+        标注 UNVERIFIED — DO NOT INFER（HS-2 literatureBasis = 无判据
+        可表述；W-4 / FA-3 / CW-7 / ED-3 / LS-3 / MT-2 草案 provenance
+        如实登记）；零为完成表格补规则。
+    Q10 历史防火墙维持？PASS——§20 全字段核验；fixture 全合成。
+    Q11 本 registry 可进入 freeze / implementation？NO。
+        Blockers（§23.1）：
+        BL-1  REGISTRY FREEZE = NOT GRANTED（须 Protocol Owner 明确批准，
+              IP-1）。
+        BL-2  UNVERIFIED inter-class 判别器 UV-1~UV-10（§19.2）——7 项
+              降级与 §17 并发 unresolved 的直接成因。
+        BL-3  Discriminator 授权程序未建立（IP-2）——修复 BL-2 的唯一
+              合规路径尚不存在。
+        BL-4  SUP spec sheets 未形式化（IP-3）。
+        BL-5  Fixture 引擎未设计（IP-4）。
+        BL-6  Timing as-matrix 值未重推导（G-NEW-2）。
+        BL-7  EventSnapshot 契约未 review（IP-5）。
+        BL-8  IMPLEMENTATION AUTHORIZATION = NOT GRANTED。
+
+================================================================================
+§24 INTEGRITY
+================================================================================
+
+    - 本轮唯一新文件：V4_Event_Semantics_Registry_Specification_
+      DESIGN_ONLY_v1.txt（本文件）。其 sha256 于完成时计算并登记于完成
+      汇报，不预写于文内（避免自引用）。
+    - 输入三件套 sha256（§Header）：f797e483…5ccf4（UPSTREAM A）/
+      30b87ea8…b941（UPSTREAM B）/ 8a559f8e…bacab（UPSTREAM C，
+      PRIMARY FIXED ARCHITECTURAL CONTRACT）。
+    - Git HEAD：2f1b2bf665b74d5c70e93056efba6c92bebaea00（写入前后必须
+      不变——完成汇报中复核）。
+    - 工作区：既有 102 项 modified / untracked 状态零触碰（完成汇报中
+      复核计数）。
+    - 无 commit / 无 push / 无 V3 触碰 / 无 probe / 无历史数据使用。
+
+================================================================================
+§25 FINAL STATUS
+================================================================================
+
+    STATUS:                      DESIGN-ONLY / REVIEW-ONLY / NO IMPLEMENTATION
+    REGISTRY FREEZE:             NOT GRANTED
+    IMPLEMENTATION AUTHORIZATION: NOT GRANTED
+    FINAL REVIEW:                Q1-Q10 PASS / Q11 = NO（Blockers BL-1~BL-8）
+
+    STOP — NO CODE CHANGES MADE
+================================================================================
+
+
+
