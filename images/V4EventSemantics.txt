@@ -1,0 +1,1248 @@
+================================================================================
+V4 EVENT SEMANTICS ARCHITECTURE — HARDENED DESIGN
+(Architecture Hardening / Specification Refinement, Round 2)
+Supersedes the *contract clauses* of
+V4_Event_Semantics_Architecture_Design_DESIGN_ONLY_v1.txt where explicitly
+stated; does not modify that file (byte-frozen upstream input).
+================================================================================
+STATUS:      DESIGN-ONLY / REVIEW-ONLY / NO IMPLEMENTATION
+BASELINE:    V3-FROZEN-BASELINE-2026-09-22（本轮零触碰）
+UPSTREAM FIXED INPUTS (sha256 verified this round):
+  - V3_Bazi_Event_Observability_Architecture_Audit_TEST_ONLY_v1.txt
+    sha256 f797e48377e57407695a291da241e12f140121d149d63a3d4a0f520a48d5ccf4
+  - V4_Event_Semantics_Architecture_Design_DESIGN_ONLY_v1.txt
+    sha256 30b87ea8f9a408011ada5c1da086cb8b847a135d5392a4217198466b3421b941
+DATE:        2026-09-27 (America/Los_Angeles)
+GIT HEAD:    2f1b2bf665b74d5c70e93056efba6c92bebaea00
+SAFETY:      NO CODE CHANGE / NO TEST CHANGE / NO DATA CHANGE / NO THRESHOLD /
+             NO CALIBRATION / NO V3 MODIFICATION OF ANY KIND / NO NEW RULES TO
+             PRODUCTION / NO PROBE RERUN / NO HISTORICAL CASES IN ANY RULE /
+             NO COMMIT / NO PUSH
+EPISTEMIC:   Owen/Jassica 历史案例不得参与任何规则定义 / taxonomy 修改 /
+             ontology 条件设计 / threshold / confidence 定义 / 规则合理性
+             论证；只能在未来 registry freeze 之后进入 validation / holdout /
+             OOS 轨道（§19）。
+             证据不足之处一律标注 UNVERIFIED — DO NOT INFER。
+================================================================================
+
+§0 EXECUTIVE SUMMARY
+================================================================================
+
+本轮是 V4 Event Semantics Architecture 的第二轮 Architecture Hardening。
+架构方向不变：V3 = Structural Authority（冻结）；V4 = Event Semantics
+Authority；AI = Explanation Layer。Model C 分层证据管线保留。本轮把 v1
+设计中发现的 10 个架构硬问题（H1-H10）收紧为可冻结的 contract 条款。
+
+十项 hardening 决议（详细条款见对应章节）：
+  HD-1 (H1)  正式建立 Layer A Structural Fact / Layer B Semantic Evidence /
+             Layer C Event Candidate 三层，配 Supplementary Evidence
+             Boundary 四桶与 Second-Engine Test（§3、§8）。
+  HD-2 (H2)  **废除 v1 §9.4 的 EXACT_DATE 定义**。Day same-family evidence
+             = corroboration only，永不单独升级 timing；EXACT_DATE 需四条件
+             合取（§10）；Timing Evidence 与 Event Identity Evidence 分离
+             （§9）。本版 registry 未登记任何 class-specific discriminator
+             → **EXACT_DATE 在 v1 contract 内不可达（reserved state）**。
+  HD-3 (H3)  Level-1 Family 词表收窄为 9 个语义宽家族 + 1 个跨家族聚合视图；
+             修正 v1 taxonomy 的 3 处 L1 命名泄漏（§4）。
+  HD-4 (H4)  废除 v1 单一 ConfidenceOrdinal（insufficient/single-signal/
+             corroborated/broad/conflicted），改为三个独立正交字段：
+             EvidenceStatus × EvidenceBreadth × Corroboration；禁止跨维
+             单一 ordinal ladder；零 Double（§11）。
+  HD-5 (H5)  School Plugin 权限收紧：coreEvidenceState 与 pluginEvidenceState
+             分离；plugin 八项禁令；plugin 抬升 insufficient→supported 必须
+             显式登记；Snapshot 必须能回答「关闭全部 plugin 候选是否仍存在」
+             （§15）。
+  HD-6 (H6)  AmbiguityClass C = HARD CEILING：C + L3 = INVALID（§14）。
+             v1 Matrix 中 Immigration（L2-L3）等违例已修正（§18）。
+  HD-7 (H7)  Property / Finance / Business 语义：structural domain signal
+             ≠ event identity；无专属 detector 的 class 只能经显式登记的
+             semantic conjunction 形成（§5.4、§18）。
+  HD-8 (H8)  Temporal 冻结：Year=broad / Month=timing-window / Day=narrow
+             corroboration；三条 backflow 禁令；Temporal Resolver 只回答
+             「evidence observed at what temporal resolution」（§9）。
+  HD-9 (H9)  OQ-2 = CLOSED / YES（R-6 消费 + provenance 契约）；OQ-3 =
+             CLOSED / NO；OQ-1 / OQ-4 / OQ-5 = DEFERRED（附保守 interim
+             规则，§21）。
+  HD-10 (H10) EventSnapshot Contract 定稿：14 问可答、9 项纪律、evidence
+             state 全量保存（非仅 confidence）（§17）。
+
+核心保守性契约（§13.4）：False specificity is worse than incomplete
+coverage。这是 V4 的 epistemic contract，不是 bug。
+
+实施仍被 BLOCKED：14 项 Implementation Preconditions 未满足（§22）；
+IMPLEMENTATION AUTHORIZATION = NOT GRANTED。
+
+================================================================================
+§1 FROZEN V3 CONTRACT
+================================================================================
+
+1.1 冻结基线：V3-FROZEN-BASELINE-2026-09-22。下列对象本轮及 V4 全生命周期
+    内 V4 侧零触碰：V3Core / V3N1 / V3N2 / InteractionAnalyzer /
+    InteractionKind / DomainMapper / N1-N2 semantics / N2 tiers-thresholds-
+    cutpoints / calibration / Year-Month-Day anchor semantics /
+    YearV3Snapshot / existing Snapshot-Adapter-UI contracts / existing tests /
+    legacy V1-V2 engines / historical event registry / historical validation
+    data。
+
+1.2 FIXED INPUT 接受（不重审、不重证）：
+    - V3 基本链：Structural Input → InteractionKind → N1 → N2 →
+      DomainMapper → Nine Domains → Year/Month/Day independent evaluation
+      → R-1~R-6 → Snapshot → Adapter → UI。
+    - V3 表达力上界（审计 §14 F1）：{15 kind} × {tenGod→domains 5 组 ∪
+      slot→domains 4 组} × {合/冲效价} × {9 域} × {三独立视图} ×
+      {N1 语义 + N2 五档}。
+    - V3 LIMITATION 登记 L-1~L-8（v1 §1.3 原样接受，其中 L-6 合绊 N1 可
+      观察/L-8 R-6 数据在 Snapshot 中保留但 UI 不展示，为本轮 §10/§16/§21
+      的直接输入）。
+
+1.3 V4 对 V3 的唯一姿态：read-only side-band 消费。任何 V4 运行路径不得
+    改变 V3 的任何输出字节。Second-Engine Test（§3.5）是本条的可审计形式。
+
+================================================================================
+§2 V4 MISSION / NON-MISSION
+================================================================================
+
+2.1 Mission：
+    M-1 把 V3 structural facts 映射为传统八字事件语义证据（Layer B）。
+    M-2 在必要条件合取 + 排除信号 + ambiguity 纪律下形成 Event Family /
+        Class candidates（Layer C）。
+    M-3 输出可审计、可重解释、零 Double 的 EventSnapshot。
+    M-4 为 AI Explanation Layer 提供枚举/序数输入。
+
+2.2 Non-Mission（V4 永不声称）：
+    N-1 不检测新的 structural interaction（检测权威 = V3）。
+    N-2 不产生 V3 N1 / N2 / Domain / magnitude 语义。
+    N-3 不回答「事件一定发生」；只回答「结构证据支持哪种事件语义候选、
+        在什么时间分辨率上被观察」。
+    N-4 不做 accuracy 声称；不做数值置信；不做医疗/法律专业判断。
+    N-5 不替代用户对真实事件的确认；输出是语义候选不是事实陈述。
+
+================================================================================
+§3 STRUCTURAL FACT vs SEMANTIC EVIDENCE vs EVENT CANDIDATE
+   (Hardening Rule #1 / H1)
+================================================================================
+
+3.1 Layer A — Structural Fact（V3 Structural Authority 独占）
+    回答：「八字结构中机械发生了什么？」
+    内容：interaction kind、participating pillars、Ten-God theme、slot
+    attribution、N1 activation、direction、N2 magnitude、temporal
+    evaluation、R-1~R-6 派生事实。全部词汇属于 V3 冻结词表。
+
+3.2 Layer B — Semantic Evidence（V4 Event Semantics）
+    回答：「某个 structural fact 是否具有某种传统事件语义？」
+    内容：V4 rule registry 中显式登记的映射条目——每条把 V3 词汇组合
+    （Layer A）标注为某 event family 的 supporting / conflicting /
+    condition / exclusion / supplementary 证据。Layer B 不产生任何新结构
+    事实；它只是「结构→语义」的登记表。
+
+3.3 Layer C — Event Candidate（V4）
+    回答：「综合必要条件后，是否可以形成某个 Event Family / Class
+    candidate？」
+    内容：candidate 状态机（no-candidate / dormant / supported /
+    conflicted / unresolved / superseded）、specificity level、timing
+    resolution、ambiguity class。
+
+3.4 路径禁令与许可：
+    FORBIDDEN path（永久禁止）：
+      V4 raw Bazi → independently detect new structural interaction
+      → directly create event
+    理由：该路径绕过 V3 检测权威（P1）、绕过 Layer B 登记纪律、不可审计、
+      是隐藏的第二 structural engine。
+
+    ALLOWED path（唯一许可的 V4 自有派生路径）：
+      raw Bazi → V4-owned supplementary semantic derivation → Event Evidence
+      前提（全部满足，缺一即 FORBIDDEN）：
+        (a) 不产生 V3 InteractionKind
+        (b) 不产生 V3 N1 / V3 N2
+        (c) 不产生新的 Domain
+        (d) 不修改 V3 任何输出
+        (e) 不构成隐藏的第二套 structural engine（见 3.5 Second-Engine
+            Test）
+        (f) 派生函数本身在 registry 中登记（derivation spec + version +
+            literature provenance），产出只能是 Event Evidence 对象
+            （§8 词表），不能是 V3 词表对象。
+
+3.5 Second-Engine Test（H6 的可审计形式）：
+    V4 supplementary derivation 合规当且仅当：
+      T1 输出类型 ∈ Event Evidence 词表（§8），∉ {InteractionKind, N1,
+         N2, Domain, magnitude, tier}；
+      T2 派生是对既有 V3 kind/theme 的语义细化或对本命盘静态属性的标注
+         （如藏干透出细化、性别六亲映射），不是新的柱位作用分类器——
+         即不存在一个「V3 没有而 V4 新发明的两柱/三柱关系判定」；
+      T3 V3 输出在 V4 开启前后逐字节不变（diff = empty）；
+      T4 每条派生证据的 provenance 标注 origin = v4-supplementary +
+         derivation ID + version。
+    任一 T 不满足 → 判定 SECOND-ENGINE VIOLATION，该派生禁止进入 registry。
+
+================================================================================
+§4 HARDENED TAXONOMY (Hardening Rule #3 / H3)
+================================================================================
+
+4.1 L1 Family 词表（唯一合法的 Level-1 输出词汇，语义必须宽）：
+    L1-1 Relationship
+    L1-2 Children
+    L1-3 Finance / Asset
+    L1-4 Career / Work
+    L1-5 Movement / Travel
+    L1-6 Education
+    L1-7 Family
+    L1-8 Health / Safety
+    L1-9 Legal / Social
+    L1-X Cross-Family Aggregate（仅 major-life-transition 聚合视图使用；
+         标注 NON-DOMAIN-DERIVED，不是 V3 域激活的直接产物，见 4.4）
+
+    禁止把下列内容当作 L1 检测结果（v1 §11 已立，本轮收进词表法条）：
+    relationship → marriage；children → childbirth；wealth → property
+    purchase；career → business founding；family → parent death；
+    travel → immigration；health → surgery。上述词只能出现在 L2/L3。
+
+4.2 L1 命名泄漏修正（对 v1 §4.2 13-family 的裁定）：
+    FX-1 v1 F8 "Family-Bereavement" → L1 = "Family"。
+         "Bereavement"（丧亲）是死亡语义，泄漏到 L1 即等价于
+         「family → parent death」禁令自违。丧亲/父母事件降为 L2 class。
+    FX-2 v1 F6 "Relocation" → L1 = "Movement / Travel"。
+         "Relocation" 是具体迁徙语义，宽家族应为 Movement / Travel；
+         move/relocation/immigration 降为 L2 class。
+    FX-3 v1 F3 "Asset-Property" + F4 "Finance-Cash" → 合并为单一 L1
+         "Finance / Asset"，下设两个 L2 semantic branch：
+         B-3a Asset-Property branch（资产/文书语义）
+         B-3b Cash-Flow branch（现金流/财富语义）
+         理由：v1 T-2 的「资产事件 vs 现金流事件不得合并」结论保留——
+         合并发生在 L1 命名层（语义宽家族），分支区分发生在 L2（branch
+         是语义分支不是独立 L1 家族）。
+    FX-4 v1 F12 "Wealth-Flow Detail" → 更名 reserved branch
+         "Debt (reserved)"，置于 Finance / Asset 下，v1 不建 class
+         （CONVENTION-DEPENDENT 登记保留）。
+    FX-5 v1 F13 "Travel"（短期旅行）→ 置于 L1-5 Movement / Travel 下作
+         reserved class（school-dependent，v1 不实现）。
+    其余 F1 Relationship / F2 Children / F5 Career / F7 Education /
+    F9 Health-Safety / F10 Legal-Social 命名与 9 词表对齐（F5 →
+    "Career / Work"），无泄漏。
+    检查结论：除 FX-1 ~ FX-5 外，L2/L3 命名允许具体（L2/L3 本来就是
+    refinement 层）；泄漏只发生在 L1。
+
+4.3 L2 / L3 结构（继承 v1 §4.2 class 列表，按 4.2 重排；标注变更）：
+    L1-1 Relationship：romantic-relationship / engagement /
+        marriage-formation（L2，涵盖 registration-or-ceremony-unresolved）/
+        marriage-registration（L2 refinement，需印文书 condition set）/
+        wedding-ceremony（L3，SCHOOL-DEPENDENT，core 不可达，见 §18）/
+        separation / divorce
+    L1-2 Children：conception-fertility / childbirth / child-major-event
+    L1-3 Finance / Asset：B-3a: property-acquisition / property-sale /
+        major-property-change；B-3b: major-financial-gain /
+        major-financial-loss / financing（business / personal 两 view）/
+        major-investment；reserved: debt
+    L1-4 Career / Work：employment-change / promotion-milestone /
+        business-founding / business-expansion / business-disruption /
+        business-failure-exit / major-project-milestone
+    L1-5 Movement / Travel：move-relocation / long-distance-overseas-move /
+        immigration；reserved: short-term-travel
+    L1-6 Education：enrollment / graduation / degree-milestone /
+        major-examination
+    L1-7 Family：parent-event（父母重大事件，病/故不可分，C ceiling）/
+        major-family-change；NOT EXPRESSIBLE 登记：parent-death（独立
+        class 撤销，并入 parent-event，v1 T-7 延伸）
+    L1-8 Health / Safety：major-health-event（负向） / hospitalization /
+        accident-injury；NOT EXPRESSIBLE 登记：surgery（无任何结构判据，
+        从可实现集合移除）
+    L1-9 Legal / Social：litigation-legal-dispute / contract-document-event
+        / institutional-identity-change
+    L1-X：major-life-transition（aggregate-only）
+
+4.4 Aggregate 规则（L1-X）：major-life-transition 只能由「大运交替 +
+    多域并动」的聚合判据产生，且输出中必须标注 aggregate=true 与其所聚合
+    的 L1 families 集合；不得反向拆解为任何单一 L2 class。
+
+4.5 历史案例防火墙（重申）：本 taxonomy 及其全部修正（FX-1~FX-5）的依据
+    是 L1 语义宽度原则与任务书 Rule #3，零历史样本参与。UNVERIFIED —
+    DO NOT INFER 之处：无（全部为命名/结构裁定，无实证声称）。
+
+================================================================================
+§5 HARDENED EVENT ONTOLOGY (H3/H7 配套)
+================================================================================
+
+5.1 Ontology 字段（每 Event Class 一份记录；v1 §5.1 修订）：
+    EventClass / EventFamily(L1) / SemanticBranch(L2 branch，仅 Finance/
+    Asset 使用) / TraditionalSemantic / Specificity(L2/L3) /
+    SchoolDependency / GenderDependency / LifeStageDependency /
+    AmbiguityClass(A/B/C) /
+    --- 修订与新增字段 ---
+    RequiredStructuralPremises   必要结构前提（全部取自 V3 冻结词表；
+                                 逐条标注 V3 来源：kind / theme / slot /
+                                 domain state / N1 / N2 ordinal）
+    RequiredV4Supplementary      必要的 V4-owned 补充证据（来自 §8 ALLOWED
+                                 桶；如 gender module / 印文书 condition
+                                 set；无则 NONE）
+    RequiredConditionSet         完整合取条件 = RequiredStructuralPremises
+                                 ∧ RequiredV4Supplementary ∧（如登记）
+                                 RequiredExclusionAbsence
+    ExclusionSignals             排除信号（触发则降级/转对立分支）
+    SupportingSignals            可选支持信号（含 school plugin 证据类型）
+    ExactDateDiscriminator       【新增，默认 NONE】该 class 的 exact-date
+                                 判别器登记位。只有传统理论能可靠提供
+                                 「为什么是这一天而非同月其他日」的结构判据，
+                                 且经独立授权登记后才能非 NONE。本轮：
+                                 全部 class = NONE（§10.3）。
+    TimingCeiling                该 class 在本 registry 版本下允许的最高
+                                 timing resolution（由 10.3 派生）
+    SpecificityCeiling           该 class 的 specificity 上限（C 类 = L2）
+
+5.2 升级判据原则（继承 v1 §5.2）：candidate = 必要条件合取 + 排除信号 +
+    可选支持信号（序数），零数值阈值。v1 两个示例骨架（marriage-
+    registration / childbirth）保留，追加两条 hardening 注记：
+      注记 1：示例中的 OPTIONAL(+) annual+month 同向 corroboration 属于
+        Corroboration 维度（§11），不影响身份、不影响 timing resolution
+        的判别。
+      注记 2：任何 day 层证据在示例中的角色一律为 corroboration only
+        （§10），示例不构成 exact-date 判据。
+
+5.3 AmbiguityClass（继承 v1 §5.3，收紧）：
+    A 可判别 / B 部分可判别（可到 class 级，specificity 级无保证）/ C
+    理论不可唯一判别。C 类 = HARD CEILING（§14）：L3 永久禁止。
+
+5.4 Property / Finance / Business 语义条款（Hardening Rule #7）：
+    P-1 structural domain signal ≠ event identity。V3 的 wealth/career/
+        resource 域激活是 Layer A 事实；把它解释为任何 L2 class 需要
+        Layer B 显式登记的语义合取。
+    P-2 Property 域语义三分（property-acquisition / property-sale /
+        contract-document-event 的 ontology 必须显式区分）：
+        (i)  asset/property semantic（资产/不动产本体）
+        (ii) cash-flow/wealth semantic（现金流）
+        (iii) document/contract semantic（文书/契约/印星）
+        V3 无 property-specific detector（审计 §16，FIXED INPUT）→
+        V4 只能以显式登记的 semantic conjunction（如 asset semantic ∧
+        document semantic ∧ 财支出向）形成 candidate，且该 conjunction
+        在 ontology 中逐条列出。
+    P-3 禁止 shortcut（终版清单）：
+        wealth high ⇏ property purchase
+        career high ⇏ business founding
+        finance movement ⇏ financing（financing 另需文书语义 + 理论本身
+          无统一定义 → AmbiguityClass C，L2 封顶）
+        印星动 ⇏ 无条件 property（须三分语义定位）
+    P-4 Master Matrix 中所有 class 已按 P-1~P-3 复审（§18，9 问审计）。
+
+================================================================================
+§6 DETECTION MODEL — MODEL C（保留裁定）
+================================================================================
+
+v1 §6 四模型对比（A/B/D REJECTED，C RECOMMENDED）全部保留，理由不变。
+本轮 hardening 对 Model C 的修正：
+    - 置信输出由单一 ordinal 改为三字段 Evidence State（§11）。
+    - Temporal Resolver 语义收窄（§9/§10）。
+    - 新增 plugin evidence 隔离层（§15）。
+    - 新增 Layer B/C 显式分离（§3）。
+Model A（domain→event 直判）在本版词表下不仅 REJECTED，且其任何残余形式
+（含「弱判别」名义的单域直判）都违反 §4.1 / §5.4；Matrix §18 中
+Q-B/Q-I 审计即为此设。
+
+================================================================================
+§7 HARDENED PIPELINE
+================================================================================
+
+    ┌──────────────────────────────────────────────────────────────┐
+    │ FROZEN V3 (read-only)                                        │
+    │  V3EvaluationResult(.year/.month/.day) × N1/N2/方向/shape     │
+    │  YearV3Snapshot (R-1~R-4, R-6, 12×month cache)                │
+    └──────────────┬───────────────────────────────────────────────┘
+                   │ 只读接口 I-1/I-2/I-3（§16）
+                   ▼
+    [1] Event Candidate Generator
+        · deterministic rule registry（V4-RULE-REG，版本 + provenance）
+        · Layer B 登记条目驱动；输出 L1 family candidates（含 dormant）
+        · origin 标签：每条输入证据 = v3-core / v4-supplementary /
+          school-plugin 三选一
+                   ▼
+    [2] Evidence Aggregator
+        · 逐候选归集 supporting / conflicting / condition / exclusion
+        · 产出三字段 Evidence State（§11），不做跨维排序，不平均
+                   ▼
+    [3] Temporal Resolver
+        · 三层证据独立供料（§9）
+        · 只回答 timing resolution（YEAR_ONLY / MONTH_ONLY / EXACT_DATE /
+          UNRESOLVED + window）；EXACT_DATE 受 §10 四条件门约束
+                   ▼
+    [4] Specificity Ladder
+        · L1 family → L2 class → L3 specificity
+        · 升级 = ontology RequiredConditionSet 合取（§5.1），非评分
+        · C 类 ceiling 在此强制（§14）
+                   ▼
+    [5] Evidence State Assembly
+        · coreEvidenceState 与 pluginEvidenceState 分离组装（§15）
+        · 三字段：EvidenceStatus × EvidenceBreadth × Corroboration
+                   ▼
+    [6] EventSnapshot（§17，immutable，零 Double，registry/provenance 绑定）
+
+    硬纪律（继承 v1 D1-D4，追加）：
+    D1 V4 不复制 V3 的 detection/severity/domain/threshold/calibration。
+    D2 无反馈路径：EventSnapshot 不写回 V3/V4 上游。
+    D3 合绊可见性：以 V3 N1 family 计数 / excluded-only 标记观察，不改
+       N2 语义（与 §21 OQ-1 interim 规则一致）。
+    D4 零 Double：置信/强度一律枚举序数；聚合仅允许对「证据来源集合」
+       做基数判定并映射为枚举（§11.4），禁止任何加权求和。
+    D5（新增）plugin 证据在 [1]-[5] 全程带 school-plugin origin 标签，
+       永不与 core 证据混池（§15）。
+    D6（新增）day 层证据在 [1]-[3] 全程角色 = corroboration，永不参与
+       identity/timing 判别（§10）。
+
+================================================================================
+§8 SUPPLEMENTARY EVIDENCE BOUNDARY (Hardening Rule #1 四桶 / H1/H6)
+================================================================================
+
+  桶 1  ALLOWED — V4-owned supplementary derivation（§3.4 六前提 + §3.5
+        Second-Engine Test 全过才可登记）：
+        A-1 藏干透出细化（TenGod 语义细化，非新交互检测）
+        A-2 性别六亲映射模块（配偶星/子星 gender 通道）
+        A-3 印星文书/契约 semantic condition set（映射表：TenGod+柱位
+            语境 → document/contract semantic tag）
+        A-4 本命静态属性标注（性别、命主年龄窗口等 LifeStage 输入）
+        每项须有 derivation spec + version + literature provenance。
+
+  桶 2  NOT ALLOWED（任何形式、任何命名）：
+        D-1 自建三合/半合或任何新两柱/三柱关系判定
+        D-2 任何新 N1/N2/Domain/magnitude/tier 语义
+        D-3 数值评分 / 权重 / Double
+        D-4 从 event 输出反推结构判定（反向通道）
+        D-5 绕过 registry 合取、按 class 直连「pillars pattern → event」
+            的隐式映射表
+        D-6 修改/包装/重解释 V3 输出字节
+        D-7 以「补充证据」名义复用 V3 词表对象作为输出类型
+
+  桶 3  FUTURE V3 / V5 ONLY（V4 不得自建，登记 future consideration）：
+        F-1 三合/半合 InteractionKind（lattice 扩展）
+        F-2 神煞族的结构级语义（若未来收编进 V3 输入）
+        F-3 藏干显式 V3 语义层
+        F-4 travel 完整十神通道
+        F-5 跨域 V3 联合语义（AGG-3 重开）
+        理由：上述均为「结构检测/结构语义」权威范围，属 V3 冻结边界；
+        V4 自建即 SECOND-ENGINE VIOLATION。
+
+  桶 4  SCHOOL PLUGIN ONLY（只 ADD evidence，见 §15 权限）：
+        S-1 红鸾/天喜/桃花/驿马/空亡 证据插件
+        S-2 择日 / 应期惯例插件
+        S-3 流派六亲映射变体
+        S-4 纳音等其他流派证据
+        插件证据 origin = school-plugin，永不进入 coreEvidenceState。
+
+  桶间移动规则：任何条目从桶 3/4 移入桶 1，或从无到有新增桶 1 条目，
+  均属 registry 契约变更，须独立授权 + 版本递增 + holdout 重跑（§19）；
+  禁止以历史案例观察作为移动依据。
+
+================================================================================
+§9 TEMPORAL EVIDENCE CONTRACT (Hardening Rule #8 / H2/H8)
+================================================================================
+
+9.1 三层角色（冻结）：
+      Year  = broad evidence（年度结构激活、方向、大运层输入、R-2/R-3/R-4）
+      Month = timing-window evidence（12×month evaluations、R-1 windows、
+              R-6 peakMonths——R-6 按 §16.4 provenance 契约消费）
+      Day   = narrow corroboration；exact-date evidence 仅当该 class 的
+              ExactDateDiscriminator ≠ NONE（§10）
+
+9.2 Backflow 禁令（全部永久）：
+      B-1 禁止 Day → Month → Year backflow（下层证据不得创造/修改上层
+          结构事实）
+      B-2 禁止 Month → Day identity inference（月窗口不得推断「事件发生
+          在某个具体日」）
+      B-3 禁止 Year → exact date inference（年层证据永不产生具体日期）
+      补充：月→年、日→月的任何「证据回流」同样禁止；层间只有 §10.4 的
+      冲突记录关系，没有覆盖关系。
+
+9.3 Temporal Resolver 的唯一问题域：
+      只回答：「evidence is observed at what temporal resolution?」
+      不回答：「事件一定发生在哪一天」（N-3）。Resolver 输出是证据观察
+      分辨率，不是事件发生时刻的承诺。
+
+9.4 Timing Resolution 重定义（必要条件，全列）：
+      YEAR_ONLY
+        必要条件：(a) 年层 family/direction 证据存在；
+                  (b) 月层无收敛窗口（无 R-1/R-6 月份收敛），或月层证据
+                      缺席，或月层冲突未决；
+                  (c) 未声称任何日层参与。
+      MONTH_ONLY
+        必要条件：(a) 年层或月层 family 证据存在；
+                  (b) 月窗口收敛（R-1 window / R-6 peak month / 单月
+                      收敛）；
+                  (c) §10 EXACT_DATE 四条件未全部满足（保守回落）。
+      EXACT_DATE
+        必要条件（四条合取，缺一回落 MONTH_ONLY）：
+                  (a) 月窗口收敛至单月；
+                  (b) 日层同 family 同向结构 corroboration 存在；
+                  (c) 该 class 的 ExactDateDiscriminator 在 ontology 中
+                      登记为必要条件且非 NONE；
+                  (d) 该 class RequiredConditionSet 全部满足。
+      UNRESOLVED
+        必要条件：层间方向冲突未决（双分支保留，§12）。
+      附加不变量：日层 quiet ⇏ 事件不存在（三层独立评估，v1 §9.4 结论
+      保留）；timing resolution 变更不改变候选身份（timing ≠ identity）。
+
+9.5 与 v1 §9.4 的关系：本节整体取代 v1 §9.4（其 EXACT_DATE 定义见 §10.2
+    废除记录）。
+
+================================================================================
+§10 EXACT-DATE SAFETY CONTRACT (Hardening Rule #2 / H2)
+================================================================================
+
+10.1 概念分离（冻结）：
+       Timing Evidence        =「证据在什么时间分辨率上被观察到」
+       Event Identity Evidence=「候选为什么是这个 family/class」
+       二者独立：timing 证据永不参与身份判别；身份证据（含 day 层
+       corroboration）永不单独产生 EXACT_DATE。
+
+10.2 v1 §9.4 废除记录（before → after）：
+       BEFORE（v1 §9.4，已废除）：
+         EXACT_DATE ⟺ 月窗口收敛至单月 ∧ 日层同 family 同向族证据存在
+         MONTH_ONLY ⟺ 月窗口存在 ∧ 日层无 corroboration 或矛盾未决
+       废除理由：把「日层有同族结构」当作 exact-date 判据，等价于
+         Day structural evidence → EXACT_DATE shortcut（任务书 Q3 所指）。
+         任何月份中都存在结构日，该定义在几乎任何 marriage-family 月窗口
+         内都会产出 EXACT_DATE，制造系统性 false specificity。
+       AFTER（本契约）：
+         Day-level same-family structural evidence is corroboration only.
+         它不能单独把 MONTH_ONLY 升级为 EXACT_DATE。EXACT_DATE = §9.4
+         四条件合取；理论不能可靠提供 discriminator 的 class 保守输出
+         MONTH_ONLY。
+
+10.3 Discriminator Registry（本轮状态）：
+       本版 registry 对全部 Event Class 登记 ExactDateDiscriminator =
+       NONE。理由：本轮没有为任何 class 找到并授权「为什么是这一天而非
+       同月其他日」的可靠结构判据；择日体系（wedding）属 school plugin
+       证据，按 §15 不得充当 structural discriminator。
+       ⇒ 推论：**在本版 frozen contract 下 EXACT_DATE 不可达（reserved
+       state）**。任何实现产出 EXACT_DATE 即为 contract violation。
+       未来登记 discriminator 的程序：独立授权 + 文献 provenance +
+       registry 版本递增 + holdout 重跑；禁止从历史案例倒推 discriminator。
+
+10.4 层间分歧：年 broad + 月 narrow + 日 quiet（或其他组合）分歧按 §12
+    冲突账本记录为 dual-branch/unresolved，不互相覆盖、不互相拉平。
+
+================================================================================
+§11 EVIDENCE STATE MODEL (Hardening Rule #4 / H4)
+================================================================================
+
+11.1 废除记录（before → after）：
+      BEFORE（v1 §7[5] / §13）：单一 ConfidenceOrdinal =
+        insufficient / single-signal / corroborated / broad / conflicted
+        （沿用 N1 CONF-2 词表形态，事件域重定义）
+      废除理由：该词表把「证据是否成立」（status）、「证据覆盖广度」
+        （breadth）、「证据来源多重性」（corroboration）三个正交维度压进
+        一条伪序数链；「corroborated > broad」这类排序无语义意义。
+      AFTER：三字段正交模型。
+
+11.2 三字段定义（candidate 级，core 与 plugin 各自独立计算，§15）：
+      EvidenceStatus（证据是否成立）：
+        insufficient  必要条件集未满足（候选 dormant）
+        supported     必要条件集满足且无未决冲突
+        conflicted    存在冲突且 registry 排除/否定规则已确定性裁决
+                      （分支已降级/转移，§12.2）
+        unresolved    存在冲突且无规则裁决（双分支保留）
+      EvidenceBreadth（证据覆盖广度——候选证据跨越的独立 V3 观察面）：
+        narrow    单一 domain ∧ 单一 temporal layer
+        moderate  上述两维恰好一维多重
+        broad     多 domain ∧ 多 temporal layer
+        （「domain 计数」= 候选证据涉及的不同 V3 FortuneDomain 去重数；
+          「layer 计数」= year/month/day 观察层去重数。仅此两处集合基数
+          判定被允许，见 11.4。）
+      Corroboration（来源多重性）：
+        single-source   证据来自单一 V3 evaluation（如仅年层）
+        multi-source    ≥2 个独立 V3 evaluation（如年+月）
+        multi-temporal  同 family 证据跨 ≥2 temporal layer 且方向一致
+      约束：三字段全部枚举；零 Double；无数值 confidence；三字段组合是
+      tuple 不是 ladder——禁止定义任何跨 tuple 的全序。
+
+11.3 与 v1 词表的迁移映射（仅用于解释，非运行期转换）：
+      insufficient → status=insufficient（breadth/corroboration 照实记录）
+      single-signal → {supported, narrow, single-source}
+      corroborated  → {supported, narrow|moderate, multi-source}
+      broad         → {supported, broad, multi-source|multi-temporal}
+      conflicted    → {conflicted|unresolved, breadth 照实, corroboration
+                       照实}（conflicted vs unresolved 由 §12.2 裁决）
+
+11.4 聚合确定性：breadth/corroboration 的映射只允许「证据来源集合的基数
+    → 枚举」（1→narrow、2→moderate、≥3→broad；层数 1/≥2 同理）。这是
+    唯一被许可的数值使用（集合基数），不是评分；任何对证据「强度」的
+    加权、求和、平均、归一化仍然禁止。
+
+11.5 第四字段裁定：不设第四字段。候选存在性（no-candidate/dormant/
+    present）与分支冲突记录已由候选级状态 + §12 账本承载，无需再引入
+    一个混合维度字段。若未来需要，必须独立定义语义并走 registry 授权，
+    不得复活单一 ordinal。
+
+================================================================================
+§12 CONFLICT / UNCERTAINTY MODEL
+================================================================================
+
+12.1 四态证据账本（继承 v1 §10.1，逐候选逐证据维护，永不平均）：
+      supporting   支持 {green}
+      conflicting  同 family 对立语义证据 {red}
+      condition    前提性证据（满足 RequiredConditionSet 用）{gray}
+      exclusion    排除信号 {yellow}
+      （每条证据的 polarity 相对某 Event Family 定义；exclusion 是独立
+       类型不是 polarity。）
+
+12.2 冲突裁决规则（新增，保证 EvidenceStatus 确定性）：
+      - conflicting evidence ≠ algorithm failure：冲突是八字语义常态，
+        V4 显式呈现而非消解。
+      - 同 family 对立分支并行保留（如 marriage-branch /
+        disruption-branch），各自独立计证据，输出标注 branch conflict。
+      - EvidenceStatus=conflicted ⟺ 某条 ExclusionSignal 规则被确定性
+        触发（分支按规则降级/转移，全程留痕）。
+      - EvidenceStatus=unresolved ⟺ 冲突存在但无 registry 规则裁决。
+      - 禁止按证据「数量/强度」裁决冲突（无数值支配）；裁决只能来自
+        registry 规则的显式枚举条件。
+      - AGG-3 约束：多 family 证据先逐域聚合，候选层仅做序数级联合，
+        不产生跨域数值。
+
+12.3 输出状态词表（候选级，继承 v1 §10.3）：
+      no-candidate / dormant-candidate / candidate-supported /
+      candidate-conflicted / candidate-unresolved /
+      candidate-superseded（lattice/排除规则裁决）。
+
+12.4 合法负输出（任务书 Q9 正面回答）：no-candidate / dormant /
+    insufficient / unresolved 是 V4 的一等公民输出，不是错误状态。证据
+    不足时 V4 必须输出上述状态之一，禁止强行产出事件候选（§13.4）。
+
+================================================================================
+§13 SPECIFICITY LADDER (H3/H7 配套)
+================================================================================
+
+13.1 阶梯（继承 v1 §11，词表对齐 §4）：
+      L0  Structural activation（V3 域状态——不是事件）
+      L1  Broad Event Family candidate（仅 §4.1 词表；由 V3 域激活 +
+          Layer B 登记直接生成，永远允许）
+      L2  Specific Event Class candidate（需 ontology RequiredConditionSet
+          合取 + family-specific discriminators）
+      L3  Specificity refinement（如 registration vs ceremony）
+          ——需 condition set（含 V4 supplementary / school module 证据）
+          ——C 类禁入（§14）
+          ——school module 证据可支持的 L3 须显式标注 SCHOOL-DEPENDENT，
+            core 单独不可达（§15）
+
+13.2 升级规则：逐级合取，缺任一必要前提 → 停级（dormant）。
+     AmbiguityClass=C 的候选永不进入 L3。
+
+13.3 方向性案例（任务书原文，hardened 答案）：
+      - relationship structural activation ⟶ 只生成 L1 Relationship
+        family candidate；marriage-formation（L2）需 §5.2 判据集；
+        结构激活永远不直接等于 marriage。wedding-ceremony（L3）core
+        不可达（§18 行 W-3）。
+      - wealth activation ⟶ L1 Finance / Asset family candidate；其下
+        走 B-3a（资产语义）或 B-3b（现金流语义）分支判据；property-
+        acquisition（L2）需 §5.4 三分语义合取；否则停留 family 级。
+
+13.4 V4 CORE 保守性契约（Hardening Rule #13，epistemic contract）：
+      False specificity is worse than incomplete coverage.
+      只能证明 Relationship family → 不输出 Marriage。
+      只能证明 Children family → 不输出 Childbirth。
+      只能证明 Finance/Asset family → 不输出 Property acquisition。
+      只能证明 Movement family → 不输出 Immigration。
+      只能证明 Health/Safety family → 不输出 Surgery。
+      保守停级不是 bug，是 V4 的核心认识论承诺；任何为「覆盖率好看」而
+      放宽判据的变更都违反本契约。
+
+================================================================================
+§14 AMBIGUITY CONTRACT (Hardening Rule #6 / H7)
+================================================================================
+
+14.1 HARD CEILING（冻结）：AmbiguityClass C 的候选永远停留在 L1/L2 +
+     显式 ambiguity 标注。
+       C + L3 = INVALID
+     本轮登记的 C 类典型（不可唯一判别对）：
+       parent-event vs parent-death
+       financing vs generic financial movement
+       surgery vs generic health negative event（surgery 因此整体
+         NOT EXPRESSIBLE）
+       immigration vs broader relocation
+       business lifecycle subtype（expansion/disruption/failure 相互间
+         理论判别弱）
+       hospitalization vs other major health negatives（§18 修正：v1
+         标 B+H，hardening 后升 C——理论无法把「住院」与一般重度负向
+         结构区分）
+       wedding-ceremony 的具体日期（择日属流派，非结构判别）
+
+14.2 C 类候选的输出义务：保留候选 + ambiguityClass=C + SpecificityCeiling
+    = L2 +（如适用）候选拆分展示对立语义分支。禁止输出任何唯一性声称。
+
+14.3 未来 discriminator 的授权程序：新增独立且经授权的 discriminator
+    可以重定义 ontology（C → B/A），程序 = 文献 provenance + 独立授权 +
+    registry 版本递增 + holdout 重跑。**禁止通过历史案例倒推
+    discriminator**——观察到历史事件与候选吻合不构成理论判别力证据。
+
+================================================================================
+§15 SCHOOL PLUGIN AUTHORITY (Hardening Rule #5 / H5)
+================================================================================
+
+15.1 三类区分（冻结）：
+      V4 Core Candidate      由 V4 Core Registry（v3-core + v4-supplementary
+                             证据）独立决定；plugin 关闭时必须完整成立或
+                             完整不成立。
+      Supplementary Evidence §8 桶 1，origin = v4-supplementary，计入
+                             coreEvidenceState。
+      School Plugin Evidence §8 桶 4，origin = school-plugin，只计入
+                             pluginEvidenceState。
+
+15.2 Plugin 八项禁令（全部永久）：
+      X-1 不得产生 V3 structural fact
+      X-2 不得产生独立 Event Candidate（不得无中生有）
+      X-3 不得修改 V3
+      X-4 不得删除 / 降级 / 掩蔽 Core evidence
+      X-5 不得静默改变 Core candidate identity（family/class）
+      X-6 不得静默改变 ambiguity
+      X-7 不得静默改变 timing
+      X-8 不得静默改变 Event Class / Specificity
+      plugin 只能 ADD supporting/corroborating 证据到既有 core 候选。
+
+15.3 Plugin 抬升的显式登记：
+      若 plugin evidence 使原本 insufficient 的候选达到 supported，则
+      EventSnapshot 必须记录：
+        coreEvidenceState.status = insufficient（原样保留）
+        pluginEvidenceState.contribution = lifted-insufficient-to-supported
+      绝不能呈现为「Core independently detected event」。
+
+15.4 coreEvidenceState / pluginEvidenceState 结构（审计对象）：
+      coreEvidenceState    = §11 三字段 + evidenceRefs（仅 v3-core 与
+                             v4-supplementary origin）
+      pluginEvidenceState  = {modules: [{moduleID, moduleVersion,
+                             addedEvidenceRefs, contribution:
+                             none / corroboration-added /
+                             lifted-insufficient-to-supported / ...}],
+                             aggregateNote}
+      两态永不合并成一个数值或一个 ordinal。
+
+15.5 存在性问题（Snapshot 必答）：
+      「这个候选如果关闭所有 school plugins，还会不会存在？」
+      答 = coreEvidenceState.status ∈ {supported, conflicted, unresolved}
+      （即 core 独立成立）。字段 derivedPluginIndependence: Bool 由
+      coreEvidenceState 机械派生，供 UI/AI 直接引用。
+
+15.6 Interim 治理（OQ-4 未决期间的强制规则）：
+      - 所有 plugin 默认关闭；启用需显式配置 + 版本登记。
+      - EventSnapshot 携带 pluginManifest（启用模块 + 版本）。
+      - 无 manifest 的 snapshot 视为 plugin 全关（derivedPluginIndependence
+        = true）。
+      - 正式授权/审计流程 → OQ-4 DEFERRED（§21）。
+
+================================================================================
+§16 V3 ↔ V4 AUTHORITY BOUNDARY (H10)
+================================================================================
+
+16.1 权属（继承 v1 §12）：
+      V3 owns（冻结）：structural detection / interaction semantics /
+        magnitude (N2) / domain attribution / temporal evaluation /
+        snapshot derivation (R-1~R-6)。
+      V4 owns：event ontology / candidate generation / event evidence
+        aggregation / specificity / timing interpretation（§9 界定）/
+        evidence state。
+      方向唯一：V4 → V3 只读；无任何反馈路径。
+
+16.2 只读接口（继承 v1 I-1~I-3）：
+      I-1 V3EvaluationResult（year / 12×month / day 三视图）
+      I-2 YearV3Snapshot（12×month cache、R-1~R-4、R-6、quietDomains、
+          overflowDomains）
+      I-3 V3EventRecord / familyID（经 audit trail）
+
+16.3 证据可追溯性（H10 正面回答）：每条 Event Evidence 必须携带：
+      origin ∈ {v3-core, v4-supplementary, school-plugin}
+      provenance 链：
+        v3-core          → sourceEvaluation（年/月#k/日）→
+                           sourceInteraction（V3EventRecord/familyID）→
+                           V3 原始输出
+        v4-supplementary → derivationID + version → 派生输入（原始四柱
+                           / V3 引用）
+        school-plugin    → moduleID + moduleVersion → 模块内部输入声明
+      + rule provenance（registry 规则 ID + 版本 + 文献出处）。
+      「为什么产生此候选」= RequiredConditionSet 所引用的证据清单 +
+      排除信号缺席事实，全部可沿上述链回放。
+
+16.4 R-6 消费契约（OQ-2 落地，Hardening Rule #9）：
+      裁定：YES — V4 may consume R-6 data already preserved in
+      YearV3Snapshot（presentation-hidden ≠ semantic-unavailable）。
+      约束（全部强制）：
+        R6-1 只能读取已存在的 Snapshot 数据；不修改 R-6；不改变 R-6
+             semantics；不改变 V3 magnitude；不重新计算 R-6。
+        R6-2 证据 provenance 必须注明 source = YearV3Snapshot.R6，
+             不得伪装为 evaluate(.year) 产物。
+        R6-3 R-6 moderate/overflow 数据对 V4 可读（绕过展示门属 UI 层
+             事实，非语义不可用），但对 UI 呈现的影响属 V4 UI 阶段议题
+             （OQ-5）。
+
+16.5 excluded-only / quiet(P) 证据（OQ-1 interim，Hardening Rule #10）：
+      V4 不创建新的 magnitude / severity system（永久）。
+      excludedOnly 证据只能作为 structural corroboration / condition
+      evidence；不得自动提升 N2 magnitude、Event confidence（status/
+      breadth/corroboration）、Event specificity。
+      只有 registry 中明确的 semantic rule 才能使其成为 supporting
+      evidence；本轮未定义这样的正向规则 → 相关正向语义 DEFERRED
+      （OQ-1，§21）。 interim 硬规则（无论如何生效）：
+        EQ-1 excludedOnly 证据 polarity 只能登记为 condition 或
+             corroboration，不得登记为独立 supporting 主证据。
+        EQ-2 excludedOnly 证据永远不能是 L2 升级的唯一依据（必须另有
+             active-direction 证据）。
+        EQ-3 excludedOnly 不改变 EvidenceBreadth/Corroboration 的基数
+             计数以外的任何字段。
+
+================================================================================
+§17 EVENTSNAPSHOT CONTRACT (Hardening Rule #11 / H9)
+================================================================================
+
+17.1 14 问 → 字段映射（每问必有确定字段承载）：
+      Q1  哪个 Event Family？        → family（§4.1 词表）+ semanticBranch
+      Q2  哪个 Event Class？         → eventClass: EventClass?（L2，可空）
+      Q3  当前 Level？               → level: L1/L2/L3
+      Q4  为什么产生？               → RequiredConditionSet 命中记录 +
+                                       registryRuleRefs（规则 ID+版本）
+      Q5  哪些证据支持？             → evidenceRefs[polarity=supporting]
+                                       （全量对象，§16.3 provenance）
+      Q6  哪些证据冲突？             → evidenceRefs[polarity=conflicting]
+                                       + branchConflicts
+      Q7  哪些证据缺失？             → missingPremises（RequiredConditionSet
+                                       中未满足项的枚举清单）
+      Q8  时间范围是什么？           → timingWindow: Window?
+      Q9  时间精度是什么？           → timingResolution（§9.4 四值）
+      Q10 ambiguity 是什么？         → ambiguityClass: A/B/C + ceiling 标注
+      Q11 Core 还是 Plugin evidence？→ coreEvidenceState +
+                                       pluginEvidenceState（§15.4）+
+                                       derivedPluginIndependence
+      Q12 使用了哪个 registry？      → registryVersion + registryHash
+      Q13 使用了哪些 school modules？→ pluginManifest（模块+版本）；
+                                       未启用则空表
+      Q14 能否完整追溯回 V3 source evaluation？
+                                     → 每条 evidenceRef 的 provenance 链
+                                       （§16.3）；buildProvenance 含 V3
+                                       Snapshot 引用/哈希
+
+17.2 EventSnapshot 概念结构（零 Double；全部枚举/序数/引用）：
+      EventSnapshot
+        snapshotVersion: String
+        registryVersion: String + registryHash
+        v3SnapshotRef（引用/哈希）          // 输入绑定
+        scopeAnchor: TimingScope            // annual / monthly / custom
+        anchorDate: Date
+        pluginManifest: [ModuleID+Version]  // §15.6
+        candidates: [EventCandidate]
+        buildProvenance: BuildProvenance    // 输入哈希 + registry 哈希
+      EventCandidate
+        candidateID
+        family（L1） + semanticBranch（如适用）
+        eventClass: EventClass?             // L2（可空）
+        specificity: Specificity?           // L3（可空）
+        level: L1/L2/L3
+        status（§12.3 词表）
+        evidenceRefs: [EventEvidence]       // §16.3 全量 provenance
+        missingPremises: [PremiseID]
+        branchConflicts: [BranchConflict]
+        coreEvidenceState: EvidenceState    // §11 三字段
+        pluginEvidenceState: PluginState    // §15.4
+        derivedPluginIndependence: Bool
+        timingResolution: YEAR_ONLY/MONTH_ONLY/EXACT_DATE/UNRESOLVED
+        timingWindow: Window?
+        ambiguityClass: A/B/C
+        specificityCeiling: L1/L2/L3
+        schoolModulesUsed: [ModuleID]
+        aggregate: Bool（仅 L1-X）
+
+17.3 纪律（九项，全部强制）：
+      immutable / deterministic / Codable（新增字段 default = [] 沿现有
+      兼容性惯例）/ registry-version-bound / provenance-bound /
+      zero Double / no random / no locale dependence / no AI write-back。
+
+17.4 可重解释性（H9 特别条款）：Snapshot 不得只存 confidence 结论；必须
+      保存完整 evidence state（三字段 + 全量证据对象 + missingPremises +
+      分支冲突），使未来任何时刻可以脱离原始运行环境重新解释该候选为何
+      成立/不成立/未决。confidence 不是证据，证据才可重解释。
+
+================================================================================
+§18 MASTER EVENT MATRIX — HARDENED (Hardening Rule #12 / 9 问逐行审计)
+================================================================================
+
+18.1 审计问题（对每行）：
+      A  L1 family 是否过度具体？
+      B  是否错误地把 V3 domain 当成 event detector？
+      C  Required Structural Premises 是否全部真的来自 V3（或显式标注
+         V4-supplementary / school）？
+      D  V4-owned evidence 是否清楚标记？
+      E  School-dependent evidence 是否清楚标记？
+      F  是否存在 hidden new detector？
+      G  Timing 是否过度声明？（day 层仅 corroboration；EXACT_DATE 需
+         discriminator——本版全 NONE）
+      H  是否存在 ambiguity C 却允许 L3？
+      I  是否存在 one structural signal → one life event？
+
+18.2 列说明：Premises 只列 V3 词汇或显式标注 V4-S/School；Timing 列
+      「M(+D c)」= 月窗口 + 日层 corroboration only；Ambig=A/B/C；
+      Ceiling=本 registry 下 specificity 上限；Audit=9 问结果（PASS 或
+      修正标记 FXn，见 18.4）。Gap 词表沿用 A-H（v1 §22.16）。
+
+--- L1-1 Relationship ----------------------------------------------------------
+W-1 Marriage-formation(reg/ceremony unresolved)|L2|配偶星参与(V4-S gender
+    module)+日支槽位+合类族 N1 存在|V3:partial|V4-S:Y|School:-|Y/M(+D c)
+    |B|L2|B|Audit:PASS(D/E 标记)
+W-2 Marriage-registration|L2 refinement|W-1 条件 ∧ 印文书 semantic
+    condition set(V4-S)|V3:partial|V4-S:Y|School:-|Y/M|B|L2|B
+    |Audit:PASS——注意残余歧义（registration vs 其他文书事件）登记于
+    ontology NegativeExclusionSignals
+W-3 Wedding-ceremony|L3|W-1 条件 ∧ 择日(School)|V3:partial|V4-S:N
+    |School:extreme|M(+D c；exact-date 仅择日=非结构判别→仍 MONTH_ONLY)
+    |B(timing 维度 C)|L3=SCHOOL-ONLY，core 不可达|H
+    |Audit:FX-1（v1 行 Wedding 允许 L3——修正：core 单独不可达；plugin
+    只 ADD corroboration，不得借此达成 L3 身份，见 §15.2 X-8）
+W-4 Engagement|L2|配偶星动(V4-S gender)+合类族|V3:partial|V4-S:Y|School:
+    high|Y/M|B|L2|B|Audit:PASS
+W-5 Romantic-relationship|L1-L2|relationship 域激活+方向|V3:yes|—|low
+    |Y/M|B|L2|B|Audit:PASS
+W-6 Separation / Divorce|L2|日支冲刑+配偶星受制方向|V3:yes|—|high|Y/M
+    |B|L2|B|Audit:PASS（对立分支：W-1 婚姻分支，§12 并行保留）
+
+--- L1-2 Children -------------------------------------------------------------
+C-1 Conception-fertility|L2|children 域+gender 通道(V4-S)|V3:partial
+    |V4-S:Y|medium|Y/M|B|L2|B|Audit:PASS
+C-2 Childbirth|L2|children 域+时柱窗|V3:partial|V4-S:Y(gender)|medium
+    |M(+D c)|B|L2|B|Audit:PASS——FX-G：v1「M/D」降为 corroboration
+C-3 Child-major-event|L1-L2|children 域冲克方向|V3:yes|—|medium|Y/M
+    |B|L2|B|Audit:PASS
+
+--- L1-3 Finance / Asset ------------------------------------------------------
+FA-1 Property-acquisition|L2|印(文书 tag，V4-S condition set)+财(支出向)
+    显式语义合取|V3:partial|V4-S:Y|high|Y/M|B|L2|B
+    |Audit:FX-B/FX-I——v1 印+财跨域行补记：这不是 property detector，
+    是登记的 semantic conjunction（§5.4 P-2/P-3）；无合取只输出 L1
+FA-2 Property-sale|L2|印失+财得方向 合取(V4-S 文书 set)|V3:partial
+    |V4-S:Y|high|Y/M|B|L2|B|Audit:同 FA-1
+FA-3 Major-property-change|L2|印/财大动+语义合取|V3:partial|V4-S:Y
+    |high|Y/M|B|L2|B|Audit:同 FA-1
+FA-4 Major-financial-gain|L2|wealth 域 favorable 方向+N2 强度可观察
+    |V3:yes|—|low|Y/M|B|L2|B|Audit:PASS（方向+量级是 V3 可观察事实，
+    非新 detector）
+FA-5 Major-financial-loss|L2|wealth 域 unfavorable 方向+N2|V3:yes|—
+    |low|Y/M|B|L2|B|Audit:PASS
+FA-6 Financing|L2|财+印文书 合取(V4-S)|V3:partial|V4-S:Y|extreme|Y/M
+    |C|L2|C+E|Audit:FX-H 确认——理论无统一判别（vs 一般财动）→ C
+    ceiling，永不出 L3；business/personal 两 view 仅语境标注
+FA-7 Major-investment|L1-L2|财动+比劫(合伙)|V3:partial|—|high|Y/M
+    |B+H|L2|B+H|Audit:PASS（弱判别如实标注）
+
+--- L1-4 Career / Work --------------------------------------------------------
+CW-1 Employment-change|L2|career 域+官印动|V3:yes|—|medium|Y/M|B|L2|B
+    |Audit:PASS
+CW-2 Promotion-milestone|L2|官星得用方向|V3:yes|—|low|Y/M|B|L2|B
+    |Audit:PASS
+CW-3 Business-founding|L2|食伤+财+比劫 组合合取|V3:partial|—|high
+    |Y/M|B|L2|B|Audit:FX-B——显式登记：career high ⇏ business founding
+    （§5.4 P-3）；判据是组合合取，非单域直判
+CW-4 Business-expansion|L1-L2|财官同动|V3:partial|—|high|Y(大运)/M
+    |B+H|L2|B+H|Audit:PASS（lifecycle 相互判别弱，H 如实）
+CW-5 Business-disruption|L1-L2|官杀混杂/食伤受制泛化|V3:partial|—|high
+    |Y|B+H|L2|B+H|Audit:PASS
+CW-6 Business-failure-exit|L1-L2|官杀攻身+比劫夺财|V3:partial|—|high
+    |Y|B+H|L2|B+H|Audit:PASS
+CW-7 Major-project-milestone|L2|官/印动+方向|V3:partial|—|high|Y/M
+    |B+H|L2|B+H|Audit:PASS
+
+--- L1-5 Movement / Travel ----------------------------------------------------
+MT-1 Move-relocation|L2|日支/年柱动(核心)；驿马=School-only ADD
+    |V3:partial(驿马缺)|V4-S:N|School:high|M/Y(大运)|B|L2|
+    SCHOOL-DEPENDENT(core 判据不足以独立达 L2 时停 L1 Movement family)
+    |B|Audit:FX-B/E——v1「神煞插件」由禁令改为：驿马只能 ADD 证据，
+    不得单独创造 L2 candidate；core 判据（日支/年柱动）不足即停级
+MT-2 Long-distance-overseas-move|L2|同 MT-1 + 印证件 tag(V4-S)
+    |V3:partial|V4-S:Y|extreme|Y(大运)|C|L2|C+H|Audit:FX-H
+MT-3 Immigration|L2|驿马(School)+印证件 tag(V4-S)+年柱 组合|V3:no
+    |V4-S:Y|extreme|Y(大运)|C|L2 ceiling|C+H
+    |Audit:FX-H——v1 行「L2-L3」修正：immigration vs broader relocation
+    理论不可判别 → C + L3 = INVALID（§14）；L3 永久禁止
+
+--- L1-6 Education ------------------------------------------------------------
+ED-1 Enrollment|L2|印星得用方向|V3:yes|—|low|Y/M|B|L2|B|Audit:PASS
+ED-2 Graduation|L2|印/食伤得用+方向|V3:yes|—|low|Y/M|B|L2|B|Audit:PASS
+ED-3 Degree-milestone|L2|印得用+强度|V3:partial|—|medium|Y/M|B|L2|B
+    |Audit:PASS
+ED-4 Major-examination|L2|食伤+印同动|V3:yes|—|medium|M(+D c)|B|L2|B
+    |Audit:FX-G——v1「Y/M/D」降为 corroboration only
+
+--- L1-7 Family ---------------------------------------------------------------
+FM-1 Parent-event（病/故不可分，单一 class）|L2|印/偏财受冲克+年月柱方向
+    |V3:yes(方向)|—|medium|Y/M|C|L2 ceiling|B
+    |Audit:FX-I——parent-death 独立 class 撤销（NOT EXPRESSIBLE 登记）；
+    病/故结构不可分 → C，永不出 L3，不做死亡声称
+FM-2 Major-family-change|L1-L2|月柱/年柱大动|V3:yes|—|high|Y/M|B+H
+    |L2|B+H|Audit:PASS
+
+--- L1-8 Health / Safety ------------------------------------------------------
+HS-1 Major-health-event(negative)|L1-L2|health 域激活(印/日支)+方向
+    |V3:yes|—|medium|Y/M(+D c)|B|L2|B|Audit:PASS
+HS-2 Hospitalization|L2|health 负向+强度细化|V3:partial|—|high|M
+    |C|L2 ceiling|C+H|Audit:FX-H——v1「B+H」修正：无法与一般重度负向
+    判别 → C ceiling（§14.1）
+HS-3 Surgery|—|无任何结构判据|V3:no|—|—|—|—|NOT EXPRESSIBLE|H
+    |Audit:FX-B——从可实现集合移除（v1 已「L3 不可达」，本轮升级为
+    整体 NOT EXPRESSIBLE 登记）
+HS-4 Accident-injury|L2|多冲刑齐发(天克地冲/三刑)强度+并见|V3:yes|—
+    |medium|M(+D c)|B|L2|B|Audit:FX-G——v1「Y/M/D」降为 corroboration
+
+--- L1-9 Legal / Social -------------------------------------------------------
+LS-1 Litigation / Legal-dispute|L2|伤官见官 kind ∧ 官杀克身方向 合取
+    |V3:yes|—|low|Y/M|B|L2（L3 具体司法阶段不可达）|B
+    |Audit:FX-I——v1「kind 直判」修正：单 kind ⇏ 诉讼事件（one signal
+    → one event 禁令）；须合取 + L3 封顶（litigation vs 非司法冲突
+    理论判别有限，残余歧义登记 ontology）
+LS-2 Contract-document-event|L2|印文书 semantic condition set(V4-S)
+    |V3:partial|V4-S:Y|medium|Y/M|B|L2|B+E|Audit:PASS
+LS-3 Institutional-identity-change|L1-L2|官印相生泛化|V3:partial|—
+    |high|Y(大运)|B+H|L2|B+H|Audit:PASS
+
+--- L1-X Aggregate ------------------------------------------------------------
+AG-1 Major-life-transition|L1 aggregate|大运交替+多域并动|V3:yes|—
+    |high|Y(大运)|B|L1（aggregate-only，§4.4）|B|Audit:PASS
+
+--- Reserved（本版不实现，仅登记）---------------------------------------------
+R-1 Debt（Finance/Asset）——CONVENTION-DEPENDENT，不建 class
+R-2 Short-term-travel（Movement/Travel）——纯神煞判据，SCHOOL-DEPENDENT，
+    不建 class
+R-3 Parent-death、Surgery——NOT EXPRESSIBLE（§4.3、HS-3、FM-1）
+
+18.3 NOT EXPRESSIBLE / INSUFFICIENT / DEFERRED / SCHOOL-DEPENDENT /
+    AMBIGUOUS 均为合法 Matrix 结果（任务书确认）；本矩阵不为「看起来
+    完整」制造规则。
+
+18.4 审计修正汇总（全部由 9 问驱动，零历史样本参与）：
+      FX-1(W-3)  wedding L3 → SCHOOL-ONLY，core 不可达
+      FX-B/FA-*  property/business 判据显式标注 semantic conjunction
+      FX-H(MT-3) immigration L2-L3 → L2 ceiling（C+L3=INVALID）
+      FX-H(HS-2) hospitalization B+H → C ceiling
+      FX-B(HS-3) surgery → NOT EXPRESSIBLE
+      FX-I(FM-1) parent-death 撤销并入 parent-event（C ceiling）
+      FX-I(LS-1) litigation kind 直判 → 合取 + L3 封顶
+      FX-G(全局) 全部 day 层 timing 声明降为 corroboration only
+      FX-E(MT-1) 驿马类判据 SCHOOL-DEPENDENT 显式化，plugin 不得单独
+                 创造 candidate
+      （FX 编号与 §4.2 命名修正 FX-1~FX-5 相互独立。）
+
+================================================================================
+§19 ANTI-OVERFITTING ARCHITECTURE
+================================================================================
+
+继承 v1 §15 九机制，全部保留：rule provenance（文献出处，非历史案例）/
+deterministic rule registry（冻结哈希）/ evidence trace（§16.3 全链）/
+fixture tests（合成命盘 golden fixtures，序数断言）/ blind validation
+（Phase A 协议纪律）/ holdout cases / out-of-sample validation /
+contradiction tracking（§12 账本持久化）/ coverage tracking。
+
+本轮追加：
+  AO-1 历史案例（Owen/Jassica）永久禁入：规则定义 / taxonomy / ontology
+       条件 / threshold / confidence / 规则合理性论证。只能在 registry
+       freeze 之后进入 validation / holdout / OOS 轨道。
+  AO-2 桶移动即契约变更（§8）：任何 Supplementary Boundary 桶间移动 /
+       新增 ALLOWED 派生 / 新增 discriminator，均需独立授权 + 版本递增
+       + holdout 重跑。
+  AO-3 保守性回归检查：任何 registry 变更须复核其不违反 §13.4（不得为
+       覆盖率放宽判据）与 §14（不得借变更重释 C 类）。
+
+================================================================================
+§20 AI BOUNDARY
+================================================================================
+
+继承 v1 §16，全部保留：AI = Explanation Layer，非 Event Detector
+Authority；数据流单向 V4 EventSnapshot → AI；AI 输出永不写回 V4/V3；
+AI 只见 EventSnapshot 语义字段（枚举/序数），不见 raw 数值。
+
+本轮追加（硬条款）：
+  AI-1 AI 不得把 AmbiguityClass C 候选解释为确定事件（字段级约束：
+       snapshot 提供 ambiguityClass + specificityCeiling；提示词层约束
+       双保险）。
+  AI-2 AI 不得把 timing resolution（如 MONTH_ONLY）陈述为事件发生日期。
+  AI-3 AI 不得对 derivedPluginIndependence=false 的候选隐藏 plugin
+       依赖；必须如实说明 core/plugin 证据来源。
+  AI-4 AI 不得将 missingPremises/dormant/unresolved 状态「补全」为事件
+       叙事（§12.4 / §13.4 延伸）。
+
+================================================================================
+§21 OQ-1 ~ OQ-5 DISPOSITION (Hardening Rules #9/#10 / H8)
+================================================================================
+
+  OQ-1（quiet(P) / excluded-only 证据语义）
+    DISPOSITION: DEFERRED（正向语义无安全完整定义，不强行 CLOSED）。
+    已冻结的 interim 硬规则（无论如何生效）：
+      - V4 不创建新的 magnitude / severity system（永久）。
+      - excludedOnly 只能作为 structural corroboration / condition
+        evidence（EQ-1）；不得自动提升 N2 magnitude / Event confidence /
+        specificity（EQ-2/§16.5）。
+      - 成为 supporting evidence 须 registry 显式 semantic rule；本轮
+        不定义 → 保持 DEFERRED。
+    DEFERRED 原因：正向聚合语义（excludedOnly 如何参与三字段计算）涉及
+    「合绊证据 vs 支撑证据」的理论权重问题，本轮无文献级安全定义。
+
+  OQ-2（R-6 moderate peak 可否被 V4 直接消费）
+    DISPOSITION: CLOSED / YES。
+    理由：presentation-hidden ≠ semantic-unavailable（R-6 数据已在
+    YearV3Snapshot 中确定性保留）。约束见 §16.4 R6-1~R6-3（只读、不改
+    semantics、provenance = YearV3Snapshot.R6 而非 evaluate(.year)）。
+
+  OQ-3（AmbiguityClass C 是否允许 L3）
+    DISPOSITION: CLOSED / NO。
+    C + L3 = INVALID（§14）。未来新 discriminator 须独立授权 + 文献
+    provenance，禁止历史案例倒推。
+
+  OQ-4（School plugin 授权/启用/审计治理）
+    DISPOSITION: DEFERRED（治理流程未完整定义）。
+    Interim 强制规则（§15.6）：plugin 默认关闭 + pluginManifest 强制
+    披露 + 八项禁令（§15.2）+ 存在性问题可答（§15.5）。正式授权流程
+    （谁批准、审计周期、违规处置）留待独立治理设计。
+
+  OQ-5（EventSnapshot 与 M5 / AI Snapshot 整合）
+    DISPOSITION: DEFERRED（presentation phase）。
+    原因：属 V4 UI/呈现阶段议题；本轮 §17 已保证 Snapshot 自足（14 问
+    可答），整合设计不阻塞本 contract freeze。
+
+  处置原则：不为「全部 CLOSED」强行决策（OQ-1/4/5 保持 DEFERRED 是
+  合法且更安全的状态）。
+
+================================================================================
+§22 IMPLEMENTATION PRECONDITIONS
+================================================================================
+
+V4 implementation remains BLOCKED until all of the following are satisfied:
+  1.  Taxonomy frozen（§4 全部 FX 修正被独立批准）
+  2.  Ontology complete for every implementation-target Event Class
+      （§5.1 全字段填写；当前仅骨架 + 两示例，UNVERIFIED — DO NOT
+      INFER 之外全部 class 待填）
+  3.  V3/V4 authority boundary frozen（§3/§16）
+  4.  Supplementary Evidence Boundary frozen（§8 四桶）
+  5.  Exact-date contract frozen（§9/§10，含 discriminator registry 状态）
+  6.  Evidence state model frozen（§11 三字段 + §12 裁决规则）
+  7.  Ambiguity C ceiling frozen（§14）
+  8.  School plugin authority frozen（§15）
+  9.  EventSnapshot schema frozen（§17）
+  10. Master Matrix reviewed（§18 9 问审计 + 修正批准）
+  11. OQ gates resolved or explicitly deferred（§21：2 CLOSED，3 DEFERRED
+      —— DEFERRED 须被 owner 明确接受为可冻结状态）
+  12. Fixture strategy designed（合成命盘 golden fixtures 方案）
+  13. Registry provenance schema designed（规则/派生/模块三级 provenance
+      的具体 schema）
+  14. Historical validation protocol separated from rule development
+      （Owen/Jassica 只进 validation/holdout/OOS 轨道的组织性隔离）
+
+本报告不是 implementation authorization；IMPLEMENTATION AUTHORIZATION
+= NOT GRANTED。满足 14 项后仍需 owner 显式授权方可进入实施。
+
+================================================================================
+§23 ARCHITECTURE FREEZE CHECKLIST
+================================================================================
+
+freeze 对象（每项须独立文档 + 版本 + 哈希，本轮给出 contract 条款）：
+  FZ-1  V4 Taxonomy Contract v1（§4，含 FX-1~FX-5 命名修正）
+  FZ-2  V4 Ontology Field Contract v1（§5；per-class 填写另册）
+  FZ-3  Layer A/B/C Boundary Contract v1（§3，含 Second-Engine Test）
+  FZ-4  Supplementary Evidence Boundary v1（§8 四桶）
+  FZ-5  Temporal Evidence Contract v1（§9，三条 backflow 禁令 + 四值
+        重定义）
+  FZ-6  Exact-Date Safety Contract v1（§10，discriminator registry 全
+        NONE 状态）
+  FZ-7  Evidence State Model v1（§11 三字段 + §12 裁决）
+  FZ-8  Ambiguity Contract v1（§14 C ceiling）
+  FZ-9  School Plugin Authority Contract v1（§15 八禁令 + 双 state）
+  FZ-10 EventSnapshot Schema Contract v1（§17 14 问 + 九纪律）
+  FZ-11 Hardened Master Matrix v1（§18 + 修正汇总 18.4）
+  FZ-12 OQ Register v1（§21：CLOSED 2 / DEFERRED 3）
+  FZ-13 Fixture Strategy（待设计 — §22#12）
+  FZ-14 Registry Provenance Schema（待设计 — §22#13）
+  FZ-15 Historical Validation Protocol（待设计 — §22#14）
+
+================================================================================
+§24 INTEGRITY
+================================================================================
+
+  Git HEAD before      : 2f1b2bf665b74d5c70e93056efba6c92bebaea00
+  Git HEAD after       : 2f1b2bf665b74d5c70e93056efba6c92bebaea00
+                         （收尾复核值见最终汇报；与本行一致即为未变）
+  working tree status  : 既有大量 modified/untracked 项（本轮之前已存在
+                         的 102 项工作区状态）——只记录，不触碰
+  files changed        : 0（生产文件）
+  files created        : 1（本报告，BacktestData/ 下 DESIGN-ONLY 文档）
+  code changed         : NO
+  test changed         : NO
+  V3 changed           : NO
+  historical data changed : NO
+  probe rerun          : NO
+  commit               : NO
+  push                 : NO
+  UNAUTHORIZED CHANGE DETECTED 条款：若收尾复核发现任何非本报告的生产
+  文件变化，立即 STOP 并报告 UNAUTHORIZED CHANGE DETECTED，不自行修复。
+
+================================================================================
+§25 FINAL REVIEW Q1-Q10（逐项回答）
+================================================================================
+
+Q1 V4 是否可能偷偷成为第二个 V3？
+   NO。防线：§3.4 六前提 + §3.5 Second-Engine Test（T1-T4 机械可查）+
+   §8 桶 2 NOT ALLOWED 清单 + §16.1 权属表。V4 输出类型被限定为 Event
+   Evidence 词表，产出不了任何 V3 词表对象；T3（V3 输出 diff = empty）
+   可作为实现期回归断言。
+
+Q2 是否存在任何 Domain → Specific Event shortcut？
+   NO。§4.1 L1 词表法条 + §13.4 保守性契约 + §18 全行 Q-B/Q-I 审计。
+   修正记录：property/business/litigation 判据全部显式化为 semantic
+   conjunction（FA-1~3、CW-3、LS-1）；wealth high ⇏ property、
+   career high ⇏ business founding、单 kind ⇏ litigation 已入 §5.4
+   P-3 禁令清单。
+
+Q3 是否存在 Day structural evidence → EXACT_DATE shortcut？
+   NO。§10.2 已废除 v1 §9.4 旧定义；§10.3 discriminator registry 全
+   NONE ⇒ EXACT_DATE 在本版 contract 中不可达（reserved state）。任何
+   实现产出 EXACT_DATE 即 violation。
+
+Q4 是否存在任何 Plugin → Core candidate silent override？
+   NO。§15.2 八项禁令 + §15.3 抬升显式登记 + §15.4 双 state 分离 +
+   §15.5 derivedPluginIndependence 机械派生 + §17 pluginManifest。
+   Snapshot 结构上不可能呈现「core 独立检出」而实际依赖 plugin。
+
+Q5 是否存在 Ambiguity C → L3 路径？
+   NO。§14.1 C + L3 = INVALID 冻结；§13.2 升级规则硬编码 C 检查；
+   §18 修正 FX-H(MT-3)/FX-H(HS-2)/FX-I(FM-1) 已清除 v1 中全部违例行。
+   唯一重开路径 = §14.3 授权程序（禁止历史倒推）。
+
+Q6 是否存在 Double / numeric event confidence 路径？
+   NO。§11 三字段全枚举；§11.4 唯一许可的数值使用 = 证据来源集合基数
+   → 枚举映射；§7 D4 + §17.3 zero Double；聚合/平均/加权仍全部禁止。
+   无第四字段复活单一 ordinal（§11.5）。
+
+Q7 是否存在 historical case → rule 路径？
+   NO。§19 AO-1 永久禁入 + rule provenance 只接受文献出处 + holdout /
+   out-of-sample 双重审计 + §14.3 禁止倒推 discriminator + §8 桶移动
+   禁止以历史观察为依据。历史数据只能进 validation/holdout/OOS。
+
+Q8 EventSnapshot 能否完整回答 Why did this candidate exist?
+   YES。§17.1 Q4/Q5/Q7/Q14：RequiredConditionSet 命中记录 +
+   registryRuleRefs + 全量 evidenceRefs（§16.3 三级 provenance 链）+
+   missingPremises + 排除信号缺席事实。回放路径：candidate → 规则 →
+   每条证据 → V3 source evaluation，确定性可重放。
+
+Q9 证据不足时 V4 能否合法输出 No candidate / Dormant / Insufficient /
+   Unresolved？
+   YES。§12.3/§12.4：负输出是一等公民；§13.4 保守性契约禁止强行产出
+   事件；timing UNRESOLVED、status unresolved 均为合法持久状态。
+
+Q10 当前架构是否已达到 IMPLEMENTATION-READY？
+   NO。Blockers = §22 全部 14 项前置未满足，其中实质缺口：
+     - ontology 全 class 填写（当前仅骨架 + 两示例）
+     - fixture strategy 未设计
+     - registry provenance schema 未设计
+     - historical validation protocol 未分离成文
+     - OQ-1/4/5 的 DEFERRED 状态需 owner 明确接受
+   全部满足后仍需显式 IMPLEMENTATION AUTHORIZATION。
+
+================================================================================
+STOP — DESIGN-ONLY / REVIEW-ONLY / NO IMPLEMENTATION
+================================================================================
+
+Hardening 完成。立即停止：不写 Swift、不写 V4 detector、不写
+EventSnapshot implementation、不修改 V3、不修改 UI、不修改 AI prompt、
+不修改历史 registry、不跑历史案例、不做 backtest、不做 calibration、
+不 commit、不 push。
+
+本报告不修改 V4_Event_Semantics_Architecture_Design_DESIGN_ONLY_v1.txt
+字节；其与本报告冲突之处（v1 §7[5]/§9.4/§13 confidence 字段、§4.2
+家族命名、§17 Matrix 相关行）以本报告 HARDENED 条款为准，v1 文件保持
+原样作为上游输入。
+
+STATUS 保持：DESIGN-ONLY / REVIEW-ONLY / NO IMPLEMENTATION
+IMPLEMENTATION AUTHORIZATION = NOT GRANTED
+================================================================================
