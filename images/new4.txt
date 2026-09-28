@@ -1,0 +1,1065 @@
+V4 EVENT SEMANTICS — NEW-4 MT-1-FPO CONTRACT RESOLUTION
+DESIGN-ONLY REPORT v1
+
+STATUS: READ-ONLY / ANALYZE-ONLY / CONTRACT RESOLUTION — THIS ROUND IS DESIGN ONLY.
+NO IMPLEMENTATION. NO FILE MODIFICATION OF ANY KIND EXCEPT THIS REPORT.
+NEW-6 IS A SEPARATE DOWNSTREAM CONTRACT TRACK AND IS NOT SOLVED HERE.
+
+================================================================================
+§0 EXECUTIVE ANSWER
+
+Resolved issue: NEW-4 / MT-1-FPO CONTRACT AMBIGUITY.
+Upstream authority: V4_Event_Semantics_NEW1_MT1_Resolution_Closure_DESIGN_ONLY_v1.txt
+(NEW-1 CORE LOGIC = CLOSED; NEW-1 CONTRACT FREEZE = BLOCKED BY NEW-4 / NEW-6).
+
+Answers to the seven required questions (task §0 A-G):
+
+A. WHAT MT-1-FPO SHOULD ASSERT
+   MT-1-FPO tests the distinction between
+   CORE-BACKED L1 FAMILY EXISTENCE and L2 SPECIFICITY REACHABILITY
+   (MODEL B, §4):
+   - plugin-OFF run: exactly one L1 record (family=Movement, level=L1,
+     eventClass=nil); coreEvidenceState=supported;
+     derivedPluginIndependence=YES; specificityCeiling=L2; NO L2 record;
+     MT-1 L2 identity unreachable; specificity stops at L1.
+   - companion plugin-ON run: L1 and L2 records coexist (Registry §17.3);
+     L2 record identity fields assertable with existing vocabulary;
+     school-dependent annotation carrier and L1→L2 specificity-lift
+     contribution semantics are NEW-6 items, explicitly isolated (§8, §12).
+
+B. WHAT "PLUGIN-OFF FIXTURE" MEANS FOR MT-1
+   Evaluate the all-core R5 = MT-1.1 ∧ MT-1.2 ∧ MT-1.3 with all school
+   plugins disabled. Core holds independently (§15.5 → DPI=YES); the
+   core-backed L1 Movement family candidate exists; MT-1 L2 class identity
+   is not reachable; per Hardened §13.2 and the master matrix MT-1 row,
+   specificity stops at L1 (dormant at L2), with ceiling unchanged at L2.
+
+C. DOES T-PO REQUIRE A SECOND BRANCH?
+   YES. T-PO TEMPLATE = REQUIRES SECOND BRANCH. Registry §18.1 T-PO
+   (L1418-1421) currently encodes only the
+   "insufficient-by-construction ∧ DPI=NO" pattern, which is mechanically
+   inapplicable to MT-1 and, if applied verbatim, would re-create the
+   NEW-1 contradiction at the fixture layer. The two-branch model
+   (Branch 1: CORE-INSUFFICIENT / DPI=NO; Branch 2: CORE-SUPPORTED /
+   DPI=YES → L1 fallback exists, L2 unavailable until the class-specific
+   school gate) is required by existing contract text (§7).
+
+D. EXPRESSIBLE IN EXISTING CONTRACT?
+   YES for the NEW-4 responsibility domain. Hardened §17.2 already
+   distinguishes the L1 record (family=Movement, level=L1, eventClass=nil)
+   from the L2 record (family=Movement, level=L2, eventClass=MT-1) via
+   family / eventClass:EventClass? / level / specificityCeiling over a
+   candidates array. PLUGIN-OFF L1 FALLBACK = EXPRESSIBLE;
+   PLUGIN-OFF L2 UNREACHABILITY = EXPRESSIBLE (§5, §6).
+
+E. MINIMUM TEXTUAL CONTRACT REPAIR
+   DEFINED — three Registry-local repairs, all DESIGN-ONLY, NOT
+   IMPLEMENTED (§9):
+   - MCP-N4-1: §18.1 T-PO two-branch rewrite.
+   - MCP-N4-2: MT-1-FPO expected EventSnapshot assertion set (off-run
+     full set + on-run state fields), with NEW-6 items explicitly marked
+     DEFERRED TO NEW-6.
+   - MCP-N4-3: §18.3 add an MT-1 F-PO example row cross-referencing
+     MCP-N4-2 (parallel to the existing MT-3 F-PO row).
+   Scope limits respected: no Hardened change, no R5/R7 change, no
+   derivedPluginIndependence definition change, no EventSnapshot
+   implementation change, no new enum value, no new field, no NEW-6
+   change, no V3 change.
+
+F. CONTRADICTION WITH NEW-1 OR HARDENED?
+   NONE. NEW-1 COMPATIBILITY = PASS (three counterexample checks in task
+   §10 all fail to fire: no DPI=YES→L2-exists implication, no
+   plugin-off→no-candidate implication, no plugin-independently-creates
+   implication). HARDENED COMPATIBILITY = PASS with HARDENED CHANGE
+   REQUIRED = NO (§10, §11).
+
+G. CLOSURE-READY WITHOUT SOLVING NEW-6?
+   YES. NEW-6 DEPENDENCY = PRESENT but strictly isolated: the plugin-off
+   referent of MT-1-FPO has ZERO NEW-6 dependency; only the plugin-on
+   full contribution / school-dependent semantics layer belongs to NEW-6.
+   Closure criterion C11 explicitly admits "clearly isolated NEW-6
+   fields". Therefore:
+   NEW-4 CORE SEMANTICS = CLOSED
+   NEW-4 CONTRACT   = CLOSURE-READY
+   (not BLOCKED BY NEW-6: C10 and C11 are satisfiable in the isolated
+   form; the BLOCKED branch of task §15 applies only when C10/C11 cannot
+   be satisfied because NEW-6 is required.)
+
+VERDICT VOCABULARY: only PASS / PASS WITH NOTE / INSUFFICIENT EVIDENCE /
+CONTRADICTION / CONTRACT VIOLATION / CRITICAL CONTRACT VIOLATION / DEFERRED /
+NOT EXPRESSIBLE, plus model judgments VALID / INVALID / INSUFFICIENT.
+No score, ranking, confidence, probability, accuracy percentage,
+best/worst, or winner is used anywhere in this report.
+
+================================================================================
+§1 FIXED INPUTS / SHA VERIFICATION
+
+All six fixed inputs verified locally (shasum -a 256). All MATCH.
+
+1. V3_Bazi_Event_Observability_Architecture_Audit_TEST_ONLY_v1.txt
+   f797e48377e57407695a291da241e12f140121d149d63a3d4a0f520a48d5ccf4
+   MATCH (task-book value).
+
+2. V4_Event_Semantics_Architecture_HARDENED_DESIGN_v1.txt
+   8a559f8e88b151ce6684f5f89464c34b51d67b52149d258721b0ff89f70bacab
+   MATCH (repository-registered authority value; task book did not
+   restate this sha).
+
+3. V4_Event_Semantics_Registry_Specification_DESIGN_ONLY_v1.txt
+   c80d7d760de22b373d1e432dee021925a160cea52bf19ef2e33020a984734772
+   MATCH (repository-registered value; task book did not restate this
+   sha).
+
+4. V4_Event_Semantics_Protocol_Contract_Audit_DESIGN_ONLY_v1.txt
+   0ac0c0b761e168fcd4c36f9cd33a2bb5dfa7260681ca7bca1ffd201c3dc9acbe
+   MATCH (repository-registered value; task book did not restate this
+   sha).
+
+5. V4_Event_Semantics_NEW1_MT1_Contradiction_Resolution_DESIGN_ONLY_v1.txt
+   7aff5e84e174e6ac4880ea1b339ddfe11781e22b7845884864f0540be7933eb9
+   MATCH (task-book value).
+
+6. V4_Event_Semantics_NEW1_MT1_Resolution_Closure_DESIGN_ONLY_v1.txt
+   f4fb9d1b8c1f0ab32ad10cc216c2f14cc84c00ab2a640702fa85a19d5032bc12
+   MATCH (task-book value). This report is the immediate upstream
+   authority.
+
+No mismatch. No STOP condition triggered. No version substituted.
+
+================================================================================
+§2 NEW-4 PROBLEM STATEMENT
+
+2.1 Registration source
+Protocol Contract Audit registers NEW-4 as a fixture-gap item:
+"L76: fixture 缺口清单（F-C / F-P / F-D / FPO 歧义 / W-5 F-A）" and
+"L734-735: FPO 歧义 ~6". NEW-4 predates this round; the NEW-1 Closure
+report made it load-bearing.
+
+2.2 Upstream state (NEW-1 Closure)
+- NEW-1 CORE LOGIC = CLOSED (MCP-1/MCP-2 conceptually verified against
+  Hardened, eight-point check, zero contradictions).
+- NEW-1 CONTRACT FREEZE = BLOCKED BY NEW-4 / NEW-6.
+- NEW-4 = DOWNSTREAM CONTRACT BLOCKER: MT-1-FPO expected Snapshot
+  semantics not yet defined.
+
+2.3 The three contract facts constituting NEW-4
+(1) MT-1-FPO appears in the Registry only as an identifier under MT-1
+    R11 ("Fixtures: MT-1-FPO 为主 + FN", Registry L831-832). There is no
+    explicit MT-1-FPO field-level EventSnapshot expectation set anywhere
+    in the Registry (§18.3 L1438-1468 contains instance rows for W-1 all
+    six template classes, FA-4, FA-6, MT-3 F-PO, MT-3 F-A, HS-2, HS-3,
+    W-6∩MT-1 F-A — no MT-1 F-PO row).
+(2) Registry §18.1 T-PO (L1418-1421) describes only the
+    "insufficient-by-construction ∧ DPI=NO" plugin-off pattern.
+(3) That single-branch template is not mechanically applicable to MT-1.
+    MT-1's valid state is different:
+      R5 = MT-1.1 ∧ MT-1.2 ∧ MT-1.3 — ALL core premises (no School
+      conjunct; Registry L807-832: R1 SCHOOL-DEPENDENT, R5 all-core,
+      R7 Supporting: [School:S-YM1]).
+    Therefore when R5 is satisfied, even with the plugin OFF:
+      coreEvidenceState = supported
+      derivedPluginIndependence = YES   (Hardened §15.5 mechanical map)
+    but:
+      plugin OFF: MT-1 L2 specificity is not reachable → stop at L1
+      Movement family (Hardened master matrix MT-1; Registry §16.1
+      S-YM1 core-off column "L2 停 L1（判据特异性不足）").
+      plugin ON: S-YM1 may ADD supporting evidence and, under the
+      explicit SCHOOL-DEPENDENT rule, L2 may become reachable.
+    This distinction MUST remain explicit.
+
+2.4 What NEW-4 must resolve
+The referent of MT-1-FPO's expected EventSnapshot is currently
+undefined, and the only available template (T-PO) is wrong for MT-1.
+NEW-4 = define the MT-1-FPO contract semantics at design level and the
+minimum Registry-local repair that makes it unambiguous, without
+solving NEW-6.
+
+================================================================================
+§3 MT-1-FPO SEMANTIC REFERENT
+
+3.1 Current referent state
+MT-1 R11 names MT-1-FPO as the primary fixture but supplies no expected
+Snapshot assertion set. The referent is therefore not "ambiguous between
+two competing definitions" — it is UNDEFINED in the Registry text and
+must be uniquely determined from the rest of the contract corpus.
+
+3.2 Contract evidence chain (authority order respected)
+E1. Hardened §15.5 (L711-715): derivedPluginIndependence: Bool is
+    mechanically derived from coreEvidenceState.status ∈ {supported,
+    conflicted, unresolved}. For MT-1 with R5 all-core and satisfied:
+    coreEvidenceState=supported → DPI=YES — independent of plugin state.
+E2. Hardened master matrix MT-1 (L941-945): "SCHOOL-DEPENDENT(core 判据
+    不足以独立达 L2 时停 L1 Movement family)；驿马只能 ADD 证据，不得
+    单独创造 L2 candidate；core 判据（日支/年柱动）不足即停级".
+    Stop-at-L1 presupposes an L1 Movement family candidate exists.
+E3. Registry §16.1 S-YM1 row (L1309-1321): core-off column for MT-1
+    reads "L2 停 L1（判据特异性不足）" — the Registry itself already
+    distinguishes MT-1's plugin-off outcome from W-3/MT-3's
+    insufficient-by-construction outcome.
+E4. Registry §17.3 (L1398-1399): "L1 broad family 视图与 L2 并存不属
+    合并——L1 是独立 broad 输出层" — the L1 family view is an
+    independent output layer, not a degraded L2.
+E5. Hardened §13.2 (L620-621): "升级规则：逐级合取，缺任一必要前提 →
+    停级（dormant）" — missing a necessary premise stops the level
+    (dormant); it does not erase the candidate family.
+E6. Hardened FX-E (L1006-1017): 驿马类判据 SCHOOL-DEPENDENT 显式化；
+    plugin 不得单独创造 candidate — plugin evidence is ADD-only.
+E7. Registry R5 (L807-832): MT-1.1 ∧ MT-1.2 ∧ MT-1.3, all core — no
+    School conjunct. S-YM1 appears only in R7 (Supporting).
+
+3.3 Determined referent
+From E1-E7 the MT-1-FPO referent is uniquely determined:
+  MT-1-FPO asserts, for an R5-satisfied synthetic input:
+  - plugin-OFF: the core-backed L1 Movement family candidate EXISTS
+    (family=Movement, level=L1, eventClass=nil), coreEvidenceState=
+    supported, DPI=YES, specificityCeiling=L2, and the MT-1 L2 class
+    identity DOES NOT exist / is NOT reachable.
+  - plugin-ON (companion): L1 and L2 records coexist; the L2 record's
+    identity/state fields are assertable with existing vocabulary;
+    contribution-lift and school-dependent annotation semantics are
+    NEW-6 scope.
+This matches the task-book Expected focus verbatim: MT-1-FPO tests the
+distinction between CORE-BACKED L1 FAMILY EXISTENCE and L2 SPECIFICITY
+REACHABILITY.
+
+MT-1-FPO REFERENT = UNAMBIGUOUS (at design layer, uniquely determined by
+contract evidence; Registry text itself UNCHANGED this round).
+
+3.4 Answers to task §0 question A and B
+A: stated in §3.3 and §8. B: stated in §0 (B) — plugin-off means
+"evaluate all-core R5 with school plugins disabled": core independence
+holds, L1 family exists, L2 unreachable, stop at L1, ceiling unchanged.
+
+================================================================================
+§4 MODEL A-D EVALUATION
+
+Selection rule (task §4): choose only by contract evidence, not by
+preference. Evidence set per task list: Hardened §15.4 / §15.5 / §17.2 /
+master matrix MT-1 / FX-B / FX-E; Registry R1 / R5 / R7 / R10 / R11 /
+§16.3 / §17.3 / §18.1 / §18.2.
+
+MODEL A: "Plugin-off means MT-1 candidate does not exist."
+  VERDICT: INVALID.
+  Contradicts:
+  - E2/E5: master matrix "停 L1" and Hardened §13.2 "停级（dormant）"
+    both presuppose an existing L1 Movement family candidate; stopping a
+    level is not candidate non-existence.
+  - E4: §17.3 makes the L1 broad family an independent output layer —
+    it cannot vanish with plugin state.
+  - E3: §16.1 core-off column says "L2 停 L1", not "无候选".
+  - E1/§16.3: DPI=YES (mechanical, core-side) is orthogonal to candidate
+    existence; MODEL A would couple them, re-creating NEW-1 in the
+    mirror direction (plugin-off erasing a core-backed family).
+  Additionally, MODEL A would violate the family of X prohibitions'
+  underlying principle (no silently destroying core-backed output when
+  plugins are off — Hardened §15.2 L683-692).
+
+MODEL B: "Plugin-off means MT-1 L2 class identity does not exist, but
+L1 Movement family candidate remains."
+  VERDICT: VALID.
+  Verbatim-aligned with:
+  - E2 master matrix: SCHOOL-DEPENDENT; core criteria insufficient to
+    independently reach L2 → stop at L1 Movement family.
+  - E3 §16.1 core-off column: "L2 停 L1（判据特异性不足）".
+  - E4 §17.3: L1 and L2 are two independent records ("并存不属合并").
+  - Hardened §17.2 (L813-841): family (L1 field) and eventClass:
+    EventClass? (L2, nullable) are separate fields; level is explicit;
+    candidates is an array — two-record coexistence is the native shape.
+  - E6 FX-E: plugin must not single-handedly create the L2 candidate —
+    the OFF run must therefore lack the L2 identity.
+  - Hardened §13.2: stop-level (dormant) semantics.
+  MODEL B also aligns row-by-row with the NEW-1 Closure five-concept
+  separation (§3 A-E there): CORE EVIDENCE INDEPENDENCE /
+  FAMILY-LEVEL CANDIDATE EXISTENCE / L2 SPECIFICITY REACHABILITY /
+  SPECIFICITY CEILING / PLUGIN CONTRIBUTION remain mutually independent.
+
+MODEL C: "Plugin-off tests only derivedPluginIndependence."
+  VERDICT: INVALID.
+  - DPI is a single mechanical Bool (Hardened §15.5); it does not carry
+    candidate existence, L2 reachability, or ceiling information.
+  - Registry §16.3 (L1334-1343, as clarified by MCP-2 semantics) answers
+    the plugin-off question with a three-part field group
+    (coreEvidenceState, DPI, L2-reachability note), not DPI alone.
+  - Registry §18.2 S6 (L1426-1436) requires a field-level assertion set
+    (status / identity / ambiguity / timing resolution / evidenceState /
+    coreEvidenceState / DPI) — DPI-only is not an S6-shaped contract.
+  - A DPI-only MT-1-FPO would be underdetermined: it could not detect
+    the L1 fallback (MODEL A violations would pass) nor L2
+    unreachability (silent L2 creation would pass), and if read as
+    "DPI=YES ⇒ pass", it implies MODEL A's negation space and re-opens
+    NEW-1.
+
+MODEL D: "Plugin-off tests that the candidate falls back from L2 to L1."
+  VERDICT: INVALID.
+  - "Falls back from L2 to L1" implies a single candidate mutating its
+    level. This contradicts §17.3's two-record coexistence semantics
+    (L1 is an independent output layer, not a degraded L2) and would
+    require a process/migration semantics that §15.4's statelessness
+    (L1300-1303: contribution/evidence states carry no cross-state
+    memory) does not provide.
+  - The overlap between D and B (plugin-off has no L2; L1 exists) is
+    already fully carried by MODEL B; D's incremental content (the
+    fallback process) has no contract basis. A fixture asserting
+    "fallback" would demand an implementation-maintained transient state
+    that the contract does not define.
+
+SELECTION: MODEL B = VALID. MODEL A / MODEL C / MODEL D = INVALID.
+Selection is forced by the evidence set, not by preference.
+
+================================================================================
+§5 FAMILY IDENTITY VS L2 IDENTITY (MANDATORY FORENSIC CHECK)
+
+Question: does the current EventSnapshot contract distinguish
+  L1: family=Movement, level=L1, eventClass=nil
+from
+  L2: family=Movement, level=L2, eventClass=MT-1 ?
+
+RESULT: YES — EXPRESSIBLE. Exact fields/sections:
+
+Hardened §17.2 EventSnapshot / EventCandidate conceptual structure
+(L813-841):
+- candidates: [EventCandidate] — an ARRAY, so an L1 record and an L2
+  record can coexist as two elements (native expression of §17.3
+  coexistence).
+- family — the L1 broad-family field, present on every record.
+- eventClass: EventClass? — the L2-specific field, NULLABLE. nil on an
+  L1 record expresses "no L2 class identity"; MT-1 on an L2 record
+  expresses the L2 identity. No new field needed.
+- specificity: Specificity? — L3-specific, nullable (not exercised by
+  MT-1, ceiling=L2).
+- level — explicit L1/L2/L3 discriminator per record.
+- specificityCeiling — the field that separates CEILING (L2) from
+  CURRENT REACHABILITY (L1 off / L2 on), exactly the NEW-1 Closure
+  §3-D distinction.
+- coreEvidenceState / derivedPluginIndependence: Bool /
+  pluginEvidenceState / pluginManifest / schoolModulesUsed /
+  timingResolution / ambiguityClass / status / missingPremises — all
+  existing fields used by the §6 truth table.
+
+L1 record: family=Movement, level=L1, eventClass=nil,
+specificityCeiling=L2, coreEvidenceState=supported, DPI=YES.
+L2 record: family=Movement, level=L2, eventClass=MT-1,
+specificityCeiling=L2, coreEvidenceState=supported, DPI=YES.
+
+NOT EXPRESSIBLE is NOT triggered. No fields invented. EventSnapshot not
+redesigned. NEW-6 not touched (the school-dependent annotation carrier
+and the lift contribution value are NOT among the fields needed for the
+NEW-4 responsibility domain — see §8/§12).
+
+================================================================================
+§6 MT-1 PLUGIN-OFF / PLUGIN-ON TRUTH TABLE
+
+Assumption (task §6): R5 = MT-1.1 ∧ MT-1.2 ∧ MT-1.3 is satisfied.
+All values use only vocabulary authorized by Hardened/Registry.
+NEW-4/NEW-6 column: responsibility attribution per row.
+
+ #  Dimension                    PLUGIN OFF              PLUGIN ON               Responsibility
+ 1  coreEvidenceState            supported               supported               NEW-4 (unchanged)
+ 2  derivedPluginIndependence    YES                     YES                     NEW-4 (unchanged)
+ 3  family                       Movement                Movement                NEW-4 (unchanged)
+ 4  candidate level              L1 (single record)      L1 ∥ L2 coexist         NEW-4
+                                                         (two records, §17.3)
+ 5  eventClass                   nil (on the L1 record)  MT-1 (on the L2         NEW-4
+                                                         record; the L1 record
+                                                         keeps eventClass=nil)
+ 6  specificityCeiling           L2                      L2                      NEW-4 (unchanged)
+ 7  L1 family candidate exists?  YES                     YES                     NEW-4 (unchanged)
+ 8  MT-1 L2 identity reachable?  NO                      YES (via the explicit   NEW-4
+                                                         SCHOOL-DEPENDENT
+                                                         school gate)
+ 9  plugin evidence present?     NO                      YES (S-YM1, R7          NEW-4
+                                                         Supporting ADD)
+10  plugin contribution          none                    corroboration-added     row 10 base value:
+                                                         (existing §15.4 enum    NEW-4; full lift
+                                                         value covers the        semantics =
+                                                         corroborative layer;    UNREPRESENTED →
+                                                         the L1→L2 specificity-  NEW-6 boundary
+                                                         lift semantic has NO
+                                                         defined enum value)
+11  school-dependent status      not applicable (no L2   the L2 record must      annotation carrier
+                                 record to annotate)     carry SCHOOL-DEPENDENT  = UNREPRESENTED
+                                                         annotation; no named    → NEW-6 boundary
+                                                         carrier exists in the
+                                                         EventSnapshot contract
+                                                         (schoolModulesUsed can
+                                                         record module usage
+                                                         but is not a
+                                                         school-dependent
+                                                         status carrier)
+12  candidate status             L1 record active;       L1 record active;       NEW-4
+                                 L2 stop-level dormant   L2 record active once
+                                 (Hardened §13.2)        the school gate is
+                                                         met (existing status
+                                                         vocabulary)
+13  timing resolution            MONTH_ONLY              MONTH_ONLY              NEW-4 (unchanged;
+                                 (mechanical result of   (same)                  R9: M/Y(大运) |
+                                 R9: M/Y | corroboration-                        corroboration-only
+                                 only | NONE)                                    | NONE)
+14  ambiguity class              B                       B                       NEW-4 (unchanged;
+                                                                                 G-3 (W-6/MT-1) /
+                                                                                 G-9 (W-1/MT-1/FM-2)
+                                                                                 concurrency context
+                                                                                 per master matrix;
+                                                                                 concurrency
+                                                                                 assertions belong
+                                                                                 to F-A, not F-PO)
+
+Notes:
+- UNCHANGED rows (1, 2, 3, 6, 7, 13, 14): the core side is invariant
+  under the plugin switch — precisely the invariance MT-1-FPO must
+  verify.
+- CHANGED rows (4, 5, 8, 9): the specificity-reachability side varies
+  with the plugin switch — the other half of what MT-1-FPO must verify.
+- Rows 10/11: base values expressible with existing vocabulary
+  (none / corroboration-added; schoolModulesUsed records S-YM1 usage),
+  but the FULL semantic layer (L1→L2 lift enum value; dedicated
+  school-dependent annotation carrier) is UNREPRESENTED — this is the
+  pre-registered NEW-6 boundary (Protocol Audit gap 2 / IP-4 / IP-5).
+  It applies equally to Branch 1 classes; it is NOT created by Branch 2.
+- No row requires an invented field or a new enum value.
+- Rows belonging to NEW-6 rather than NEW-4: the full semantic layer of
+  rows 10 and 11 (plugin-on side only). All other rows are NEW-4.
+
+The table demonstrates the required NEW-1 Closure property: YES for
+derivedPluginIndependence (row 2) does NOT imply YES for L2 reachability
+(row 8) — the two are independent rows with different OFF/ON behavior.
+
+================================================================================
+§7 T-PO TEMPLATE ANALYSIS
+
+7.1 Current text (Registry §18.1, L1418-1421, verbatim):
+  "T-PO Plugin-Off（仅 R4≠空的 class）：plugin-off → coreEvidenceState =
+   insufficient-by-construction 且 derivedPluginIndependence = NO；
+   plugin-on → 候选存在且恒带 plugin-supported / school-dependent 标注"
+
+7.2 A vs B determination (task §7):
+Is T-PO intended as
+  A. a universal plugin-off template, or
+  B. a template specifically for classes whose core RequiredConditionSet
+     includes a School-dependent premise?
+Evidence: the scope qualifier in the title is "仅 R4≠空的 class" — i.e.
+applicability is determined by R4 being non-empty, NOT by the R5
+composition. The set of R4≠空 classes with generators is
+{W-3, MT-1, MT-3} (MT-2 is DEFERRED with no generator and is not
+applicable; see §16 RR-3). Within that set, only W-3/MT-3 have a School
+conjunct in R5 (W-3.3 / MT-3.3 [School:S-YM1] → insufficient-by-
+construction); MT-1's R5 is all-core. Therefore T-PO's intent is
+A (universal over R4≠空 classes), but its BODY only encodes Branch-1
+content. Intent = universal; body = branch-1-only.
+
+7.3 The exact template defect (task §7):
+YES — the current wording accidentally assumes, for EVERY
+plugin-dependent class:
+  plugin-off → insufficient
+  plugin-off → DPI=NO
+This holds for W-3/MT-3 (their R5 contains a School conjunct, so the
+core alone is insufficient-by-construction, Registry §16.4 L1345-1354)
+and is mechanically FALSE for MT-1 (all-core R5 → supported ∧ DPI=YES
+under Hardened §15.5). Applied verbatim to MT-1, the template would
+make the fixture assert coreEvidenceState=insufficient-by-construction
+∧ DPI=NO, directly contradicting R5's all-core composition and §15.5's
+mechanical map — i.e., it would re-create the NEW-1 contradiction at
+the fixture layer. This is the exact template defect.
+
+7.4 Is the two-branch model REQUIRED by the existing contract? YES.
+Evidence that the contract already distinguishes the two patterns:
+- Registry §16.1 core-off column itself distinguishes MT-1
+  ("L2 停 L1（判据特异性不足）") from MT-3 ("insufficient-by-
+  construction") — L1309-1321.
+- Registry §16.3 mechanical map distinguishes supported→YES from
+  insufficient-by-construction→NO — L1334-1343.
+- Hardened master matrix MT-1: "core 判据不足以独立达 L2 时停 L1
+  Movement family" — L941-945.
+- Hardened §13.2: "升级规则：逐级合取，缺任一必要前提 → 停级
+  （dormant）" — the stop-level mechanism behind Branch 2.
+Therefore the minimum conceptual repair is the two-branch model:
+  T-PO Branch 1: CORE-INSUFFICIENT / DPI=NO
+    → no L1 candidate from that class's core condition set
+    (carries W-3 / MT-3).
+  T-PO Branch 2: CORE-SUPPORTED / DPI=YES
+    → L1 fallback exists
+    → L2 unavailable until school evidence reaches the class-specific
+      gate (ceiling unchanged)
+    (carries MT-1).
+Both branches are REQUIRED by existing contract text; neither is a new
+rule. Per task §7, final Registry wording is NOT written here — the
+wording vehicle is MCP-N4-1 (§9), NOT IMPLEMENTED.
+
+T-PO TEMPLATE = REQUIRES SECOND BRANCH.
+
+================================================================================
+§8 MT-1-FPO EXPECTED SNAPSHOT CONTRACT
+
+DO NOT CREATE THE FIXTURE — this section specifies, at design level
+only, which assertions are NEW-4's minimum responsibility and which are
+NEW-6's responsibility. They are NOT merged.
+
+8.1 NEW-4 MINIMUM RESPONSIBILITY ASSERTIONS (fully expressible with
+existing vocabulary; Hardened §17.2 fields + Registry terms):
+
+PLUGIN OFF run (the primary MT-1-FPO referent):
+  N4-O1. candidates contains EXACTLY ONE record:
+         family=Movement, level=L1, eventClass=nil.
+  N4-O2. NO record with level=L2 or eventClass=MT-1 exists.
+  N4-O3. coreEvidenceState = supported.
+  N4-O4. derivedPluginIndependence = YES.
+  N4-O5. specificityCeiling = L2 (on the L1 record; specificity
+         reached = L1 is carried by the record itself).
+  N4-O6. missingPremises is EMPTY (R5 fully satisfied; S-YM1 is NOT an
+         R5 premise and MUST NOT appear in missingPremises).
+  N4-O7. pluginManifest absent/empty; schoolModulesUsed empty.
+  N4-O8. timingResolution = MONTH_ONLY; ambiguityClass = B
+         (mechanical results of R9 and the master matrix; unchanged
+         across the switch).
+
+PLUGIN ON run (companion; candidate/family/L1/L2 state-field portion):
+  N4-N1. The L1 record keeps every unchanged value of rows 1-3, 6-7,
+         13-14 (identical to the OFF run's L1 record).
+  N4-N2. An additional L2 record exists:
+         family=Movement, level=L2, eventClass=MT-1,
+         specificityCeiling=L2, coreEvidenceState=supported,
+         derivedPluginIndependence=YES.
+  N4-N3. The two records COEXIST as two array elements (§17.3); no
+         single-candidate level transition is asserted.
+  N4-N4. Plugin evidence S-YM1 is present (R7 Supporting).
+
+8.2 NEW-6 RESPONSIBILITY ASSERTIONS (NOT defined here; explicitly
+isolated):
+  N6-1. The dedicated school-dependent annotation carrier on the L2
+        record (no named field exists in the EventSnapshot contract;
+        schoolModulesUsed is not it).
+  N6-2. The contribution-enum value/semantics for the S-YM1-mediated
+        L1→L2 specificity-lift (§15.4 enum has no such value —
+        pre-registered Protocol Audit gap 2 / IP-5).
+  N6-3. The full plugin-on contribution semantics representation.
+  These three are DEFERRED TO NEW-6. In MCP-N4-2 they appear only as
+  explicit DEFERRED markers — never defined, never placeholdered, never
+  given invented fields.
+
+8.3 Non-merging statement
+The plugin-off referent of MT-1-FPO has ZERO dependency on N6-1/N6-2/
+N6-3. The plugin-on companion can be asserted up to N4-N1..N4-N4
+without any NEW-6 field. Therefore NEW-4's minimum responsibility is
+complete and self-contained; NEW-6's responsibility remains a separate
+downstream track.
+
+================================================================================
+§9 MINIMUM CONTRACT REPAIR
+
+All repairs are DESIGN-ONLY and NOT IMPLEMENTED. Repair scope strictly
+limited to: (1) MT-1-FPO expected Snapshot semantics, (2) T-PO template
+semantics necessary to support MT-1, (3) cross-references making
+MT-1-FPO unambiguous. Hardened Design, R5, R7, the
+derivedPluginIndependence definition, the EventSnapshot implementation,
+the contribution enum, the school-dependent field, NEW-6, and any V3
+component are NOT modified.
+
+--------------------------------------------------------------------------------
+MCP-N4-1 — Registry §18.1 T-PO two-branch rewrite
+  Classification: REQUIRED FOR NEW-4.
+  File: V4_Event_Semantics_Registry_Specification_DESIGN_ONLY_v1.txt
+  Section: §18.1, T-PO entry (L1418-1421).
+  Current semantic contract: single branch — "plugin-off →
+    coreEvidenceState = insufficient-by-construction 且
+    derivedPluginIndependence = NO", implicitly universal over all
+    R4≠空 classes; plugin-on side as written.
+  Proposed semantic contract: two branches, preserving the existing
+    plugin-on clause:
+    Branch 1 (CORE-INSUFFICIENT — classes whose R5 contains a
+      School-dependent premise, i.e. W-3 / MT-3):
+      plugin-off → coreEvidenceState = insufficient-by-construction,
+      derivedPluginIndependence = NO, and no L1 candidate arises from
+      that class's core condition set.
+    Branch 2 (CORE-SUPPORTED — classes whose R5 is all-core, i.e.
+      MT-1):
+      plugin-off → coreEvidenceState = supported,
+      derivedPluginIndependence = YES; the L1 broad-family candidate
+      EXISTS (family-level record, eventClass=nil); MT-1 L2 identity is
+      NOT reachable; specificity stops at L1 (stop-level dormant,
+      Hardened §13.2); specificityCeiling unchanged (L2).
+      plugin-on → unchanged from the current clause: candidate with
+      L2 reachable only under the explicit SCHOOL-DEPENDENT school
+      gate; S-YM1 ADD-only; school dependence and plugin contribution
+      explicit (full representation semantics = NEW-6).
+  Why required: the single branch is mechanically inapplicable to MT-1
+    and, applied verbatim, re-creates NEW-1 at the fixture layer (§7).
+  Hardened compatibility: verbatim-aligned with §15.5 / §13.2 / §17.3 /
+    master matrix MT-1 / FX-B / FX-E; zero Hardened modification.
+  HD-5 impact: none — Branch 2 keeps S-YM1 ADD-only; plugin never
+    independently creates the candidate.
+  Other blocker impact: none.
+  New contradiction introduced: none (verified by the three
+    counterexample checks in §10).
+  Status: NOT IMPLEMENTED.
+
+--------------------------------------------------------------------------------
+MCP-N4-2 — MT-1-FPO expected EventSnapshot assertion set
+  Classification: REQUIRED FOR NEW-4.
+  File: V4_Event_Semantics_Registry_Specification_DESIGN_ONLY_v1.txt
+  Section: MT-1 R11 (L831-832) as the anchor; §18.2 S6 (L1426-1436) as
+    the assertion-set vehicle.
+  Current semantic contract: none — MT-1-FPO is an identifier with no
+    expected Snapshot assertion set.
+  Proposed semantic contract: register the §8 NEW-4 minimum
+    responsibility assertions as the MT-1-FPO expected Snapshot
+    contract:
+    - OFF run: N4-O1 .. N4-O8 (complete, zero NEW-6 dependency).
+    - ON run (companion): N4-N1 .. N4-N4 (state fields only).
+    - NEW-6 items (N6-1 / N6-2 / N6-3) appear ONLY as explicit
+      "DEFERRED TO NEW-6" markers — not defined, not placeholdered, no
+      invented fields.
+  Why required: without it, MT-1-FPO has no referent and NEW-1's
+    contract freeze remains blocked (upstream Closure §NEW-4 finding).
+  Hardened compatibility: every assertion maps 1:1 onto existing
+    §17.2 fields (§5); zero Hardened modification.
+  HD-5 impact: none (N4-N4 asserts ADD-only presence, not creation).
+  Other blocker impact: resolves the NEW-4 blocker recorded by the
+    NEW-1 Closure report.
+  New contradiction introduced: none (§10).
+  Status: NOT IMPLEMENTED.
+
+--------------------------------------------------------------------------------
+MCP-N4-3 — §18.3 MT-1 F-PO example row
+  Classification: REQUIRED FOR NEW-4.
+  File: V4_Event_Semantics_Registry_Specification_DESIGN_ONLY_v1.txt
+  Section: §18.3 instances (L1438-1468). Existing rows: W-1 all six
+    template classes, FA-4, FA-6, MT-3 F-PO (L1457), MT-3 F-A, HS-2,
+    HS-3, W-6∩MT-1 F-A. NO MT-1 F-PO row exists.
+  Current semantic contract: MT-1-FPO is absent from the instance
+    catalog — the R11 primary fixture has no worked example, unlike its
+    MT-3 counterpart.
+  Proposed semantic contract: add an MT-1 F-PO instance row, parallel
+    in form to the MT-3 F-PO row (L1457), cross-referencing MCP-N4-2's
+    assertion set (OFF run primary; ON run companion noted), so that
+    MT-1-FPO is self-consistently lookable-up inside the Registry.
+  Why required: cross-reference completeness — R11 names MT-1-FPO as
+    the primary fixture; §18.3 must carry its instance or the referent
+    stays catalog-orphaned.
+  Hardened compatibility: none needed — pure Registry catalog row.
+  HD-5 impact: none. Other blocker impact: none.
+  New contradiction introduced: none.
+  Status: NOT IMPLEMENTED.
+
+--------------------------------------------------------------------------------
+DEFERRED TO NEW-6 (NOT part of this repair; boundary in §12):
+  - L1→L2 specificity-lift contribution enum value/semantics
+    (Protocol Audit gap 2 / IP-5).
+  - Dedicated school-dependent annotation carrier (IP-4 carrier
+    question).
+  These belong to NEW-6's track: "How should EventSnapshot represent
+  plugin contribution and school-dependent specificity-lift
+  semantics?"
+
+NOT REQUIRED (explicitly):
+  - Any Hardened Design modification.
+  - Any R5 / R7 modification.
+  - Any derivedPluginIndependence definition modification.
+  - Any EventSnapshot implementation modification, new field, or new
+    enum value.
+  - Any NEW-6 modification.
+  - Any V3 component modification.
+  - Concurrency-group (G-3 / G-9) assertions inside MT-1-FPO — those
+    belong to F-A fixture jurisdiction (§18.3 W-6∩MT-1 F-A precedent),
+    not to F-PO.
+
+================================================================================
+§10 NEW-1 COMPATIBILITY
+
+The NEW-4 resolution MUST preserve the NEW-1 closure:
+  derivedPluginIndependence = YES
+  AND plugin-off L2 reachability = NO
+  remain simultaneously valid.
+
+Three explicit counterexample checks (task §10):
+
+CHECK 1: Does the proposed NEW-4 contract accidentally imply
+  DPI=YES → L2 exists?
+  NO. MODEL B and MCP-N4-2 assert, in the SAME OFF run, DPI=YES
+  (N4-O4) and no L2 record / L2 unreachable (N4-O2, row 8). T-PO
+  Branch 2 makes L2 reachability conditional on the school gate, never
+  on DPI. The truth table keeps them on separate rows (2 vs 8).
+  → NOT A CONTRADICTION.
+
+CHECK 2: Does it accidentally imply plugin-off → no candidate at all?
+  NO. Branch 2 explicitly asserts the L1 fallback exists (N4-O1, row
+  7); MODEL A — the only model implying candidate non-existence — was
+  adjudicated INVALID on §17.3/master-matrix/§13.2 evidence.
+  → NOT A CONTRACT VIOLATION.
+
+CHECK 3: Does it accidentally imply plugin ON → plugin independently
+  creates MT-1?
+  NO. Branch 2's L2 reachability presupposes R5 fully satisfied (rows
+  1-2 unchanged, DPI=YES); S-YM1 is ADD-only (R7 Supporting; row 9);
+  HD-5 and the X-1..X-8 prohibitions (all qualified by "silently / 无
+  core 合取支撑", Hardened §15.2 L683-692) remain untouched. Plugin
+  contribution never appears as a creation operator anywhere in §8/§9.
+  → NOT AN HD-5 VIOLATION.
+
+Five-concept independence preserved (NEW-1 Closure §3 A-E), row-mapped:
+  CORE EVIDENCE INDEPENDENCE   → row 1 (unchanged across switch)
+  FAMILY-LEVEL EXISTENCE       → row 7 (unchanged across switch)
+  L2 REACHABILITY              → row 8 (changes across switch)
+  SPECIFICITY CEILING          → row 6 (unchanged across switch)
+  PLUGIN CONTRIBUTION          → row 10 (base value only; NEW-6 for
+                                 full semantics)
+No row is derivable from another; the switch only moves rows 4/5/8/9.
+
+NEW-1 COMPATIBILITY = PASS. NEW-1 CORE LOGIC = CLOSED remains intact.
+
+================================================================================
+§11 HARDENED COMPATIBILITY
+
+Checked item by item against task §11:
+
+Hardened §15.4 (core/plugin separation; contribution semantics, L701-
+  709): MCP-N4-1/2/3 do not touch the contribution enum; the plugin-on
+  base contribution value uses an existing enum member; core-side
+  fields stay plugin-independent. → COMPATIBLE.
+
+Hardened §15.5 (mechanical derivedPluginIndependence, L711-715): DPI
+  definition and derivation unchanged; Branch 2 IS the direct
+  mechanical application (supported → YES) with an added scope note
+  already authorized by the NEW-1 closure (MCP-2 semantics). →
+  COMPATIBLE.
+
+Hardened §17.2 (EventSnapshot structure, L813-841): every NEW-4
+  assertion uses existing fields only (§5 field mapping). No new field,
+  no type change, no new enum value. → COMPATIBLE.
+
+Hardened §17.3 (L1/L2 output semantics, L843-846 + Registry §17.3
+  restatement): the truth table (rows 4/5) and N4-N3 explicitly use
+  two-record coexistence; MCP-N4-2 forbids single-candidate level
+  transition assertions. → COMPATIBLE.
+
+Hardened MT-1 master matrix (L941-945): SCHOOL-DEPENDENT; stop at L1
+  when core specificity insufficient; 驿马 ADD-only; plugin cannot
+  independently create the L2 candidate. Branch 2 and the truth table
+  are verbatim projections of this row into fixture semantics. →
+  COMPATIBLE.
+
+FX-B (semantic conjunction explicit annotation) / FX-E (驿马类判据
+  SCHOOL-DEPENDENT explicit; plugin must not single-handedly create a
+  candidate) / plugin-off fallback (L1006-1017): Branch 2's "L2
+  unavailable until the school gate" and "S-YM1 ADD-only" are the
+  fixture-layer projections of FX-B/FX-E; the OFF run asserts the
+  fallback exactly as the master matrix prescribes. → COMPATIBLE.
+
+HARDENED CHANGE REQUIRED = NO.
+The task-§11 trigger ("If any proposed NEW-4 repair requires Hardened
+modification → HARDENED CHANGE REQUIRED = YES and NEW-4 = NOT
+CLOSURE-READY") does NOT fire.
+
+HARDENED COMPATIBILITY = PASS.
+
+================================================================================
+§12 NEW-6 BOUNDARY / DEPENDENCY
+
+Task §12 is mandatory. NEW-6 is NOT solved here.
+
+NEW-4 asks: "What should MT-1-FPO assert about candidate/family/L1/L2
+  state?" → answered by §8 NEW-4 responsibility domain, entirely in
+  existing vocabulary.
+NEW-6 asks: "How should EventSnapshot represent plugin contribution and
+  school-dependent specificity-lift semantics?" → the two carrier gaps
+  (lift contribution value; school-dependent annotation carrier),
+  pre-registered in the Protocol Audit (gap 2 / IP-4 / IP-5, L643-651,
+  L737-738, L772-773).
+
+Does the NEW-4 resolution REQUIRE a new contribution enum value or a
+new school-dependent field?
+  It REQUIRES their EXISTENCE for the plugin-on FULL semantic layer,
+  but does NOT require their CREATION in this round:
+  - The MT-1-FPO plugin-off assertion set (N4-O1..N4-O8) has ZERO
+    NEW-6 dependency.
+  - The plugin-on companion state-field assertions (N4-N1..N4-N4) have
+    ZERO NEW-6 dependency.
+  - Only the plugin-on FULL contribution semantics and the
+    school-dependent annotation on the L2 record (N6-1/N6-2/N6-3)
+    depend on NEW-6 carriers.
+
+NEW-4 DEPENDENCY ON NEW-6 = YES — with the exact boundary:
+  BELONGS TO NEW-4 (this round's definable domain):
+    - OFF run: all assertions N4-O1..N4-O8.
+    - ON run: L1/L2 two-record existence, identity fields
+      (family/level/eventClass), coreEvidenceState, DPI,
+      specificityCeiling, timingResolution, ambiguityClass, status,
+      plugin-evidence presence (S-YM1).
+  BELONGS TO NEW-6 (deferred, untouched):
+    - plugin-on full contribution semantics (L1→L2 specificity-lift
+      enum value/semantics).
+    - dedicated school-dependent annotation carrier on the L2 record.
+  NEW-4 does NOT absorb NEW-6: MCP-N4-2 carries NEW-6 items only as
+  explicit DEFERRED markers; no new enum value is created; no new
+  field is created; no placeholder occupies future NEW-6 space.
+
+Firewall statement (task §12): if NEW-6's eventual carrier design
+conflicts with the MCP-N4-2 assertion set, NEW-6's resolution governs
+and MCP-N4-2's ON-run deferred portion is revised then; the OFF-run
+referent is immune by construction (RR-1).
+
+================================================================================
+§13 FIXTURE SEMANTIC FIREWALL
+
+No fixture is created, changed, or run. No test code is written. No
+expected values are added to the repository. No fixture file is
+generated. Design-level specification only. The MUST / MUST NOT
+distinction is the core of the MT-1-FPO fixture semantic contract.
+
+MT-1-FPO MUST ASSERT (plugin-OFF run, primary referent):
+  M1. Exactly one candidate record: family=Movement, level=L1,
+      eventClass=nil.
+  M2. No record with level=L2 or eventClass=MT-1.
+  M3. coreEvidenceState = supported.
+  M4. derivedPluginIndependence = YES.
+  M5. specificityCeiling = L2 (specificity reached = L1).
+  M6. missingPremises = empty.
+  M7. pluginManifest absent/empty; schoolModulesUsed empty.
+  M8. timingResolution = MONTH_ONLY; ambiguityClass = B.
+  M9. (companion plugin-ON run) L1 ∥ L2 two-record coexistence with
+      the L2 record's identity/state fields per N4-N2, and S-YM1
+      present as ADD-only plugin evidence (N4-N4).
+
+MT-1-FPO MUST NOT ASSERT:
+  X1. MT-1 L2 candidate existence in the plugin-OFF run.
+  X2. derivedPluginIndependence = NO (for MT-1).
+  X3. coreEvidenceState = insufficient-by-construction (for MT-1).
+  X4. That S-YM1's absence makes the core insufficient (S-YM1 is an R7
+      Supporting premise, NOT an R5 premise).
+  X5. Any single-candidate level fallback/migration (violates §17.3
+      two-record coexistence; MODEL D rejected).
+  X6. Any value for a NEW-6 carrier field (the fields do not exist;
+      they must not be placeholdered or invented).
+  X7. A school-dependent annotation on the L1 record (school
+      dependence is an L2-reachability property for MT-1, not an
+      L1-family property).
+  X8. Any G-3 (W-6∩MT-1) / G-9 (W-1∩MT-1∩FM-2) concurrency-group
+      member assertions (those belong to F-A fixture jurisdiction per
+      the §18.3 W-6∩MT-1 F-A precedent).
+
+The M-set is exactly NEW-4's minimum responsibility (§8.1); the X-set
+encodes the NEW-1 compatibility results (§10), the Hardened
+compatibility results (§11), and the NEW-6 firewall (§12) at the
+fixture-semantics level.
+
+================================================================================
+§14 HISTORICAL DATA FIREWALL
+
+Not used anywhere in this report as rule input or semantic evidence:
+  - Owen events
+  - Jassica events
+  - historical correspondence
+  - backtest results
+
+MT-1-FPO semantics were derived exclusively from contract text
+(Hardened Design, Registry, Protocol Contract Audit, and the two
+upstream NEW-1 reports). Historical data must not influence the rule;
+future synthetic fixture inputs must likewise not be taken from
+historical events (see §16 RR-4). This is a contract problem only.
+
+================================================================================
+§15 CLOSURE CRITERIA
+
+[C1] MT-1-FPO referent is unambiguous.
+     PASS — §3/§4: MODEL B is uniquely forced by the contract evidence
+     set (E1-E7); no competing model survives.
+
+[C2] Plugin OFF L1 fallback is explicitly distinguishable from plugin
+     OFF L2 unreachability.
+     PASS — truth table rows 7 vs 8 (both OFF); MCP-N4-2 asserts them
+     as separate items (N4-O1 vs N4-O2/N4-O5).
+
+[C3] coreEvidenceState remains supported when R5 is satisfied.
+     PASS — row 1 identical in both columns; Branch 2 presupposes it.
+
+[C4] derivedPluginIndependence remains YES.
+     PASS — row 2 identical in both columns (Hardened §15.5 mechanical
+     map, plugin-state-independent).
+
+[C5] plugin OFF does not imply candidate-family disappearance.
+     PASS — MODEL A adjudicated INVALID (§4); row 7 = YES in the OFF
+     column.
+
+[C6] plugin ON does not imply plugin independently creates candidate.
+     PASS — §10 CHECK 3; row 2 unchanged; S-YM1 ADD-only; HD-5/X-
+     catalog untouched.
+
+[C7] T-PO semantics no longer force DPI=NO for MT-1.
+     PASS — under MCP-N4-1's two-branch model (Branch 2), MT-1 maps to
+     CORE-SUPPORTED / DPI=YES. The verdict REQUIRES SECOND BRANCH is
+     itself the satisfying form: the two-branch model is what C7
+     demands, and its necessity is proven from existing contract text
+     (§7.4). NOT IMPLEMENTED status does not affect the semantic
+     adjudication.
+
+[C8] No Hardened modification is required.
+     PASS — §11: HARDENED CHANGE REQUIRED = NO.
+
+[C9] NEW-1 logical closure remains intact.
+     PASS — §10: all three counterexample checks fail to fire;
+     five-concept independence preserved row-by-row.
+
+[C10] NEW-6 is not silently solved inside NEW-4.
+     PASS — §12: no new enum value, no new field, no placeholder;
+     NEW-6 items carried only as explicit DEFERRED markers; NEW-6
+     track left fully open.
+
+[C11] Expected Snapshot semantics can be specified using existing
+     contract vocabulary, except for clearly isolated NEW-6 fields.
+     PASS — §5/§6/§8: the entire NEW-4 responsibility domain is
+     existing-vocabulary; the exceptions (N6-1/N6-2/N6-3) are clearly
+     isolated per §12 (explicit DEFERRED markers, zero field
+     occupation, zero OFF-run dependency), meeting the "clearly
+     isolated" standard in C11's own wording.
+
+RESULT: C1-C11 ALL PASS.
+
+The task-§15 BLOCKED branch ("If C1-C9 pass but C10/C11 cannot be
+satisfied because NEW-6 is required → NEW-4 CONTRACT = BLOCKED BY
+NEW-6") does NOT apply: C10 and C11 ARE satisfiable in the isolated
+form — the NEW-6 dependency is present but confined to a clearly
+isolated plugin-on semantic layer that NEW-4's contract does not need
+in order to be unambiguous.
+
+  NEW-4 CORE SEMANTICS = CLOSED
+  NEW-4 CONTRACT       = CLOSURE-READY
+
+Per task §15: NEW-4 is not falsely marked "fully implemented" — it is
+marked CLOSURE-READY, which is a design-layer readiness verdict;
+MCP-N4-1/2/3 remain NOT IMPLEMENTED.
+
+================================================================================
+§16 RESIDUAL RISKS
+
+RR-1 — NEW-6 isolation residue.
+  The plugin-on FULL semantic layer (L1→L2 lift contribution value;
+  dedicated school-dependent annotation carrier) is not representable
+  until NEW-6 resolves. Until then, MCP-N4-2's ON-run assertion set
+  must ship with explicit DEFERRED markers. If NEW-6's eventual carrier
+  design conflicts with MCP-N4-2, NEW-6's resolution governs and
+  MCP-N4-2's deferred ON-run portion is revised; the OFF-run referent
+  is immune by construction (zero NEW-6 dependency).
+
+RR-2 — plugin-on companion fixture naming/jurisdiction.
+  This report adjudicates MT-1-FPO (OFF-run primary + ON-run state
+  fields). Whether the companion ON run is a separately named fixture
+  and which R11 entry governs it is a Registry fixture-catalog
+  organization question, deliberately not expanded here; it does not
+  affect NEW-4's semantic closure.
+
+RR-3 — T-PO applicability domain note.
+  T-PO's scope qualifier "仅 R4≠空的 class" yields the generator-
+  bearing set {W-3, MT-1, MT-3}; MT-2 is DEFERRED with no generator and
+  is outside T-PO's domain. After two-branching: Branch 1 covers
+  W-3/MT-3 (R5 contains a School-dependent premise); Branch 2 covers
+  MT-1 (all-core R5). Any future R4≠空 class maps mechanically by
+  whether its R5 contains a School-dependent premise — no further
+  template-structure change required.
+
+RR-4 — MT-1-FPO synthetic input constraint (implementation-phase).
+  The future fixture input must satisfy R5 = MT-1.1 ∧ MT-1.2 ∧ MT-1.3
+  and must avoid concurrently triggering R5 for the other members of
+  G-3 (W-6∩MT-1) or G-9 (W-1∩MT-1∩FM-2) — concurrency assertions
+  belong to F-A fixtures (Registry §18.3 W-6∩MT-1 F-A precedent,
+  Registry §17.2 G-3 L1382 / G-9 L1392 with the unresolved flag).
+  Mixing concurrency into F-PO would destroy the single-referent
+  property of the assertion set. Declared here only; input definition
+  is out of scope (DO NOT CREATE THE FIXTURE).
+
+================================================================================
+§17 FINAL STATUS
+
+The authoritative FINAL STATUS block is the terminal block of this
+report (after §18 Integrity), exactly as required by task §19.
+
+================================================================================
+§18 INTEGRITY
+
+Verified at completion:
+- Git HEAD: 2f1b2bf665b74d5c70e93056efba6c92bebaea00 — unchanged
+  before and after this report was written.
+- Registry: UNCHANGED (sha c80d7d76…984734772 re-verified identical).
+- Hardened Design: UNCHANGED (sha 8a559f8e…f70bacab re-verified
+  identical).
+- EventSnapshot implementation: UNCHANGED.
+- Fixture: UNCHANGED. Fixture test: UNCHANGED.
+- Swift: UNCHANGED. V3: UNCHANGED. N1/N2: UNCHANGED.
+- Thresholds: UNCHANGED. Calibration: UNCHANGED.
+- Probe: none executed. Backtest: none executed.
+- Historical validation rerun: none.
+- AI prompt: UNCHANGED. UI: UNCHANGED.
+- Commit: none. Push: none.
+- Workspace: git status --porcelain count = 102, identical to the
+  pre-task count. BacktestData/ presents as a single untracked
+  directory entry, so this new report file does not change the count.
+  This task changed nothing except creating this DESIGN-ONLY report.
+- All six FIXED INPUT sha256 values re-verified MATCH (§1).
+- This report contains no self-referential sha256 (computed externally
+  after writing).
+
+================================================================================
+FINAL STATUS
+
+TARGET:
+NEW-4 / MT-1-FPO Contract Resolution
+
+MT-1-FPO REFERENT:
+UNAMBIGUOUS
+
+MODEL:
+VALID
+
+T-PO TEMPLATE:
+REQUIRES SECOND BRANCH
+
+PLUGIN-OFF L1 FALLBACK:
+EXPRESSIBLE
+
+PLUGIN-OFF L2 UNREACHABILITY:
+EXPRESSIBLE
+
+NEW-1 COMPATIBILITY:
+PASS
+
+HARDENED COMPATIBILITY:
+PASS
+
+NEW-6 DEPENDENCY:
+PRESENT
+
+MINIMUM CONTRACT REPAIR:
+DEFINED
+
+NEW-4 CORE SEMANTICS:
+CLOSED
+
+NEW-4 CONTRACT:
+CLOSURE-READY
+
+REGISTRY:
+UNCHANGED
+
+HARDENED DESIGN:
+UNCHANGED
+
+EVENTSNAPSHOT IMPLEMENTATION:
+UNCHANGED
+
+FIXTURE:
+UNCHANGED
+
+TEST:
+UNCHANGED
+
+V3:
+UNCHANGED
+
+COMMIT:
+NONE
+
+PUSH:
+NONE
+
+IMPLEMENTATION AUTHORIZATION:
+NOT GRANTED
+
+STOP
