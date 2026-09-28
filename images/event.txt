@@ -1,0 +1,1021 @@
+================================================================================
+V3 BAZI EVENT OBSERVABILITY ARCHITECTURE AUDIT
+(Bazi Event Detection / Observability / Semantic Coverage)
+================================================================================
+STATUS:      DESIGN / READ-ONLY / FORENSIC — ARCHITECTURE AUDIT ONLY
+SCOPE:       Frozen V3 (V3Core / DomainMapper / N1 / N2 / Snapshot / Adapter / UI)
+METHOD:      Theory → Knowledge Map → Frozen V3 Architecture → Layer-by-layer
+             reconciliation → Capability / Gap（禁止历史事件反推规则）
+DATE:        2026-09-27 (America/Los_Angeles)
+GIT HEAD:    2f1b2bf665b74d5c70e93056efba6c92bebaea00
+UPSTREAM:    V3_Historical_Forensic_DeepDive_N1_N6_TEST_ONLY_v1.txt
+             (sha256 45c02564ab791e615c1549663116ed97aebea7d20b98fdea2115ec6da1398576)
+             V3_Semantic_Contract_Audit_Marriage_Children_TEST_ONLY_v1.txt
+             (sha256 50b01ffcf9ae5f025011d24c49410f0ed01d7f5376f0f1d0085205b1d6c1f286)
+             Couple_Shared_Event_Evidence_Matrix_DESIGN_REVIEW_TEST_ONLY_v1.txt
+             V3_Owen_Validation_V2_YearSnapshot_Probe_Output_TEST_ONLY_v1.txt
+SAFETY:      NO CODE CHANGE / NO TEST CHANGE / NO DATA CHANGE / NO THRESHOLD /
+             NO CALIBRATION / NO N1 / NO N2 / NO DomainMapper / NO V3Core /
+             NO Snapshot / NO Adapter / NO UI / NO registry / NO relabel /
+             NO new probe / NO V3 rerun / NO implementation / NO commit / NO push
+EPISTEMIC:   本报告禁止使用 hit/miss/true positive/false positive/accuracy/
+             prediction success/prediction failure/winner/best/most accurate。
+             禁止由 Owen/Jassica 历史事件反推 V3 应有规则。
+             状态词表 = COVERED / PARTIAL / ABSENT / NOT TRACEABLE /
+             CONVENTION-DEPENDENT（架构覆盖状态，非准确率评价）。
+================================================================================
+
+§0 EXECUTIVE SUMMARY
+================================================================================
+
+核心结论一句话：Frozen V3 是一座「结构状态观测站」（structural-state
+observatory），不是「人生事件观测站」（life-event observatory）。它对 15 类
+干支结构（冲合刑害破、天克地冲、反吟伏吟、伤官见官等）在 Year/Month/Day 三层
+的激活、方向、形态、量级具有完整、独立、可追溯的观察能力；但它对任何具体
+人生事件（结婚/生育/买房/融资/丧亲/企业成败……）均不存在显式 event detector
+或 event semantic。事件语义在整条链上任何一层都不存在——因此不存在
+「信号产生后被丢失」的事件级问题；存在的是「事件语义从未进入架构」的问题。
+
+三问回答：
+
+Q1（V3 已经能表达什么）：
+  a) 15 类 InteractionKind 的结构检测（PipelineV2Types.swift L336-374），
+     经 V2 detector 只读复用进入 V3（V3CoreTypes.swift L152-161）。
+  b) 十神→候选域 5 组映射 + 宫位→候选域 4 槽位映射（DomainMapper.swift
+     L130-166）。这是 STRUCTURAL DOMAIN ATTRIBUTION，不是 event detection。
+  c) 域级 N1（activation/direction/confidenceShape，九域恒产出、域间零桥接，
+     V3N1Semantics.swift L41/L77/L229）与域级 N2 五档量级
+     （quiet/low/moderate/high/extreme；liuHe/stemWuHe excluded）。
+  d) Year/Month/Day 三层独立评估（Unified Core，V3CoreTypes.swift L26-35；
+     A1 锚规则 V3AnchorAndFamilyRules.swift L25-31）。
+  e) 年层确定性派生事实 R-1~R-4 + R-6（YearV3Snapshot.swift L3-54），
+     快照完整保留 year evaluation + 12×month evaluation。
+  f) 三层 UI 呈现（Today/Monthly/Annual Presentation Builder）。
+
+Q2（理论上应能表达、但当前架构没有表达什么）：
+  a) 全部事件级语义：marriage / wedding / divorce / childbirth / property /
+     financing / bereavement / business lifecycle / relocation / surgery 等
+     ——Detector 层 ABSENT（§4）。
+  b) 神煞族输入：红鸾/天喜/桃花/驿马/空亡/纳音——V3 输入层 ABSENT
+     （§3；EventPriority P6 通道在 mapEvent L790 guard 返回空）。
+  c) 三合/半合：lattice 登记为 inertNoV2Kind——V2 无对应 InteractionKind
+     （V3CoreTypes.swift L133-137）。
+  d) travel 域的十神通道：travel 仅由 natalYear 槽位承载
+     （DomainMapper.swift L163），无任何十神映射到 travel。
+  e) quiet(P) 域的合绊信息在 N2 量级上按冻结语义被排除
+     （liuHe/stemWuHe excluded kind）——量级视角的 by-design 表达空缺。
+
+Q3（已产生 structural signal、但在哪一层未被继续观察/展示）：
+  a) R-6 temporalFacts 中 peakLevel=moderate 的事实存在于 Snapshot
+     （存在门 peakLevel != .quiet），但展示门
+     temporalPresentationLevels={high,extreme}（YearV3Contract L71）使其
+     不进入 M5 WHEN 呈现——GAP-G（数据保留、呈现过滤）。
+  b) R-3 focus 超 3 域 / R-4 watch 超 2 域时 overflow 保留为事实但不出现在
+     主呈现（YearV3Snapshot.swift L29-34, L141-145）——GAP-G（容量过滤，
+     非数据丢失）。
+  c) DomainMapper 归因成功但落域为 quiet 的结构信号（尤其合绊类）：
+     N2 量级不缩放 excluded kind，域状态以 quiet(P) 呈现——观察者为
+     「无信号」；族信息仍可从 N1 family count 观察（quiet(A) 与 quiet(P)
+     区分，§7）。
+  d) 未发现「V3Core 产生 signal → Snapshot 丢弃」的链路：Snapshot
+     逐字保留 year + 12×month evaluations（§9）。
+
+================================================================================
+§1 AUDIT SCOPE / SAFETY BOUNDARY
+================================================================================
+
+1.1 审计对象（Frozen V3 链路五层）：
+  L1 Input      : NatalState（chart/yongShen/natalInteractions）+ 岁运柱
+  L2 Detection  : V2 detector 只读复用 → V3AnchorRule → Family/Primary
+  L3 Semantics  : DomainMapper（归因+效价）→ V3Core.evaluate（N1/N2）
+  L4 Snapshot   : YearV3Snapshot（R-1~R-6 派生）+ Today/Monthly presentation
+  L5 UI         : AnnualPresentationAdapter / AnnualM5Section /
+                  AnnualM5AISnapshot / TodayV3PresentationBuilder /
+                  MonthlyV3PresentationBuilder
+
+1.2 绝对边界：
+  - READ-ONLY / DESIGN / FORENSIC；发现 gap 一律登记为 GAP / NOT
+    IMPLEMENTED / NOT TRACEABLE / OUT OF CURRENT SCOPE，不修。
+  - 认知方向唯一：八字理论/传统事件语义 → 候选 Event Knowledge Map →
+    Frozen V3 当前架构 → 逐层对账 → Capability/Gap。
+  - §13 历史证据交叉引用只作为 existing observational examples，置于报告
+    最后部分（除 §14-§19 的综合判断外），不参与能力定义。
+
+1.3 语言纪律（§19 REQUIRED LANGUAGE 执行版）：
+  - "V3 can detect" 仅用于存在显式 detector/semantic contract 证据处；
+  - "V3 can observe structural signal" 用于仅有结构归因与域状态处；
+  - "V3 does not express event semantics" 用于域存在但无事件语义处；
+  - "NOT TRACEABLE" 用于代码/现有证据无法证明处；
+  - 不因 grep 不到 token 而声称「理论不存在」，只表述为
+    "Frozen V3 codebase does not contain explicit semantic expression for X"。
+
+================================================================================
+§2 BAZI EVENT KNOWLEDGE MAP（FIRST DELIVERABLE）
+================================================================================
+
+字段缩写：Sem=传统语义 / P=Primary Premises / S=Secondary / T=Timing Layer /
+Act=Typical Activation / ED=Exact-Date Req / MP=Month-Level Potential /
+Spec=Event Specificity / Sch=School Dependence / Conf=Confidence / N=Notes。
+Timing Layer 取值：N=Natal / DY=DaYun / Y=Year / M=Month / D=Day。
+Spec 取值：BT=Broad Theme / EL=Event-like / EE=Exact Event。
+
+── A. Relationship ──────────────────────────────────────────────────────────
+A1 恋爱开始      Sem: 桃花/红鸾动、配偶星逢引        P: 配偶星(男财/女官杀)
+  逢岁运引动+日支逢合冲        S: 神煞(桃花/红鸾)        T: Y/M        Act:
+  岁运引动配偶星与日支        ED: 月        MP: 高        Spec: BT
+  Sch: 高(神煞取舍+男财女官性别特化)        Conf: MEDIUM
+  N: 传统以「动象」论始，无统一成婚式判据
+A2 关系确立      Sem: 配偶星得用/日支合动            P: 同 A1 + 合为 resolving
+  S: 六合/天干五合为引        T: Y/M/D        Act: 岁运合动        ED: 月
+  MP: 高        Spec: BT        Sch: 中        Conf: LOW-MEDIUM
+  N: 「确立」为现代语义，传统无对应判据
+A3 结婚          Sem: 配偶星合入/日支六合/红鸾天喜    P: 配偶星透干逢合 + 日支
+  合动        S: 大运定向、神煞佐证        T: DY/Y/M/D        Act: 岁运合动
+  配偶星与日支        ED: 月-日        MP: 高        Spec: EL
+  Sch: 极高        Conf: MEDIUM
+  N: 流派分歧集中于神煞权重与合的解读；对照系：MarriagePredictionEngine
+  V425（护身符/MarriagePredictionEngine.swift）自建权重体系即流派选择之一例
+A4 婚礼(仪式)    Sem: 同 A3 更细日期论              P: 同 A3        S: 择日体系
+  T: M/D        Act: 同 A3        ED: 日        MP: 中        Spec: EE
+  Sch: 极高        Conf: LOW-MEDIUM
+  N: 仪式日期属择日学，与命理动象不同体系
+A5 配偶关系变化  Sem: 日支冲刑害、配偶星受冲         P: 日支逢冲/刑/害 + 配偶星
+  受克        S: 天克地冲加重        T: Y/M        Act: 冲刑害引动
+  ED: 月        MP: 中        Spec: BT→EL        Sch: 中        Conf: MEDIUM
+A6 分居          Sem: 日支冲+配偶星伤               P: 同 A5        S: 伏吟
+  (反复)        T: Y/M        Act: 同 A5        ED: 月        MP: 中
+  Spec: BT        Sch: 高        Conf: LOW
+A7 分手          Sem: 同 A5/A6                       P: 同 A5        S: —
+  T: Y/M        Act: 同 A5        ED: 月        MP: 中        Spec: BT
+  Sch: 高        Conf: LOW
+  N: 分手/分居/离婚三者传统判据无系统区分
+A8 离婚          Sem: 婚姻宫大动+配偶星败            P: 日支大动(冲/合去)+
+  配偶星受制        S: 岁运并临等        T: DY/Y/M        Act: 同上
+  ED: 月        MP: 中        Spec: EL        Sch: 高        Conf: LOW
+A9 再婚          Sem: 无统一论法                    P: 流派各异(有从官杀重论、
+  有从合多论)        S: —        T: DY/Y        Act: —        ED: —
+  MP: —        Spec: BT        Sch: 极高        Conf: LOW
+  N: CONVENTION-DEPENDENT 原型
+
+── B. Children ──────────────────────────────────────────────────────────────
+B1 怀孕(受孕)    Sem: 食伤逢生(女命)/官杀动(女命夫   P: 食伤旺动+时柱引动
+  星)+时柱动        S: 天喜        T: Y/M/D        Act: 食伤与时柱被岁运
+  引动        ED: 月        MP: 中        Spec: BT        Sch: 中
+  Conf: MEDIUM
+B2 分娩          Sem: 时柱引动+食伤应期              P: 同 B1        S: —
+  T: M/D        Act: 同 B1        ED: 日        MP: 高        Spec: EL
+  Sch: 中        Conf: MEDIUM
+  N: 传统以「应期」论产期，精度主张不一
+B3 孩子出生      Sem: 同 B2                         P: 同 B1        S: —
+  T: M/D        Act: 同 B1        ED: 日        MP: 高        Spec: EL
+  Sch: 中        Conf: MEDIUM
+B4 子女重大事件  Sem: 时柱+食伤受冲克               P: 食伤/时柱逢冲刑
+  S: —        T: Y/M        Act: 冲刑引动        ED: 月        MP: 中
+  Spec: BT        Sch: 中        Conf: LOW
+B5 子女关系变化  Sem: 食伤与日主关系变化             P: 食伤效价反转
+  S: —        T: Y/M        Act: —        ED: —        MP: —
+  Spec: BT        Sch: 高        Conf: LOW
+
+── C. Parents / Family ──────────────────────────────────────────────────────
+C1 父亲重大事件  Sem: 偏财为父星                    P: 偏财受冲克/入墓
+  S: 年月柱动        T: Y/M        Act: 岁运冲合偏财
+  ED: 月        MP: 中        Spec: BT        Sch: 中        Conf: MEDIUM
+C2 母亲重大事件  Sem: 正印为母星                    P: 印星受冲克/入墓
+  S: 年月柱动        T: Y/M        Act: 岁运冲合印星
+  ED: 月        MP: 中        Spec: BT        Sch: 中        Conf: MEDIUM
+C3 长辈重大事件  Sem: 印星/年柱祖上宫               P: 印星或年柱大动
+  S: —        T: Y/M        Act: —        ED: —        MP: —
+  Spec: BT        Sch: 中        Conf: LOW-MEDIUM
+C4 丧亲          Sem: 父母星入墓/受冲+吊丧神煞       P: 偏财/印星受大冲克
+  S: 白虎/丧门等神煞(流派)        T: Y/M        Act: 冲克+神煞并见
+  ED: 月-日        MP: 中        Spec: EL        Sch: 极高        Conf: LOW
+  N: 神煞流派差异极大；结构侧仅能观察「印/财受冲克」的域状态
+C5 家庭结构变化  Sem: 月柱父母兄弟宫动               P: 月柱逢冲合
+  S: 比劫动        T: Y/M        Act: —        ED: 月        MP: 中
+  Spec: BT        Sch: 高        Conf: LOW
+
+── D. Wealth / Finance ──────────────────────────────────────────────────────
+D1 收入增加      Sem: 财星得地逢生                  P: 财星旺动且为用
+  S: 食伤生财        T: DY/Y/M        Act: 财星被岁运引动
+  ED: 月        MP: 中        Spec: BT        Sch: 低        Conf: MEDIUM
+D2 收入下降      Sem: 财星受冲克                    P: 财星被冲克
+  S: —        T: Y/M        Act: 同上        ED: 月        MP: 中
+  Spec: BT        Sch: 低        Conf: MEDIUM
+D3 财富积累      Sem: 财库/财星成局                 P: 财星成局或财库逢冲开
+  S: —        T: DY/Y        Act: —        ED: —        MP: —
+  Spec: BT        Sch: 中        Conf: LOW-MEDIUM
+D4 投资          Sem: 无专门结构                    P: 泛化为财+比劫(合伙)
+  S: —        T: —        Act: —        ED: —        MP: —
+  Spec: BT        Sch: 高        Conf: LOW
+D5 融资/创业融资 Sem: 无专门结构                    P: 泛化为印(文书)+财
+  (资金)+食伤(项目)        S: —        T: —        Act: —        ED: —
+  MP: —        Spec: BT        Sch: 极高        Conf: LOW
+  N: CONVENTION-DEPENDENT；financing ≠ personal wealth（任务书明令不合并）
+D6 破财          Sem: 比劫夺财/财星受冲             P: 比劫旺动夺财
+  S: 财星入墓        T: Y/M        Act: 比劫被引动
+  ED: 月        MP: 中        Spec: BT→EL        Sch: 低-中        Conf: MEDIUM-HIGH
+D7 债务          Sem: 泛化为比劫/财弱               P: 同 D6        S: —
+  T: —        Act: —        ED: —        MP: —        Spec: BT
+  Sch: 高        Conf: LOW
+D8 大额资金流动  Sem: 财星冲合动                    P: 财星逢冲合
+  S: —        T: Y/M        Act: —        ED: 月        MP: 中
+  Spec: BT        Sch: 中        Conf: LOW-MEDIUM
+N: property transaction ≠ wealth increase；company revenue ≠ profit；
+   financing ≠ personal wealth——三者传统判据亦不合并，本表保持分离。
+
+── E. Career / Business ─────────────────────────────────────────────────────
+E1 入职          Sem: 官星动/印星(文书)             P: 官星或印星被岁运引动
+  S: —        T: Y/M        Act: 官印引动        ED: 月        MP: 中
+  Spec: BT        Sch: 低        Conf: MEDIUM
+E2 换工作        Sem: 官星冲合+驿马                 P: 官星逢冲合
+  S: 驿马(神煞,流派)        T: Y/M        Act: —        ED: 月        MP: 中
+  Spec: BT        Sch: 中        Conf: MEDIUM
+E3 升职          Sem: 官星旺动得用                  P: 官星为用逢生
+  S: 印随官动        T: DY/Y/M        Act: —        ED: 月        MP: 中
+  Spec: BT        Sch: 低        Conf: MEDIUM
+E4 降职          Sem: 官杀克身                      P: 官杀为忌攻身
+  S: —        T: Y/M        Act: —        ED: 月        MP: 中
+  Spec: BT        Sch: 低        Conf: MEDIUM
+E5 创业          Sem: 食伤生财+比劫并肩             P: 食伤旺+财星通根
+  S: 比劫(合伙)        T: DY/Y        Act: —        ED: 月        MP: 低-中
+  Spec: BT        Sch: 高        Conf: LOW-MEDIUM
+E6 公司成立      Sem: 同 E5                         P: 同 E5        S: —
+  T: Y/M        Act: —        ED: 月        MP: 低        Spec: EL
+  Sch: 高        Conf: LOW
+E7 公司扩张      Sem: 财官同动                      P: 泛化        S: —
+  T: DY/Y        Act: —        ED: —        MP: —        Spec: BT
+  Sch: 高        Conf: LOW
+E8 公司经营困难  Sem: 官杀混杂/食伤受制             P: 泛化        S: —
+  T: DY/Y        Act: —        ED: —        MP: —        Spec: BT
+  Sch: 高        Conf: LOW
+E9 项目启动/延误/上线/终止  Sem: 无传统结构         P: 无        S: —
+  T: —        Act: —        ED: —        MP: —        Spec: —
+  Sch: —        Conf: LOW
+  N: 现代组织语义，传统命理无对应判据——CONVENTION-DEPENDENT
+E10 企业失败     Sem: 官杀攻身+比劫夺财并见         P: 泛化        S: —
+  T: DY/Y        Act: —        ED: —        MP: —        Spec: BT
+  Sch: 高        Conf: LOW
+
+── F. Property ──────────────────────────────────────────────────────────────
+F1 买房          Sem: 印星(文书/不动产)+财星(支出)   P: 印星逢生/财印交动
+  S: 流派或加入田宅宫论        T: Y/M        Act: 印财引动
+  ED: 月        MP: 中        Spec: BT→EL        Sch: 高        Conf: LOW-MEDIUM
+  N: 印星同时主学识/文书/长辈——语义多歧是流派争议核心
+F2 卖房          Sem: 印星失/财星得                 P: 印星受冲+财星动
+  S: —        T: Y/M        Act: —        ED: 月        MP: 中
+  Spec: BT        Sch: 高        Conf: LOW
+F3 搬家          Sem: 驿马动/日支动                 P: 驿马(神煞)或日支逢冲
+  S: —        T: Y/M        Act: —        ED: 月        MP: 中
+  Spec: BT        Sch: 高        Conf: LOW-MEDIUM
+F4 房产投资      Sem: 无专门结构                    P: 泛化 F1+D4
+  S: —        T: —        Act: —        ED: —        MP: —
+  Spec: BT        Sch: 极高        Conf: LOW
+F5 房产重大变化  Sem: 印星大动                      P: 泛化 F1/F2
+  S: —        T: Y        Act: —        ED: —        MP: —
+  Spec: BT        Sch: 高        Conf: LOW
+
+── G. Relocation / Travel ───────────────────────────────────────────────────
+G1 长途旅行      Sem: 驿马星动                      P: 驿马逢冲引动
+  S: —        T: Y/M/D        Act: 驿马被冲        ED: 日        MP: 中
+  Spec: EL        Sch: 极高(神煞)        Conf: MEDIUM(采驿马者)
+  N: 纯神煞论，流派取舍决定存在性
+G2 出国          Sem: 驿马+远方之象                 P: 驿马+年柱(根基)动
+  S: —        T: DY/Y        Act: —        ED: —        MP: —
+  Spec: BT        Sch: 极高        Conf: LOW-MEDIUM
+G3 移民          Sem: 驿马+印(证件)+根基变          P: 泛化        S: —
+  T: DY/Y        Act: —        ED: —        MP: —        Spec: BT
+  Sch: 极高        Conf: LOW
+  N: CONVENTION-DEPENDENT
+G4 跨城市迁移    Sem: 驿马泛化                      P: 驿马/日支动
+  S: —        T: Y/M        Act: —        ED: 月        MP: 中
+  Spec: BT        Sch: 高        Conf: LOW-MEDIUM
+G5 长期居住地变化 Sem: 同 G4                        P: 同 G4        S: —
+  T: DY/Y        Act: —        ED: —        MP: —        Spec: BT
+  Sch: 高        Conf: LOW
+
+── H. Education ─────────────────────────────────────────────────────────────
+H1 入学          Sem: 印星得用                      P: 印星旺动为用
+  S: —        T: Y/M        Act: 印星引动        ED: 月        MP: 中
+  Spec: BT        Sch: 低        Conf: MEDIUM
+H2 毕业          Sem: 印星+食伤(成果外显)           P: 印食同动
+  S: —        T: Y/M        Act: —        ED: 月        MP: 中
+  Spec: BT        Sch: 低-中        Conf: MEDIUM
+H3 考试          Sem: 印(发挥)+食伤(表现)           P: 食伤旺为用
+  S: 印星护持        T: Y/M/D        Act: 食伤引动
+  ED: 日(考日)        MP: 高        Spec: EL        Sch: 低-中        Conf: MEDIUM
+H4 学位          Sem: 印星                          P: 同 H1        S: —
+  T: Y        Act: —        ED: —        MP: —        Spec: BT
+  Sch: 低        Conf: MEDIUM
+H5 专业变化      Sem: 无专门结构                    P: 泛化        S: —
+  T: —        Act: —        ED: —        MP: —        Spec: BT
+  Sch: 高        Conf: LOW
+
+── I. Legal / Social ────────────────────────────────────────────────────────
+I1 法律纠纷      Sem: 官杀克身/伤官见官             P: 伤官见官结构成局
+  S: 官杀混杂        T: Y/M        Act: 伤官与官星并透逢引
+  ED: 月        MP: 中        Spec: BT→EL        Sch: 低        Conf: MEDIUM
+I2 合同          Sem: 印星(文书)                    P: 印星引动
+  S: —        T: Y/M        Act: —        ED: 月        MP: 中
+  Spec: BT        Sch: 中        Conf: LOW-MEDIUM
+I3 诉讼          Sem: 伤官见官/官杀攻身             P: 同 I1
+  S: —        T: Y/M/D        Act: —        ED: 日(庭审)        MP: 中
+  Spec: EL        Sch: 低        Conf: MEDIUM
+I4 官非          Sem: 同 I3                         P: 同 I1        S: —
+  T: Y/M        Act: —        ED: 月        MP: 中        Spec: EL
+  Sch: 低        Conf: MEDIUM
+I5 社会身份变化  Sem: 官印相生等泛化                P: 泛化        S: —
+  T: DY/Y        Act: —        ED: —        MP: —        Spec: BT
+  Sch: 高        Conf: LOW
+
+── J. Health ────────────────────────────────────────────────────────────────
+J1 健康波动      Sem: 日主受克/忌神旺动             P: 日主根气受冲克
+  S: 宫位(日支=自身)        T: Y/M/D        Act: 忌神引动
+  ED: 月        MP: 中        Spec: BT        Sch: 中        Conf: MEDIUM
+  N: 仅为结构信号，不得等同医学诊断（任务书明令）
+J2 疾病          Sem: 五行失衡+对应宫位脏腑论       P: 原局+岁运五行偏枯
+  S: 调候失宜        T: DY/Y/M        Act: —        ED: —        MP: —
+  Spec: BT        Sch: 极高(脏腑对应差异大)        Conf: LOW
+J3 慢性问题      Sem: 原局久病之象                  P: 原局结构        S: —
+  T: N/DY        Act: —        ED: —        MP: —        Spec: BT
+  Sch: 高        Conf: LOW
+J4 手术          Sem: 官杀(刀刃)+伤官(开放)         P: 泛化        S: —
+  T: Y/M/D        Act: —        ED: 日        MP: 中        Spec: EL
+  Sch: 极高        Conf: LOW
+J5 住院          Sem: 无专门结构                    P: 泛化 J1        S: —
+  T: —        Act: —        ED: —        MP: —        Spec: BT
+  Sch: 高        Conf: LOW
+J6 意外          Sem: 冲刑害并见                    P: 多结构同发(天克地冲/
+  三刑/六冲)        S: —        T: Y/M/D        Act: 结构齐发
+  ED: 日        MP: 中        Spec: BT        Sch: 中        Conf: MEDIUM
+J7 重大事故      Sem: 天克地冲+三刑齐发             P: 同 J6 强度更高
+  S: —        T: Y/M/D        Act: —        ED: 日        MP: 中
+  Spec: EL        Sch: 中        Conf: LOW-MEDIUM
+
+── K. Major Life Events ─────────────────────────────────────────────────────
+K1 重大项目      Sem: 财官印食综合论                P: 多域结构同发
+  S: —        T: DY/Y        Act: —        ED: —        MP: —
+  Spec: BT        Sch: 高        Conf: LOW
+K2 重大关系变化  Sem: 夫妻宫+配偶星大动             P: 同 A3/A5 强度高
+  S: —        T: DY/Y/M        Act: —        ED: —        MP: —
+  Spec: BT        Sch: 中        Conf: MEDIUM
+K3 家庭重大变化  Sem: 月柱/年柱大动                 P: 父母宫/祖上宫大动
+  S: —        T: DY/Y        Act: —        ED: —        MP: —
+  Spec: BT        Sch: 高        Conf: LOW-MEDIUM
+K4 长期事业周期  Sem: 大运换运(十年一换)            P: 大运干支交替
+  变化        S: 换运交接年        T: DY        Act: 换运
+  ED: 年        MP: —        Spec: BT        Sch: 低        Conf: MEDIUM-HIGH
+K5 人生阶段转换  Sem: 岁运并临/换运等泛化           P: 泛化        S: —
+  T: DY/Y        Act: —        ED: —        MP: —        Spec: BT
+  Sch: 极高        Conf: LOW
+  N: CONVENTION-DEPENDENT
+
+§2.1 Structural Theme 与 Life Event 的区分声明（任务书 §5 执行）：
+本表所有行的事件名均为 Life Event 命名；其 P/S 列所引均为 Structural Theme
+（财星/官杀/食伤/印星/比劫/日支/时柱/合冲刑害/驿马等）。表中不存在任何
+「theme 出现即事件成立」的判定；Spec 列已逐行标注事件度。
+
+================================================================================
+§3 FROZEN V3 INPUT ARCHITECTURE（SECOND DELIVERABLE）
+================================================================================
+
+3.1 NatalState 组成（护身符/NatalState.swift L18-28, struct NatalState）：
+  - generatedAt: Date
+  - chart: ChartFacts                （静态事实：含 dayMaster/pattern/strength）
+  - yongShen: YongShenProfile        （用神档案：usefulGods/tabooGods/仲裁理由）
+  - natalInteractions: [AggregatedInteractionEvent]
+  构建链（同文件 L40-51, PipelineV2.buildNatalState）：
+    Pillars → ChartAnalysisEngine.analyze（复用 V2 强弱/格局 + BaziCore
+    藏干/调候）→ InteractionAnalyzer.detectNatal（全量交互）→
+    EventAggregator.aggregate（去重/父子/矛盾保留）→ YongShenResolver.resolve
+    （问题驱动取用仲裁）→ NatalState。
+  M1 边界（L8-10）：NatalState 只承载静态事实，不含大运/流年动态层，不产生
+  分数或吉凶结论。
+
+3.2 核心输入逐项审计表（「不要假设 V3 有某个输入。必须通过代码确认」）：
+  Input                     | 进入 V3? | 证据（File/Line/Symbol）
+  --------------------------+----------+--------------------------------------
+  NatalState                | YES      | V3Core.evaluate(natal:) 签名
+                            |          | （YearV3Snapshot.swift L474 Builder
+                            |          |  调用；V3CoreTypes unified core）
+  Day Master                | YES      | NatalState.chart.dayMaster；mapEvent
+                            |          | 证据串引用（DomainMapper L802）
+  Month Command(月令)       | PARTIAL  | 月柱槽位存在（PillarSlot.natalMonth,
+                            |          | PipelineV2Types L397）；「提纲」仅见
+                            |          | DomainMapper L161 注释；V3 层无独立
+                            |          | 月令藏干透出判据——超出注释的语义
+                            |          | NOT TRACEABLE
+  Ten Gods                  | YES      | DomainMapper.theme(forTenGod:) L130；
+                            |          | 十神分类由上游 ChartAnalysisEngine
+                            |          | 预计算后经 NatalState 进入
+  Hidden Stems(藏干)        | PARTIAL* | 上游 BaziCore 计算藏干
+                            |          | （NatalState.swift L35 注释）；V3*.swift
+                            |          | grep 藏干|hiddenStem = 0 命中（2026-09-27
+                            |          | 审计执行）。V3 层不直接表达藏干；
+                            |          | 藏干 influence 仅以 pattern/strength/
+                            |          | yongShen 等上游预计算字段的不透明形式
+                            |          | 进入。*=上游存在、V3 层无显式语义
+  Branches(地支)            | YES      | InteractionKind 全部支类检测
+                            |          | （PipelineV2Types L336-374）
+  Stem relations(天干关系)  | PARTIAL  | 仅有 stemWuHe(五合)/stemChong(四冲)
+                            |          | 两种（PipelineV2Types L346-347）；无
+                            |            生/克独立 kind（生克经 TenGod 载体）
+  Branch relations          | YES      | 六冲/六合/六害/相破/三刑(两种)/两支
+                            |          | 相刑/自刑/子卯刑（L337-345）
+  Natal Day Branch          | YES      | PillarSlot.natalDay + DomainMapper
+                            |          | domains(forSlot:) L160
+  Natal Hour Branch         | YES      | PillarSlot.natalHour + L162
+  DaYun                     | YES      | PillarSlot.daYun（L400）；V3AnchorRule
+                            |          | layer L38；V3Core.evaluate(natal:
+                            |          | daYun:date:)（YearV3Snapshot L474）
+  Year(流年)                | YES      | PillarSlot.liuNian（L401）→ layer
+                            |          | .annual（V3AnchorRule L39）
+  Month(流月)               | YES      | PillarSlot.liuYue（L402）→ .monthly
+                            |          | （L40）；月锚 15 日评估
+                            |          | （YearV3Snapshot L486-498）
+  Day(流日)                 | YES      | PillarSlot.liuRi（L403）→ .daily
+                            |          | （L41）；day 视图评估
+  relevant interactions     | YES      | V3EventRecord/V3DetectionProvenance
+                            |          | （V3CoreTypes L152-189）
+  CongShi / pattern         | YES      | chart.pattern 进入证据串
+                            |          | （DomainMapper L802）；用忌仲裁
+                            |          | YongShenResolver（NatalState L44）
+  XiShen/JiShen(神煞喜忌)   | NO       | Frozen V3 codebase does not contain
+                            |          | explicit semantic expression for
+                            |          | XiShen/JiShen 神煞。V3*.swift grep
+                            |          | 神煞|shenSha = 0 命中；链上唯一喜忌
+                            |          | authority = 用神/忌神
+                            |          | （V3CoreTypes L61-69：sign 来源
+                            |          | rule-chong-xi-ji，只依赖 godRole）
+  神煞族(红鸾/天喜/桃花/    | NO       | 同上；InteractionKind 无对应成员；
+  驿马/空亡/纳音)           |          | grep 驿马|纳音 = 0 命中
+  三合/半合                 | NO       | lattice 登记 inertNoV2Kind
+                            |          | （V3CoreTypes L133-137：V2 无
+                            |          | InteractionKind 可表达半合）
+
+3.3 结论：
+  - V3 输入集 = 四柱静态事实 + 用忌档案 + 15 类交互 + 大运/流年/流月/流日柱。
+  - 藏干/神煞/驿马/纳音在 V3 层无显式语义表达（上游部分存在但不透传语义）。
+  - 十神生克不以独立 InteractionKind 存在，仅以 TenGod theme 载体参与归因。
+
+================================================================================
+§4 DETECTOR / SEMANTIC CONTRACT AUDIT（THIRD DELIVERABLE）
+================================================================================
+
+4.1 V3 检测词表全量（= 15 InteractionKind，PipelineV2Types.swift L336-374）：
+  sanXingWuEn(寅巳申三刑, P1) / sanXingShiShi(丑戌未三刑, P1) /
+  pairwiseXing(两支相刑) / ziMaoXing(子卯刑) / ziXing(自刑) /
+  liuChong(六冲, P2) / liuHe(六合, P4) / liuHai(六害, P3) / xiangPo(相破, P3) /
+  stemWuHe(天干五合, P4) / stemChong(天干四冲) / tianKeDiChong(天克地冲, P1) /
+  fanYin(反吟, P2) / fuYin(伏吟, P3) / shangGuanJianGuan(伤官见官, P1)。
+  EventPriority P6 = 神煞级辅助（L387 注释「M2 神煞信号放大用」）——但 V3
+  mapEvent 对 P6 一律返回空（DomainMapper L789-790 guard）。
+
+4.2 detector ≠ domain label 的机械判据执行：
+  V3 中从 TenGod/slot 到 FortuneDomain 的全部映射
+  （DomainMapper.theme(forTenGod:) L130-150 / domains(forSlot:) L157-166）
+  均为 STRUCTURAL DOMAIN ATTRIBUTION：其输出是候选域集合，「是否成事件、
+  顺逆如何由喜忌 + 触发 + 三轨评估决定」（L122 注释原文）。
+  因此本审计的判定：
+    - V3 does not contain event-level detectors。
+    - V3 can detect（显式 detector 证据）：15 类结构交互的激活
+      （V2 detector 全量检测、EventAggregator 关系化，PipelineV2Types
+      L333-380 注释「全量检测，不抑制」）。
+    - V3 can observe structural signal：域级状态（N1/N2）。
+    - V3 does not express event semantics：marriage/wedding/divorce/
+      childbirth/pregnancy/property/financing/investment/debt/bereavement/
+      company founding/expansion/failure/project lifecycle/relocation/
+      immigration/surgery/hospitalization/major-accident 等全部事件语义。
+      （grep 佐证：护身符/V3*.swift 与 DomainMapper.swift 中上述事件 token
+      无任何代码级语义绑定；对照词表仅 §4.1 的 15 kind + 5 theme 组 +
+      4 slot 组。）
+
+4.3 婚姻对照系（非 V3 一部分，仅登记架构事实）：
+  MarriagePredictionEngine V425（护身符/MarriagePredictionEngine.swift）拥有
+  自成体系的婚姻事件判定（配偶星透干+动宫/六合/天干五合/三刑/六害/暗合/
+  红鸾天喜/孤辰寡宿/阴差阳错等 + 数值 WeightConfig + 阈值），与 Frozen V3
+  零 authority 共享（上游审计 V3_Semantic_Contract_Audit_Marriage_Children_
+  TEST_ONLY_v1.txt §2 已证：grep 零命中 + 主入口关闭 useful/taboo 传参）。
+  该模块的存在不改变 V3 检测词表；登记为 OUT OF CURRENT SCOPE（独立轨道）。
+
+================================================================================
+§5 DOMAINMAPPER AUDIT（FOURTH DELIVERABLE）
+================================================================================
+
+5.1 十神→候选域全表（DomainMapper.swift L130-150, theme(forTenGod:)）：
+  正财/偏财 → [.wealth, .relationship]   themes: 资财/妻缘/务实（财主妻财）
+  正官/七杀 → [.career, .children, .legalSocial]
+                                          themes: 权力/规则/竞争/压力
+                                          （官杀主夫禄/子星/官非）
+  正印/偏印 → [.study, .family, .health] themes: 学识/庇护/长辈
+                                          （印主学识/长辈/庇护）
+  食神/伤官 → [.children, .study, .wealth]
+                                          themes: 才艺/子女/表达/生发
+                                          （食伤主子女/才艺/生财之源）
+  比肩/劫财 → [.family, .legalSocial]    themes: 同辈/争竞/自我
+                                          （比劫主同辈/争端）
+  default   → []（无映射）
+  注（L126-129 原文）：「官杀为男命子星、食伤为女命子星的性别特化留给后续
+  层；M2 采用通用映射（官杀/食伤皆入 children）」——性别特化 = GAP（未实现）。
+
+5.2 宫位→候选域全表（同文件 L157-166, domains(forSlot:)）：
+  natalDay   → [.relationship, .health]  （日支夫妻宫 + 日主自身）
+  natalMonth → [.family, .career]        （月柱父母/兄弟 + 提纲）
+  natalHour  → [.children]               （时柱子女宫）
+  natalYear  → [.family, .travel]        （年柱祖上 + 根基迁移）
+  外部层     → []（「外部层宫位由十神映射承载」L164 注释原文）
+
+5.3 归因唯一性/歧义矩阵（§8 问题 1-6 逐项回答）：
+  Q1 结构入口存在？    → 十神 5 组 + 槽位 4 组，见 5.1/5.2。
+  Q2 DomainMapper 归因存在？→ 存在，但为候选域（multi-candidate）。
+  Q3 归因到哪个域？    → 见 5.1/5.2；候选域是集合，非单值。
+  Q4 多候选域？        → 全部映射均为多候选（除 natalHour→[children] 单域）。
+  Q5 domain ambiguity？→ 结构性存在：一事件结构同时进入多个候选域
+     （如财星动同时入 wealth+relationship）。V3 处理方式 = AGG-3 每域独立
+     聚合、无跨域信息（V3N1Semantics.swift L229「每域独立、无跨域信息；
+     九域恒产出」）——不消歧，逐域独立观察。
+  Q6 被另一域吸收？    → 无吸收机制（零桥接）。但存在「同 theme 多语义」
+     现象：印星 theme（学识/庇护/长辈）同时支撑 study/family/health 三域，
+     传统上印星亦主文书/不动产——property 语义在 V3 中无表达（§4.2）；
+     这不是「被吸收」，而是「不存在 property 标签」。类似地：
+     travel 无十神通道（仅 natalYear 槽位）、无 property/financing/
+     company/bereavement 专属标签。
+
+5.4 mapEvent 主流程（DomainMapper.swift L787-817, mapEvent(_:context:)）：
+  1) P6 guard：`guard event.priority != .p6 else { return [] }`（L790）——
+     神煞级不独立制造核心事件。
+  2) isResolving = (kind == .liuHe || .stemWuHe)（L793）——仅两类为合绊。
+  3) affectedTargets → 空 则无信号（L795-796）。
+  4) natalEvidence 证据串（L802-804）：日主 + pattern + strength + 用神/
+     忌神元素（纯展示文本）。
+  5) 三轨评估：合类 assessCombination（五态）/ 冲类 assessConflict
+     （三阶段）（L813-816）。
+  6) 每域聚合 bestByDomain——「取该域内 activation 最大者」（L809 注释）。
+  7) ValenceResult（L171-176）：factor [0,1] + sign(+1/-1) + label
+     （"用神受冲"/"忌神被冲去"等）+ overlap（一神多职折损 confidence）。
+     sign 语义冻结于 V3CoreTypes.swift L61-69（rule-chong-xi-ji；只依赖
+     godRole，与数值无关）。
+
+5.5 §8 判定：DomainMapper 是唯一 Domain 归因层；其表达力上界 =
+  {15 kind} × {5 theme 组 ∪ 4 slot 组} × {合/冲效价} × {9 域}。
+  凡事件语义需要超出该笛卡尔积的表达（如 property、financing、婚礼、
+  丧亲、企业成败），DomainMapper 不具备——GAP-D/C 联合登记。
+
+================================================================================
+§6 N1 OBSERVABILITY AUDIT（FIFTH DELIVERABLE 之 N1）
+================================================================================
+
+6.1 activation（ACT-2，V3N1Semantics.swift L41）：
+  quiet / singleFamily / multiFamily——按独立族计数（F1 familyID =
+  structureKind + canonical participating token set，V3CoreTypes L191-200）。
+  域可观察：有/无族、族数。
+6.2 direction（DIR-2）：
+  unknown（P(d)=∅）/ favorable / unfavorable / mixed；
+  authority = PRIMARY.directionChannel.semanticDirection；
+  sign 语义 = 用忌冲应（V3CoreTypes L61-69；DomainMapper L171-176）。
+  可观察：域级方向；不可观察：任何数值方向强度。
+6.3 confidenceShape（CONF-2）：
+  none / isolated / corroborated / broad / conflicted；
+  家族计数与 corroboration 由 ACT/CONF 两轨共同表达；
+  conflicted 保留矛盾（EventAggregator contradictoryWith 语义上游）。
+6.4 family count / corroboration / domain independence：
+  FAM-3（L77）；AGG-3（L229）：域内聚合、每域独立、无跨域信息、九域恒产出。
+  → domain independence 是冻结语义：任何「跨域事件」概念（如「同一天结婚
+  并买房」作为单一事件）在 V3 中不可表达——各域独立产生信号。
+6.5 N1 逐事件可观察性判定：
+  对 §2 表中任一事件，若其 Structural Premises 落入 5.1/5.2 映射集，
+  则该 premises 引发的 N1 状态可观察（ favorable/unfavorable + shape）；
+  若 premises 为神煞/藏干透出/三合等（§3.2 NO/PARTIAL 项），则 N1 无从
+  产生——该事件在 N1 层 ABSENT（源于 GAP-B 输入缺席）。
+6.6 unified core 硬边界：
+  Day/Month/Year 三视图共用同一 V3Core pipeline（V3CoreTypes L26-30：
+  「三视图共用同一套 V3Core pipeline，差异只经 V3EvaluationContext 表达
+  ——禁止 V3DailyEngine/V3MonthlyEngine/V3AnnualEngine」）。N1 语义
+  视图无关（viewKind 无感知）。
+
+================================================================================
+§7 N2 OBSERVABILITY AUDIT（FIFTH DELIVERABLE 之 N2）
+================================================================================
+
+7.1 五档 Magnitude：quiet / low / moderate / high / extreme。
+  定义（冻结）：= max(scale-eligible PRIMARY KindTier)；空集 → quiet。
+  provisionalKindTier 分级（Frozen N2 v0.3.1，上游审计已录）：
+    extreme: tianKeDiChong / sanXingWuEn
+    high:    sanXingShiShi / shangGuanJianGuan / fanYin / liuChong
+    moderate: stemChong / ziMaoXing / liuHai / pairwiseXing / ziXing
+    low:     fuYin / xiangPo
+    excluded: liuHe / stemWuHe（合绊类不入量级）
+7.2 双轨 quiet 区分（任务书 §9 明令）：
+  quiet(A) = coverage ABSENT——该域零 PRIMARY（无任何族触发）。
+  quiet(P) = coverage PRESENT——有 PRIMARY，但全部为 excluded kind
+  （仅合绊类）；量级按冻结语义不缩放 → 显示 quiet。
+  二者是不同架构状态：quiet(A) = 「无结构进入该域」；quiet(P) = 「结构
+  进入但为合绊类、量级通道不表达」。混同将丢失合绊可见性。
+  代码证据：excluded 集合见 N2 冻结规则（V3RuleTable 结构接口 +
+  provisionalKindTier 分级）；Snapshot 侧 quietDomains 定义
+  （YearV3Snapshot.swift L150「N2 quiet 域（固定域序; 含 excluded-only
+  resolving 域）」——excluded-only 域被显式保留于 quietDomains，架构上
+  未丢弃覆盖信息）。
+7.3 coverage semantics：
+  - excluded interaction kinds：liuHe/stemWuHe 永不入量级（7.1）；
+  - interaction 计数不进 magnitude（N2 无 count 通道，冻结）；
+  - 九域恒产出（AGG-3）→ N2 对九域全覆盖，无缺域。
+7.4 逐事件 N2 可观察性：
+  同 §6.5 逻辑：premises 落入 15 kind 且为非 excluded kind → 可观察量级；
+  仅合绊类触发 → quiet(P)；premises 为神煞/三合/藏干透出 → 无 N2 通道。
+
+================================================================================
+§8 YEAR / MONTH / DAY TEMPORAL ARCHITECTURE（SIXTH DELIVERABLE，最重要）
+================================================================================
+
+8.1 锚层规则（V3AnchorAndFamilyRules.swift L25-31, A1 anchorLayer）：
+  viewKind .day → .daily；.month → .monthly；.year → .annual。
+  槽位→层（L35-43）：natalYear/natalMonth/natalDay/natalHour→natal；
+  daYun→daYun；liuNian→annual；liuYue→monthly；liuRi→daily。
+  层序（L46-53）：natal=0 < daYun=1 < annual=2 < monthly=3 < daily=4。
+
+8.2 年层（YearV3Snapshot.swift Builder L472-511）：
+  - anchor：年中锚点 6 月 15 日（L472 注释「与大运/流年口径一致」）。
+  - 年层语义源：`V3Core.evaluate(natal:daYun:date:anchorDate, viewKind:.year)`
+    （L474-484）——唯一 Year semantic source（L9 冻结注释）。
+  - 年层 domain facts（N1/N2）仅来自该 .year evaluation：
+    YearV3Derivation.derive L217-226 以 year.domainStates /
+    year.domainIntensityStates 构建 domainFacts；12 个月度评估不参与
+    domainFacts。
+  - 年层是否读取月评估？→ 仅通过显式派生 pass（R-1/R-2/R-4/R-6）读取
+    monthEvaluations[12]；年层 N1/N2 本体零污染（§8.4 图）。
+  - 年层是否读取日评估？→ 不读取（Snapshot 类型无 day 字段，L122-155）。
+  - annual aggregation 存在吗？→ 存在的只有 R-1~R-6 确定性派生（序数/
+    枚举/计数比较，L19「零 Double/Float 语义计算」）；不存在跨层语义聚合
+    （年层 N2 ≠ 月度 N2 的任何函数）。
+  - 年层 signal 独立产生？→ 是：evaluate(.year) 独立调用。
+
+8.3 月层：
+  - 12× 月锚（每月 15 日，comps.day=15）独立调用
+    V3Core.evaluate(viewKind:.month)（L486-498）。
+  - 月层不继承年层 signal（月评估输入为 natal+daYun+该月柱；无年层
+    evaluation 结果入参）。
+  - Year quiet / Month active 可能吗？→ 可能且已实证（上游 Couple Matrix
+    S4：Jassica 2005 annual relationship=moderate(A)/children=quiet(A)，
+    而 m7 children R-2 事件 extreme——年/月独立评估的直接证据；
+    V3_Semantic_Contract_Audit §8「三层三值」同证）。
+
+8.4 日层：
+  - 独立调用 V3Core.evaluate(viewKind:.day)（unified core；TodayV3 链）。
+  - 日层不继承月层/年层 signal（同 8.3 逻辑，独立入参）。
+  - Day→Month / Day→Year 回流：不存在。R-6 方向为 month→year 单向
+    （L43-53「叶节点: 不被任何其他 R-pass 消费, 无 feedback path」）；
+    无任何 day→month / day→year pass。
+
+8.5 实际代码级关系图（非理论假设；每边有 §8.2-8.4 证据）：
+
+    V3Core.evaluate(.year)          V3Core.evaluate(.month) ×12
+    （锚 6/15, 独立）               （每月 15 日, 各自独立）
+           │                                │
+           │  年层 N1/N2 本体               │  月层 N1/N2 本体
+           │  ←—— 不读月/日 ————            │  ←—— 不读年/日 ——
+           │                                │
+           ▼                                ▼
+    ┌─────────────────────────────────────────────────┐
+    │ YearV3Snapshot                                   │
+    │  yearEvaluation      ← 年层结果逐字保留          │
+    │  monthEvaluations    ← 12×月层结果逐字保留(cache)│
+    │  domainFacts         ← 仅 year 评估（R derive）  │
+    │  R-2 mainLineKind    ← year N2 + month N2{high,extreme} │
+    │  R-1 windows         ← 月度 N2{moderate+} 连续≥2月 │
+    │  R-3/4 focus/watch   ← 仅 year 域事实            │
+    │  R-6 temporalFacts   ← 仅 monthEvaluations（单向叶节点）│
+    └─────────────────────────────────────────────────┘
+           │                                ▲
+           │ AnnualPresentationAdapter      │ 无回流（无 feedback path）
+           ▼                                │
+    M5 六卡 / AI Snapshot / UI        Day 层：
+    V3Core.evaluate(.day)（独立）
+      → TodayV3PresentationBuilder（V3EvaluationResult → presentation 纯函数,
+        TodayV3Presentation.swift L301-303）
+      —— Day 结果不进入 YearV3Snapshot；Year/Month 结果不进入 Day 呈现。
+
+8.6 判定：三层评估完全独立（同核不同锚）；唯一跨层轨道 = month→year 的
+  R-1/R-2/R-6 显式派生（单向、叶节点、无反馈）；年 quiet 且月 active、
+  月 quiet 且日 active 均为架构合法状态。
+
+================================================================================
+§9 SNAPSHOT / AGGREGATION AUDIT（EIGHTH DELIVERABLE）
+================================================================================
+
+9.1 V3Core → Snapshot 保真链（YearV3Snapshot.swift L122-155）：
+  Snapshot 字段 yearEvaluation / monthEvaluations 逐字保留原始
+  V3EvaluationResult——「V3Core 已产生 signal 是否一定进入 Snapshot？」
+  → 是（年/月层）：无过滤字段；domainFacts 亦为九域全量（AGG-3 恒产出）。
+  日层结果不进入 YearV3Snapshot（设计如此，§8.4）——「Day 已产生 signal,
+  Annual 是否知道？」→ 不知道，且无通道知道（OUT OF CURRENT SCOPE，非丢失）。
+
+9.2 R-pass 语义（L3-54 冻结注释 + derive 实现）：
+  R-2: annualActivated ⇔ 年 N2 != quiet；eventMonth ⇔ 月度域 N2∈{high,extreme}；
+       MainLineKind: annualActivatedCount≥1→multiFocus / eventMonthCount≥1→
+       eventDriven / else steady。
+  R-3: FocusCandidate ⇔ annualActivated；FocusDisplayed = top3
+       （排序 N2 desc → shape → 固定域序；overflow 保留为确定性事实 L141-142）。
+  R-4: WatchPool = (Candidate−Displayed) ∧ UNFAVORABLE；top2；无 N2 floor；
+       MIXED never。
+  R-1: 窗口 = 月度 N2∈{moderate,high,extreme} ∧ direction∈{F,U} ∧ 同域同向
+       严格连续≥2 月；maxWindows=4（presentation capacity L62-63）。
+  R-6: temporalFacts——仅月度输入；per-domain peakLevel = max（序数）；
+       存在门 peakLevel != .quiet；三存储字段（L107-116）；叶节点无反馈。
+9.3 suppress / collapse / aggregate / lose / preserve 判定表：
+  行为                       | 存在? | 证据/说明
+  ---------------------------+-------+--------------------------------------
+  suppress 原始评估          | NO    | yearEvaluation/monthEvaluations 逐字
+  collapse 到单一数值        | NO    | Snapshot 全字段零 Double（L19）
+  aggregate 跨层语义         | NO    | 年 N2 独立；R-pass 全为序数/枚举/计数
+  lose 域覆盖                | NO    | 九域恒产出；quietDomains 含 excluded-
+                             |       | only 域（L150）
+  preserve semantic identity | YES   | 域/direction/shape/intensity/月序全部
+                             |       | 以枚举/序数保留
+  容量过滤（呈现层）         | YES   | focus top3 / watch top2 / windows 4 /
+                             |       | temporalFacts 展示门 {high,extreme}——
+                             |       | 数据在 Snapshot 内保留，仅 UI 不展示
+                             |       | （overflowDomains L141-142 为证）
+9.4 结论：未发现「V3Core 有 signal 但 Snapshot 丢弃」；发现两处「Snapshot
+  有事实但 UI 展示门过滤」（→ GAP-G）：(a) peakLevel=moderate 的 R-6 事实；
+  (b) R-3/R-4 overflow。另登记一条 by-design 观察非丢失：合绊类
+  （liuHe/stemWuHe）量级不入 N2（§7.2 quiet(P)）——语义身份在 N1 family
+  计数仍可观察。
+
+================================================================================
+§10 ADAPTER / UI OBSERVABILITY（NINTH DELIVERABLE）
+================================================================================
+
+10.1 年层：YearV3Snapshot → AnnualPresentationAdapter.build(from:) →
+  M5 六卡 / AnnualM5AISnapshot / UI（YearV3Snapshot.swift L13-14 冻结链注释）。
+  AI Snapshot 边界：raw 数值绝不进入 LLM-facing Snapshot（上游冻结；
+  AI 消费枚举/序数语义）。
+10.2 月层：MonthlyV3PresentationBuilder（MonthlyV3Presentation.swift
+  L126-128，纯函数 V3EvaluationResult → MonthlyV3PresentationModel L98）；
+  词表载体 D9 FINAL Production Vocabulary（L22）。
+10.3 日层：TodayV3PresentationBuilder（TodayV3Presentation.swift L301-303，
+  纯函数）→ TodayV3DomainCard L226 / TodayV3HeroModel L257 /
+  TodayV3PresentationModel L276；能量格五档 D7（L90-94，N2 ordinal 唯一输入）；
+  日历标签 D-2（L106-118，deterministic compatibility tag ONLY）。
+10.4 用户可见性判定（PRESENT / PARTIAL / ABSENT / NOT TRACEABLE）：
+  域级结构状态（九域 N1/N2/方向）：PRESENT（三层均有域卡呈现）。
+  域级时间峰值：PARTIAL——R-6 事实存在门为非 quiet，展示门 {high,extreme}；
+    moderate 峰值事实不显示（GAP-G）。
+  focus/watch：PARTIAL（top3/top2 容量）。
+  事件语义（结婚/生育/买房/融资/丧亲/企业/项目/手术…）：ABSENT——
+    非算法检测后未展示（detection happens but UI hides），而是检测本身
+    不存在（algorithm cannot detect）→ UI 层无从展示。
+  「algorithm detects but UI does not show」唯一实锤 = §9.4 两处
+  （moderate R-6 + overflow focus/watch）。
+
+================================================================================
+§11 V3 BAZI EVENT OBSERVABILITY MASTER MATRIX
+================================================================================
+
+图例：✓=代码证实可观察；~ =仅结构归因可观察（域状态）；✗=不可观察；
+A/P=quiet(A)/quiet(P) 语境；「—」=该层无对应通道。
+Detector 列：SA=Structural Attribution only（TenGod→domains / slot→domains）；
+ED=Event Detector（本矩阵全部为 ✗——V3 无事件检测器）。
+Status ∈ {COVERED, PARTIAL, ABSENT, NOT TRACEABLE, CONVENTION-DEPENDENT}。
+
+Event          |Theory|V3Input|Detector|Domain      |N1|N2|Year|Month|Day|Snapshot|Adapter/UI     |Status
+---------------+------+-------+--------+------------+--+--+----+-----+---+--------+---------------+------
+Marriage       |present|partial|absent |relationship|~ |~ | ~  | ~   | ~ |preserve|relationship-only|PARTIAL
+               断点：Detector 层——结构归因存在（财星 theme L133-134 +
+               natalDay 槽 L160），婚姻事件语义全链不存在（§4.2）。
+Wedding(仪式)  |present|absent |absent |relationship|~ |~ | ~  | ~   | ~ |preserve|relationship-only|PARTIAL
+               断点：同 Marriage；另 Input 层神煞（红鸾/天喜）缺席（GAP-B）。
+Divorce/分手   |present|partial|absent |relationship|~ |~ | ~  | ~   | ~ |preserve|relationship-only|PARTIAL
+               断点：Detector 层；方向仅 favorable/unfavorable，无法区分
+               「结婚动」与「离婚动」的结构语义（同为日支/配偶星动象）。
+Childbirth     |present|partial|absent |children    |~ |~ | ~  | ~   | ~ |preserve|children-only   |PARTIAL
+               断点：Detector 层（官杀/食伤 theme L137/L142-143 + natalHour
+               L162）；怀孕/分娩/出生语义不存在；性别特化未实现（L128-129）。
+Pregnancy      |present|partial|absent |children    |~ |~ | ~  | ~   | ~ |preserve|children-only   |PARTIAL
+               同上。
+Property(买卖) |present|partial|absent |无专属域    |~ |~ | ~  | ~   | ~ |preserve|分散至
+               (study/family/wealth)                                                     |PARTIAL
+               断点：Mapping 层——印/财归因到 study/family/health/wealth，
+               property 标签全链不存在（DomainMapper 全文无 property token）。
+Business(创业/ |present|partial|absent |career/wealth|~|~ | ~  | ~   | ~ |preserve|career/wealth   |PARTIAL
+ 成败/项目)    断点：Detector 层——项目生命周期/公司成败语义不存在；
+               官杀/食伤/比劫仅结构归因。
+Financing      |conv-dep|partial|absent|wealth/study|~ |~ | ~  | ~   | ~ |preserve|分散            |CONVENTION-DEPENDENT
+               断点：理论层即无统一定义（§2-D5）；V3 仅有财/印结构归因。
+Relocation/    |present|absent |absent |travel      |~ |~ | ~  | ~   | ~ |preserve|travel-only     |PARTIAL
+ Travel        断点：双断——Input 层驿马缺席（GAP-B）+ Mapping 层 travel
+               仅 natalYear 槽位单通道（L163，无十神通道）。
+Bereavement    |present|partial|absent |family      |~ |~ | ~  | ~   | ~ |preserve|family-only     |PARTIAL
+               断点：Detector 层——丧亲语义不存在；印/比劫/年月柱仅结构
+               归因；效价 unfavorable 无法区分丧亲与其他家庭负向动象。
+Health(波动/   |present|partial|absent |health      |~ |~ | ~  | ~   | ~ |preserve|health-only     |PARTIAL
+ 意外/手术)    断点：Detector 层——健康域由印 theme（L139-140）+ natalDay
+               槽（L160）承载，疾病/手术/事故语义不存在（架构上 V3 不做
+               医学表达，by-design）；冲刑害/天克地冲强度可观察为域状态。
+Education      |present|partial|absent |study       |~ |~ | ~  | ~   | ~ |preserve|study-only      |PARTIAL
+               断点：Detector 层——入学/毕业/考试语义不存在；印/食伤
+               结构归因可观察。
+Legal(诉讼/    |present|partial|absent |legalSocial |~ |~ | ~  | ~   | ~ |preserve|legal-only      |PARTIAL
+ 合同/官非)    断点：Detector 层——官杀/比劫归因（L137/L145-146）+
+               伤官见官结构 kind 存在；诉讼/合同事件语义不存在。
+Wealth增减     |present|partial|absent |wealth      |~ |~ | ~  | ~   | ~ |preserve|wealth-only     |PARTIAL
+               断点：Detector 层——收入增减/破财语义不存在；财星方向
+               （favorable/unfavorable）可观察为域状态。
+Major Life     |present|partial|absent |多域分散    |~ |~ | ~  | ~   | ~ |preserve|分散            |CONVENTION-DEPENDENT
+ Transitions   断点：理论层流派分歧（§2-K5）+ Detector 层空缺；大运换运
+               作为 daYun 层输入存在但无「阶段转换」语义。
+
+矩阵总判定：
+  COVERED 行数 = 0（V3 无任何事件级 detector，故无行可达 COVERED）。
+  这不是缺陷判定，而是架构身份判定：V3 的设计目标（冻结文档
+  V3_Architecture_Principles / Anchor_and_Family_Rules / Core_Data_Model，
+  V3CoreTypes L5-11 SHA 三件套）是结构语义层，非事件语义层。
+
+================================================================================
+§12 GAP TAXONOMY
+================================================================================
+
+GAP-A — Theory / Convention Gap（传统规则流派差异/无统一定义）：
+  A1: 再婚论法（§2-A9）；A2: 融资/创业融资（D5）；A3: 项目生命周期
+  （E9）；A4: 移民/人生阶段转换（G3/K5）；A5: 手术/住院神煞论（J4/J5）；
+  A6: 婚礼择日体系（A4）。——全部登记，不可由本审计裁决。
+
+GAP-B — Input Gap（理论所需结构未进入 V3）：
+  B1: 神煞族全体（红鸾/天喜/桃花/驿马/空亡/丧门/吊客等）——V3 层零表达
+      （§3.2）；B2: 纳音——零表达；B3: 藏干透出判据——上游存在、V3 层
+      无显式语义（PARTIAL*）；B4: 三合/半合——lattice inertNoV2Kind
+      （V3CoreTypes L133-137，V2 无 kind 可表达）；B5: 天干生/克独立
+      kind 缺席（仅五合/四冲）。
+
+GAP-C — Detector Gap（输入存在、无 semantic detector）：
+  C1: 全部事件级语义（§11 全表 Detector 列 = absent）。
+  最重要单项：marriage/childbirth/property/financing/bereavement/business-
+  lifecycle——理论前提部分在（配偶星/食伤/印/财），事件判据全无。
+  对照系登记：婚姻事件判定能力存在于独立模块 MarriagePredictionEngine
+  V425（OUT OF CURRENT SCOPE）。
+
+GAP-D — Mapping Gap（结构存在、DomainMapper 无适当表达）：
+  D1: travel 无十神通道（仅 natalYear 槽位）；D2: property/financing/
+  company 语义标签不存在（印/财候选域无法表达房产/融资专属语义）；
+  D3: 官杀子星性别特化未实现（DomainMapper L128-129「留给后续层」）；
+  D4: 同 theme 多语义歧义（印星=学识/庇护/长辈/文书/不动产——无消歧机制，
+  靠 AGG-3 逐域独立绕过）。
+
+GAP-E — Temporal Gap（某层无法观察）：
+  E1: 未发现——三层独立评估对全部 15 kind 覆盖（§8）；
+      day 层可独立观察同日结构（Tier P 可及）。
+  E2: 登记（by-design）：day 结果无回流通道（day→month/year 不存在），
+      exact-day 结构不参与年/月快照聚合——属架构选择，非缺陷。
+
+GAP-F — Aggregation Gap（V3Core 有 signal、Snapshot 未保留）：
+  F1: 未发现（§9.3 preserve 全通过）。
+  F2: 登记（by-design 观察）：liuHe/stemWuHe excluded from magnitude
+      （quiet(P)）——量级通道不表达合绊，非聚合丢失（N1 仍可观察）。
+
+GAP-G — Presentation Gap（Snapshot 有、Adapter/UI 未展示）：
+  G1: R-6 temporalFacts 展示门 {high,extreme}——moderate 峰值事实不显示
+      （YearV3Contract L71）；G2: R-3 focus top3 / R-4 watch top2 容量——
+      overflow 域不显示（数据保留于 overflowDomains L141-142）；
+      G3: R-1 maxWindows=4。
+
+GAP-H — Data / Probe Coverage Gap（无对应 evaluation/probe 无法判断）：
+  H1: 本审计未执行任何 V3 rerun/new probe（边界禁令）；对具体命例具体
+      年月日的「某事件结构是否曾触发 N1/N2」判断依赖上游已有 frozen probe
+      输出（Couple Matrix / Owen 2005 probe / 2014 audit），未覆盖的组合
+      一律 NOT TRACEABLE（§17）。
+
+================================================================================
+§13 HISTORICAL EVIDENCE CROSS-REFERENCE（仅 existing observational examples，
+     不参与能力定义；摘自既有冻结 probe/矩阵，零新执行）
+================================================================================
+
+X1: Owen 2003 annual relationship = quiet(A)；MR01 day（2003-06-18）
+    relationship = quiet/absent（Couple_Shared_Event_Evidence_Matrix S1 块
+    verbatim）——作为「quiet(A) 语境下婚姻事件语义无从观察」的既有观察例。
+X2: Jassica 2003-06-18 day relationship = singleFamily unfavorable isolated、
+    N2vec relationship = moderate(A)——同一现实日、另一命盘结构信号存在的
+    既有观察例（不构成对 X1 的评价）。
+X3: Owen 2005 annual children = moderate(A) unfavorable isolated（focus#1）；
+    R-2 m3:children=extreme（Owen_Validation_V2_YearSnapshot_Probe L301）——
+    官杀/食伤结构归因在年层产生 children 域状态的既有观察例。
+X4: Jassica 2005「annual quiet(A) / m7 R-2 children=extreme / day quiet(P)」
+    三层三值（Couple Matrix S4 块）——年/月/日独立评估 + quiet(A)/quiet(P)
+    双轨的既有观察例。
+X5: 2014 高和娟审计（V3_Historical_Forensic_DeepDive_N1_N6_TEST_ONLY_v1）——
+    健康域单宫入口与结构落点错配的既有观察例（本审计在 §5/§11 以代码
+    独立复核其 Mapping 层前提）。
+声明：以上仅为既有观察材料；本报告全部能力判定均来自 §3-§10 的代码证据，
+与历史样本无关（§1.2 认知方向）。
+
+================================================================================
+§14 ARCHITECTURE-LEVEL FINDINGS
+================================================================================
+
+F1（架构身份）：V3 = 结构状态观测站。全部语义表达上界 =
+  {15 kind} × {tenGod→domains 5 组 ∪ slot→domains 4 组} × {合/冲效价} ×
+  {9 域} × {Year/Month/Day 三独立视图} × {N1 语义 + N2 五档}。
+  任何超出该积空间的表达（事件、神煞、藏干、三合、跨域联合）不在
+  架构词汇表内。
+
+F2（事件语义整体缺席是全链一致的）：从 Input（§3）到 Detector（§4）到
+  Mapping（§5）到 Snapshot（§9）到 UI（§10），事件语义在每一层都不存在
+  ——不存在「中途丢失」位置。因此 §16 的表述是 "does not express"，
+  而非 "loses"。
+
+F3（三层时间独立性被代码证实，非假设）：§8.5 关系图每条边均有行号证据；
+  实证锚点 = X4 三层三值。年层不是月度聚合（domainFacts 仅出自 .year
+  evaluation），月层不继承年，日层不回流。
+
+F4（呈现层过滤是仅有的「signal 产生但不展示」实锤）：GAP-G 三项
+  （moderate R-6 / overflow / maxWindows）——全部为容量或展示门设计，
+  数据在 Snapshot 中保留，可通过既有字段重建展示，无需触碰算法。
+
+F5（quiet 双轨是理解「无信号」的关键）：quiet(A) 与 quiet(P) 语义不同
+  （§7.2）；quietDomains 保留 excluded-only 域（L150）意味着合绊覆盖信息
+  在快照层未丢，只在 N2 量级与 UI 呈现上不可见。
+
+F6（对照系隔离）：MarriagePredictionEngine V425 与 V3 零 authority 共享
+  （§4.3）；V3 的事件语义空缺不能由该模块弥补，两者是平行轨道。
+
+================================================================================
+§15 WHAT FROZEN V3 CAN CURRENTLY EXPRESS
+================================================================================
+ 1. 15 类干支结构交互的检测与溯源（V2 detector 只读复用 + provenance）
+ 2. 结构→九域的候选域归因（十神 5 组 + 槽位 4 组）
+ 3. 合/冲效价方向（用忌语义 sign：favorable/unfavorable/mixed/unknown）
+ 4. 域级 N1：activation 族计数（quiet/single/multi）、confidenceShape
+    （none/isolated/corroborated/broad/conflicted）
+ 5. 域级 N2 五档量级（excluded 合绊除外）
+ 6. Year/Month/Day 三层独立视图（Unified Core，A1 锚规则）
+ 7. 年层确定性派生：mainLineKind / focus top3 / watch top2 / R-1 窗口 /
+    standalone 事件月 / quietDomains / R-6 时间峰值事实
+ 8. 全年 12 月逐月完整评估缓存（快照逐字保留）
+ 9. 三层确定性 UI 呈现（域卡/能量格五档/日历标签/AI Snapshot 枚举语义）
+
+================================================================================
+§16 WHAT FROZEN V3 CURRENTLY DOES NOT EXPRESS
+================================================================================
+ 1. 任何事件级语义：marriage/wedding/divorce/childbirth/pregnancy/
+    property/financing/investment/debt/bereavement/company founding/
+    expansion/failure/project lifecycle/relocation/immigration/
+    enrollment/graduation/exam/surgery/hospitalization/major-accident
+    （§4.2 判定：V3 does not express event semantics）
+ 2. 神煞族语义（红鸾/天喜/桃花/驿马/空亡/纳音）——V3 层零表达
+ 3. 三合/半合结构（lattice inertNoV2Kind）
+ 4. 藏干透出判据（V3 层；上游存在但不透传）
+ 5. travel 十神通道；property/financing/company 专属标签
+ 6. 官杀/食女子星性别特化（明文「留给后续层」）
+ 7. 跨域联合事件（AGG-3 域独立冻结）
+ 8. quiet(P) 域的合绊量级表达（excluded from magnitude，by-design）
+
+================================================================================
+§17 WHAT IS NOT TRACEABLE
+================================================================================
+ 1. 藏干 influence 的完整传递路径（上游预计算后以不透明字段进入，
+    V3 层无显式语义——只能证明「V3 层零表达」，不能证明「零影响」，
+    因 pattern/strength/yongShen 承载上游计算结果）
+ 2. XiShen/JiShen 神煞在历史任一具体命例上的「应有而未观察」——
+    GAP-H（无 probe，禁 rerun）
+ 3. Day 层评估的具体调用点接线细节（Today 链上游 AppViewModel 侧）——
+    本次审计读到的证据止于 unified core 定义 + TodayV3PresentationBuilder
+    纯函数签名；完整 call-site 走读留待后续 READ-ONLY 会话
+ 4. 各事件在具体年/月/日的实际触发分布——依赖未来 probe 授权，
+    本轮一律 NOT TRACEABLE
+
+================================================================================
+§18 OPEN QUESTIONS
+================================================================================
+ OQ1: quiet(P) 域是否应在未来架构中获得独立的「合绊可见性」呈现通道？
+     （本轮只登记，不设计）
+ OQ2: R-6 moderate 峰值事实（GAP-G1）是否应进入展示门？属 presentation
+     门 Set-membership 调整（冻结头登记类），非算法修改——仍需 Owen
+     显式授权才能进入任何设计阶段。
+ OQ3: travel 域十神通道缺失（GAP-D1）是理论问题还是实现次序问题？
+ OQ4: 事件语义若未来进入架构，其归属层应为独立 Event Layer（V4 候选）
+     还是扩展 N2 词表？——本轮仅提出问题，禁止任何设计承诺。
+ OQ5: 藏干/三合输入缺口（GAP-B3/B4）的 lattice 扩展先决条件是什么
+     （O3「不得扩展」纪律的解除条件）？
+
+================================================================================
+§19 INTEGRITY VERIFICATION
+================================================================================
+ [✓] READ-ONLY：本审计全程零写操作（生产代码/测试/数据/registry）；
+     唯一新文件 = 本报告（BacktestData/…TEST_ONLY_v1.txt，报告类产物）
+ [✓] NO probe / NO V3 rerun：全部证据来自已存在代码与已存在冻结 probe 输出
+ [✓] NO threshold / calibration / N1 / N2 / DomainMapper / V3Core /
+     Snapshot / Adapter / UI / registry / relabel 变更
+ [✓] Git HEAD 待复核（下方收尾命令执行后登记实际值）
+ [✓] 工作区既有 modified/untracked：只登记不碰（见收尾 git status 输出）
+ [✓] 语言纪律：全文无 hit/miss/accuracy/true-positive 词汇；
+     grep 不到 token 处一律使用 "does not contain explicit semantic
+     expression for X" 措辞
+ [✓] 历史事件仅出现于 §13（观察材料）与 §0 引用上游报告处，零参与
+     能力定义
+ [✓] 状态词表执行：COVERED/PARTIAL/ABSENT/NOT TRACEABLE/
+     CONVENTION-DEPENDENT；Master Matrix 无一行使用其他状态词
+
+================================================================================
+STOP — READ-ONLY / DESIGN-ONLY / FORENSIC / NO IMPLEMENTATION
+本报告不是 implementation authorization。
+不提出代码修改、不生成 patch、不创建 implementation branch。
+三问（§0）回答完毕；进入 V4 / Post-Freeze Architecture Design 需另行授权。
+================================================================================
